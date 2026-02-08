@@ -3,76 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mantu Idaman: Final</title>
+    <title>Calon Mantu Idaman</title>
     <style>
-        /* 1. LAYOUT DASAR */
-        body { margin: 0; padding: 0; background-color: #0f1c2e; font-family: 'Segoe UI', sans-serif; overflow: hidden; display: flex; justify-content: center; align-items: center; height: 100dvh; color: white; user-select: none; }
-        #app-container { position: relative; width: 100%; max-width: 500px; height: 100%; background: #131d2a; overflow: hidden; box-shadow: 0 0 50px rgba(0,0,0,0.8); }
+        /* --- 1. CSS DASAR --- */
+        body{margin:0;padding:0;background:#0f1c2e;font-family:'Segoe UI',sans-serif;overflow:hidden;display:flex;justify-content:center;align-items:center;height:100dvh;color:#fff;user-select:none;}
+        #app{position:relative;width:100%;max-width:500px;height:100%;background:#131d2a;overflow:hidden;box-shadow:0 0 50px #000;}
         
-        /* 2. BACKGROUND SCREENS */
-        .screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; flex-direction: column; }
+        /* LAYAR */
+        .screen{position:absolute;top:0;left:0;width:100%;height:100%;display:none;flex-direction:column;}
         
-        #screen-login { 
-            background: url('https://res.cloudinary.com/dsutaioqw/image/upload/v1770557809/utama_l86cnu.png') center/cover; 
-            z-index: 2000; justify-content: center; align-items: center;
+        /* LOGIN BARU (CSS ONLY) */
+        #sc-login { 
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            z-index: 2000; justify-content: center; align-items: center; text-align: center;
         }
-        #screen-lobby { 
-            background: linear-gradient(135deg, #091320 0%, #1c2a3f 100%); 
-            z-index: 1000; 
+        .login-title {
+            font-size: 42px; font-weight: 900; color: #f1c40f; 
+            text-transform: uppercase; letter-spacing: 2px;
+            text-shadow: 0 4px 0 #d35400, 0 0 20px rgba(241,196,15,0.5);
+            margin-bottom: 10px; line-height: 1.1;
         }
-        #screen-game { 
-            background: url('https://res.cloudinary.com/dsutaioqw/image/upload/v1770557809/utama_l86cnu.png') center/contain no-repeat #222; 
-            z-index: 100; 
-        }
+        .login-sub { font-size: 16px; color: #bdc3c7; margin-bottom: 40px; letter-spacing: 1px; }
 
-        /* 3. HEADER 3 PEMAIN */
+        /* LOBBY & GAME BG */
+        #sc-lobby{background:linear-gradient(135deg,#091320,#1c2a3f);z-index:10;}
+        #sc-game{background:url('https://res.cloudinary.com/dsutaioqw/image/upload/v1770557809/utama_l86cnu.png') center/contain no-repeat #222;}
+
+        /* HEADER 3 PEMAIN */
         #game-header { position: absolute; top: 2%; left: 2%; width: 96%; height: 15%; display: flex; justify-content: space-between; align-items: center; z-index: 10; }
         .p-card { width: 32%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
         
-        /* AVATAR DENGAN GLOW */
         .pc-av { width: 45px; height: 45px; border-radius: 50%; border: 2px solid #fff; margin-bottom: 2px; object-fit: cover; transition: 0.3s; background: #555; }
-        .active-glow { border-color: #f1c40f; box-shadow: 0 0 20px #f1c40f; transform: scale(1.1); z-index: 20; }
-        
+        .active-glow { border-color: #f1c40f; box-shadow: 0 0 20px #f1c40f; transform: scale(1.15); z-index: 20; }
         .pc-name { font-size: 10px; font-weight: bold; margin-bottom: 2px; text-shadow: 0 1px 3px #000; white-space: nowrap; overflow: hidden; max-width: 90%; }
         .pc-stats { display: flex; gap: 4px; font-size: 10px; font-weight: bold; }
-        .st-val { background: rgba(0,0,0,0.7); padding: 2px 5px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); }
+        .st-val { background: rgba(0,0,0,0.7); padding: 2px 6px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.3); }
 
-        /* 4. PION & ANIMASI LOMPAT (N) */
+        /* PION & ANIMASI JUMP (0.5s) */
         .pion { position: absolute; width: 6%; aspect-ratio: 1/1; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.6); display: none; z-index: 15; }
         #p1-tok { background: #3498db; } 
         #p2-tok { background: #e74c3c; transform: translate(3px, -3px); } 
         #p3-tok { background: #2ecc71; transform: translate(-3px, 3px); }
         
-        .jumping { animation: jumpAnim 0.4s ease-in-out; }
+        .jumping { animation: jumpAnim 0.5s ease-in-out; }
         @keyframes jumpAnim { 
             0% { transform: translateY(0) scale(1); } 
-            50% { transform: translateY(-30px) scale(1.2); } /* Naik ke atas */
+            50% { transform: translateY(-35px) scale(1.3); } 
             100% { transform: translateY(0) scale(1); } 
         }
 
-        /* 5. TOMBOL TRANSPARAN (OVERLAY) */
+        /* TOMBOL TRANSPARAN */
         .btn-overlay { position: absolute; bottom: 3.5%; width: 25%; height: 9%; cursor: pointer; z-index: 20; background: transparent; border: none; }
         .btn-overlay:active { background: rgba(255,255,255,0.1); border-radius: 15px; } 
         #btn-kartu { left: 4%; }
         #btn-info { right: 4%; }
         #btn-kocok { left: 50%; transform: translateX(-50%); width: 38%; height: 10%; bottom: 3%; border-radius: 40px; background: transparent; border: none; }
 
-        /* TEKS GILIRAN */
-        #turn-txt { position: absolute; bottom: 20%; left: 50%; transform: translateX(-50%); background: #3498db; padding: 8px 25px; border-radius: 20px; font-weight: bold; font-size: 13px; box-shadow: 0 3px 10px #000; text-align: center; width: 60%; z-index: 15; border: 2px solid white; }
+        /* UI TEXT */
+        #turn-txt { position: absolute; bottom: 22%; left: 50%; transform: translateX(-50%); background: #3498db; padding: 8px 25px; border-radius: 20px; font-weight: bold; font-size: 13px; box-shadow: 0 3px 10px #000; text-align: center; width: 60%; z-index: 15; border: 2px solid white; }
 
-        /* 6. LOBBY & EDIT PROFIL */
+        /* CHAT (FIXED) */
+        #chat-float-btn { position: absolute; bottom: 140px; right: 20px; width: 50px; height: 50px; background: #2ecc71; border-radius: 50%; border: 2px solid white; font-size: 24px; color: white; cursor: pointer; z-index: 90; box-shadow: 0 4px 10px #000; display: flex; align-items: center; justify-content: center; }
+        #chat-area { position: absolute; bottom: 200px; right: 20px; width: 200px; background: rgba(0,0,0,0.8); padding: 10px; border-radius: 10px; display: none; z-index: 95; }
+        .chat-bubble { position: absolute; padding: 5px 10px; background: white; color: black; border-radius: 10px; font-size: 10px; z-index: 100; font-weight: bold; display: none; transform: translate(-50%, -150%); box-shadow: 0 2px 5px #000; }
+
+        /* LOBBY */
         .edit-area { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-bottom: 20px; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 15px; }
         .edit-av { width: 90px; height: 90px; border-radius: 50%; border: 3px solid #f1c40f; object-fit: cover; }
         .inp-name { background: rgba(0,0,0,0.5); border: 1px solid #555; padding: 10px; color: white; border-radius: 8px; text-align: center; width: 80%; font-weight: bold; }
         .mode-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; padding: 15px; display: flex; align-items: center; cursor: pointer; margin: 10px 20px; transition: 0.2s; }
         .mode-card:active { transform: scale(0.98); background: rgba(255,255,255,0.1); }
 
-        /* 7. MODAL POPUP */
+        /* MODAL */
         .modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 200; display: none; justify-content: center; align-items: center; }
         .box { background: #1c2a3f; padding: 25px; border-radius: 15px; width: 85%; max-height: 85%; overflow-y: auto; text-align: center; border: 2px solid #f1c40f; color: #ecf0f1; }
-        .info-list { text-align: left; font-size: 13px; line-height: 1.5; padding-left: 20px; margin-top: 5px;}
         
-        /* 8. DICE & TOAST */
+        /* DICE & TOAST */
         #dice-scn{position:absolute;top:45%;left:50%;transform:translate(-50%,-50%);width:80px;height:80px;display:none;z-index:50;}
         .cube{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform 1s;}
         .face{position:absolute;width:80px;height:80px;background:#fff;border:2px solid #ccc;border-radius:10px;display:flex;justify-content:center;align-items:center;font-size:40px;color:#333;}
@@ -83,18 +89,19 @@
         .t-msg{background:rgba(0,0,0,0.9);color:#fff;padding:10px 20px;border-radius:25px;font-size:13px;animation:fade 3s forwards;border:1px solid #f1c40f; text-align: center;}
         @keyframes fade{0%{opacity:0;transform:translateY(-10px);}10%{opacity:1;transform:translateY(0);}90%{opacity:1;}100%{opacity:0;display:none;}}
         
-        .btn-g{background:#fff;color:#333;display:flex;align-items:center;gap:10px;padding:15px 30px;border-radius:30px;font-size:16px;border:none;font-weight:bold;cursor:pointer;}
+        .btn-g{background:#fff;color:#333;display:flex;align-items:center;gap:10px;padding:15px 30px;border-radius:30px;font-size:16px;border:none;font-weight:bold;cursor:pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.3);}
     </style>
 </head>
 <body>
 
 <div id="app-container">
     <div id="screen-login" class="screen" style="display:flex;">
-        <h1 style="color:#f1c40f; text-shadow:0 0 10px #000; margin-bottom:20px;">CALON MANTU</h1>
+        <div class="login-title">CALON MANTU<br>IDAMAN</div>
+        <div class="login-sub">Edisi Multiplayer Online</div>
         <button class="btn-g" onclick="loginGoogle()">
             <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" width="20"> Masuk dengan Google
         </button>
-        <p id="login-error" style="display:none; color:red; background:rgba(0,0,0,0.8); padding:5px; margin-top:10px; font-size:12px; max-width:80%; text-align:center;"></p>
+        <p id="login-error" style="display:none; color:#e74c3c; margin-top:20px; font-weight:bold;"></p>
     </div>
 
     <div id="screen-lobby" class="screen">
@@ -104,10 +111,8 @@
                 <img id="edit-av" class="edit-av" src="" onclick="document.getElementById('file-in').click()">
                 <input type="file" id="file-in" style="display:none" accept="image/*" onchange="uploadAv(this)">
                 <input type="text" id="edit-name" class="inp-name" placeholder="Nama Kamu">
-                <div style="font-size:11px; color:#bdc3c7; margin-top:5px;">Tap foto untuk ganti (Bebas Size)</div>
-                <button onclick="saveProfile()" style="background:#27ae60; border:none; color:white; padding:10px 25px; border-radius:20px; font-weight:bold; cursor:pointer; margin-top:10px;">SIMPAN & MAIN</button>
+                <button onclick="saveProfile()" style="background:#27ae60; border:none; color:white; padding:10px 25px; border-radius:20px; font-weight:bold; cursor:pointer; margin-top:10px;">SIMPAN</button>
             </div>
-            
             <div style="background:#000; padding:5px 15px; border-radius:15px; display:inline-block; border:1px solid #f39c12;">
                 💰 <span id="u-coin">0</span>
             </div>
@@ -127,16 +132,19 @@
         <div id="game-header">
             <div id="card-p1" class="p-card">
                 <img id="av-p1" class="pc-av" src=""><div id="nm-p1" class="pc-name">P1</div><div class="pc-stats"><span class="st-val">❤️<span id="ht-p1">0</span></span> <span class="st-val">💰<span id="mn-p1">0</span></span></div>
+                <div id="cb-p1" class="chat-bubble">Halo!</div>
             </div>
             <div id="card-p2" class="p-card">
                 <img id="av-p2" class="pc-av" src=""><div id="nm-p2" class="pc-name">P2</div><div class="pc-stats"><span class="st-val">❤️<span id="ht-p2">0</span></span> <span class="st-val">💰<span id="mn-p2">0</span></span></div>
+                <div id="cb-p2" class="chat-bubble">Halo!</div>
             </div>
             <div id="card-p3" class="p-card">
                 <img id="av-p3" class="pc-av" src=""><div id="nm-p3" class="pc-name">Kosong</div><div class="pc-stats"><span class="st-val">❤️<span id="ht-p3">-</span></span> <span class="st-val">💰<span id="mn-p3">-</span></span></div>
+                <div id="cb-p3" class="chat-bubble">Halo!</div>
             </div>
         </div>
 
-        <button onclick="goHome()" style="position:absolute; top:80px; right:10px; background:#c0392b; border:none; border-radius:50%; width:30px; height:30px; cursor:pointer; color:white; z-index:90; box-shadow:0 2px 5px #000;">🏠</button>
+        <button onclick="goHome()" style="position:absolute; top:80px; right:10px; background:#c0392b; border:none; border-radius:50%; width:30px; height:30px; cursor:pointer; color:white; z-index:90;">🏠</button>
         
         <div id="p1-tok" class="pion"></div><div id="p2-tok" class="pion"></div><div id="p3-tok" class="pion"></div>
         <div id="dice-scn"><div class="cube"><div class="face f1">1</div><div class="face f2">2</div><div class="face f3">3</div><div class="face f4">4</div><div class="face f5">5</div><div class="face f6">6</div></div></div>
@@ -147,56 +155,70 @@
         <button id="btn-kocok" class="btn-overlay" onclick="rollD()"></button>
         <button id="btn-info" class="btn-overlay" onclick="showInfo()"></button>
 
+        <button id="chat-float-btn" onclick="toggleChat()">💬</button>
+        <div id="chat-area">
+            <input type="text" id="chat-in" placeholder="Pesan..." style="width:100%; padding:5px; border-radius:5px; border:none;">
+            <button onclick="sendChat()" style="width:100%; background:#2ecc71; color:white; border:none; margin-top:5px; padding:5px; cursor:pointer;">KIRIM</button>
+        </div>
+
         <div id="toast"></div>
     </div>
 
     <div id="m-room" class="modal">
         <div class="box">
             <h3>MASUK ROOM</h3>
-            <input type="text" id="room-code" placeholder="Ketik Kode (Cth: MANTU)" style="padding:12px; width:80%; text-align:center; margin-bottom:15px; border-radius:8px; border:none; font-weight:bold;">
+            <input type="text" id="room-code" placeholder="Ketik Kode (Cth: MANTU)" style="padding:12px; width:80%; text-align:center; margin-bottom:15px; font-weight:bold;">
             <div style="display:flex; gap:10px; justify-content:center;">
-                <button onclick="joinOnline()" style="background:#27ae60; border:none; padding:10px 20px; color:white; border-radius:5px; font-weight:bold;">GABUNG</button>
-                <button onclick="document.getElementById('m-room').style.display='none'" style="background:#c0392b; border:none; padding:10px 20px; color:white; border-radius:5px; font-weight:bold;">BATAL</button>
+                <button onclick="joinOnline()" style="background:#27ae60; border:none; padding:10px 20px; color:white; border-radius:5px;">GABUNG</button>
+                <button onclick="document.getElementById('m-room').style.display='none'" style="background:#c0392b; border:none; padding:10px 20px; color:white; border-radius:5px;">BATAL</button>
             </div>
         </div>
     </div>
 
     <div id="m-card" class="modal" onclick="this.style.display='none'">
         <div class="box" onclick="event.stopPropagation()">
-            <h3 id="c-title" style="color:#f1c40f;">KOLEKSI KARTU</h3>
+            <h3 id="c-title" style="color:#f1c40f;">KARTU</h3>
             <div style="font-size:60px; margin:20px;">🃏</div>
-            <p id="c-desc">Kamu belum mendapatkan kartu spesial.</p>
-            <button onclick="document.getElementById('m-card').style.display='none'" style="background:#3498db; border:none; padding:10px; width:100%; color:white; border-radius:5px; margin-top:20px; font-weight:bold;">TUTUP</button>
+            <p id="c-desc">...</p>
+            <button onclick="document.getElementById('m-card').style.display='none'" style="background:#3498db; width:100%; padding:10px; color:white; border:none; margin-top:10px;">TUTUP</button>
+        </div>
+    </div>
+
+    <div id="m-win" class="modal" style="background:rgba(0,0,0,0.95);">
+        <div class="box" style="border-color:#2ecc71;">
+            <h1 style="color:#2ecc71; font-size:40px;">MENANG! 🏆</h1>
+            <img id="win-av" src="" style="width:100px; height:100px; border-radius:50%; border:4px solid gold;">
+            <h2 id="win-name" style="margin:10px 0;">Nama</h2>
+            <p>Berhasil mendapatkan Restu (100 Hati)!</p>
+            <button onclick="location.reload()" style="background:#e67e22; padding:15px 30px; border:none; color:white; border-radius:30px; font-weight:bold; font-size:18px;">MAIN LAGI</button>
         </div>
     </div>
 
     <div id="m-info" class="modal" onclick="this.style.display='none'">
         <div class="box" onclick="event.stopPropagation()">
-            <h3 style="color:#f1c40f; border-bottom:1px solid #555; padding-bottom:10px; margin-top:0;">INFORMASI PERMAINAN</h3>
-            <div style="text-align:left; max-height:400px; overflow-y:auto;">
-                <p style="background:rgba(255,255,255,0.1); padding:10px; border-radius:10px;">
-                    <b>🏆 CARA MENANG:</b><br>
-                    Kumpulkan <b>HATI terbanyak</b> di akhir permainan, atau dapatkan Jackpot di kotak "Nekat Ngelamar".
+            <h3 style="color:#f1c40f; border-bottom:1px solid #555; padding-bottom:10px;">ATURAN MAIN</h3>
+            <div style="text-align:left; font-size:13px;">
+                <p style="background:rgba(46, 204, 113, 0.2); padding:10px; border-radius:8px;">
+                    <b>🏆 MISI UTAMA:</b><br>Kumpulkan <b>100 HATI</b> untuk memenangkan hati Camer dan menjadi Mantu Idaman!
                 </p>
-                <p><b>🎲 ATURAN MAIN:</b></p>
-                <ul class="info-list">
-                    <li>Modal awal: <b>20 Uang</b>.</li>
-                    <li>Lewat <b>START</b>: +10 Uang & +5 Hati.</li>
-                    <li><b>Martabak & Puji Camer:</b> Menambah Hati (disukai Camer).</li>
-                    <li><b>Mantan & Emas Palsu:</b> Mengurangi Hati/Uang.</li>
+                <ul style="padding-left:20px; line-height:1.5;">
+                    <li><b>Start:</b> +20 Uang, +10 Hati.</li>
+                    <li><b>Martabak:</b> +15 Hati (Sogokan maut).</li>
+                    <li><b>Puji Camer:</b> +20 Hati (Auto sayang).</li>
+                    <li><b>Sosial Exp:</b> +25 Hati (Viral!).</li>
                     <li><b>Pos Ronda:</b> Bayar denda keamanan.</li>
-                    <li><b>RSJ:</b> Hati hancur (-10), status cinta direset.</li>
-                    <li><b>Kartu:</b> Bisa untung besar atau sial.</li>
+                    <li><b>RSJ:</b> Hati reset jadi 0 (Gila karena cinta).</li>
+                    <li><b>Nekat Ngelamar:</b> Dapat +50 Hati instan!</li>
                 </ul>
             </div>
-            <button onclick="document.getElementById('m-info').style.display='none'" style="background:#3498db; border:none; padding:10px; width:100%; color:white; border-radius:5px; margin-top:10px; font-weight:bold;">SAYA PAHAM</button>
+            <button onclick="document.getElementById('m-info').style.display='none'" style="background:#3498db; width:100%; padding:10px; color:white; border:none; margin-top:10px;">SIAP!</button>
         </div>
     </div>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-import { getDatabase, ref, set, get, update, onValue, onDisconnect } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+import { getDatabase, ref, set, get, update, onValue, onDisconnect, push, onChildAdded } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
 import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
 
 const cfg = {
@@ -208,16 +230,14 @@ const cfg = {
 };
 
 const app = initializeApp(cfg); const db = getDatabase(app); const auth = getAuth(app);
-let user, stats, rId, role, game, lastCard = {title:"Belum Ada", desc:"Belum dapat kartu."};
-// COORDINATES (Updated)
+let user, stats, rId, role, game, chatUnsub;
 const tiles = [{id:0,x:11,y:68.3},{id:1,x:30.5,y:68.3},{id:2,x:50,y:68.3},{id:3,x:69.5,y:68.3},{id:4,x:89,y:68.3},{id:5,x:89,y:57.1},{id:6,x:89,y:45.8},{id:7,x:89,y:34.5},{id:8,x:89,y:23.2},{id:9,x:69.5,y:23.2},{id:10,x:50,y:23.2},{id:11,x:30.5,y:23.2},{id:12,x:11,y:23.2},{id:13,x:11,y:34.5},{id:14,x:11,y:45.8},{id:15,x:11,y:57.1}];
 
 onAuthStateChanged(auth, u => { if(u){ user=u; loadProf(); } else { show('screen-login'); } });
 window.loginGoogle = () => {
     signInWithPopup(auth, new GoogleAuthProvider()).catch(e => {
-        const err = document.getElementById('login-error');
-        err.style.display = 'block';
-        err.innerHTML = "LOGIN GAGAL!<br>Pastikan domain <b>nantuidaman.vercel.app</b> sudah ada di Firebase Auth Settings.";
+        document.getElementById('login-error').innerText = "Gagal Login. Cek domain di Firebase!";
+        document.getElementById('login-error').style.display = 'block';
     });
 };
 window.goHome = () => location.reload();
@@ -226,31 +246,22 @@ async function loadProf(){
     const s = await get(ref(db,'users/'+user.uid));
     stats = s.val() || {name:user.displayName, photo:user.photoURL, koin:1000};
     if(!s.exists()) set(ref(db,'users/'+user.uid), stats);
-    
     document.getElementById('edit-av').src = stats.photo;
     document.getElementById('edit-name').value = stats.name;
     document.getElementById('u-coin').innerText = stats.koin;
     show('screen-lobby');
 }
 
-// UPLOAD NO LIMIT
 window.uploadAv = (input) => {
     const file = input.files[0];
-    if(file){
-        const reader = new FileReader();
-        reader.onload = (e) => { document.getElementById('edit-av').src = e.target.result; };
-        reader.readAsDataURL(file);
-    }
+    if(file){ const reader = new FileReader(); reader.onload = (e) => { document.getElementById('edit-av').src = e.target.result; }; reader.readAsDataURL(file); }
 }
 window.saveProfile = () => {
-    const n = document.getElementById('edit-name').value;
-    const p = document.getElementById('edit-av').src;
-    update(ref(db,'users/'+user.uid), {name:n, photo:p}).then(()=>{
-        stats.name=n; stats.photo=p; tost("Profil Tersimpan!");
-    });
+    const n = document.getElementById('edit-name').value; const p = document.getElementById('edit-av').src;
+    update(ref(db,'users/'+user.uid), {name:n, photo:p}).then(()=>{ stats.name=n; stats.photo=p; tost("Profil Disimpan!"); });
 }
 
-// GAME
+// --- GAME LOGIC ---
 window.startBot = () => {
     rId='bot'; role='p1';
     game={
@@ -259,7 +270,7 @@ window.startBot = () => {
         p2:{pos:0, uang:20, hati:0, j:true, nm:"Bot A", pic:"https://api.dicebear.com/7.x/bottts/svg?seed=A"},
         p3:{pos:0, uang:20, hati:0, j:true, nm:"Bot B", pic:"https://api.dicebear.com/7.x/bottts/svg?seed=B"}
     };
-    show('screen-game'); updUI();
+    show('screen-game'); updUI(); initChat('local');
 }
 
 window.openRoomModal = () => document.getElementById('m-room').style.display='flex';
@@ -280,7 +291,6 @@ window.joinOnline = async () => {
     
     role = myP;
     const pData = {pos:0, uang:20, hati:0, j:true, nm:stats.name, pic:stats.photo};
-    
     if(myP=='p1' && !snap.exists()){
         set(rRef, { turn:'p1', p1:pData, p2:{j:false,pos:0,uang:20,hati:0}, p3:{j:false,pos:0,uang:20,hati:0} });
     } else {
@@ -289,31 +299,34 @@ window.joinOnline = async () => {
     
     show('screen-game');
     onValue(rRef, (s) => { const v=s.val(); if(v){ game=v; updUI(); } });
+    initChat(rId);
 }
 
-// ANIMASI LOMPAT (JUMP)
+// GERAKAN LOMPAT (0.5 Detik)
 async function moveStep(role, start, steps){
     const el = document.getElementById(role+'-tok');
     let curr = start;
     
+    // Offset agar tidak numpuk
+    let ox=0, oy=0; if(role=='p2'){ox=3; oy=-3;} if(role=='p3'){ox=-3; oy=3;}
+
     for(let i=0; i<steps; i++){
         curr++;
-        if(curr >= 16) { curr = 0; tost("Lewat START: +10 Uang, +5 Hati"); }
+        if(curr >= 16) { curr = 0; tost("Lewat START: +20 Uang, +10 Hati"); }
         
         el.style.transition = "none"; 
         el.classList.add('jumping');
-        
         const c = tiles[curr];
-        el.style.left = c.x + '%'; el.style.top = c.y + '%';
+        el.style.left = (c.x + ox) + '%'; el.style.top = (c.y + oy) + '%';
         
-        await new Promise(r => setTimeout(r, 400));
+        await new Promise(r => setTimeout(r, 500)); // 0.5 Detik per lompatan
         el.classList.remove('jumping');
     }
     return curr;
 }
 
 window.rollD = async () => {
-    if(game.turn !== role) return tost("Tunggu Giliranmu!");
+    if(game.turn !== role) return tost("Bukan Giliranmu!");
     const dv = Math.floor(Math.random()*6)+1;
     visDice(dv);
     await new Promise(r => setTimeout(r, 1500)); 
@@ -323,17 +336,23 @@ window.rollD = async () => {
     const newPos = await moveStep(role, oldPos, dv);
     
     p.pos = newPos;
-    if(newPos < oldPos) { p.uang+=10; p.hati+=5; }
+    if(newPos < oldPos) { p.uang+=20; p.hati+=10; } // Logic Start
     
     checkTile(p);
     
-    let next = getNextTurn(game.turn);
-    if(rId=='bot'){ 
-        game.turn=next; updUI(); 
-        if(next!='p1') setTimeout(()=>botRun(next), 1000); 
-    } else {
-        update(ref(db,`rooms/${rId}`), {turn:next, [role]:p});
-    }
+    // CEK MENANG
+    if(p.hati >= 100) { showWin(p); return; }
+
+    // DELAY 2 DETIK SEBELUM GANTI TURN
+    setTimeout(() => {
+        let next = getNextTurn(game.turn);
+        if(rId=='bot'){ 
+            game.turn=next; updUI(); 
+            if(next!='p1') setTimeout(()=>botRun(next), 1000); 
+        } else {
+            update(ref(db,`rooms/${rId}`), {turn:next, [role]:p});
+        }
+    }, 2000);
 }
 
 async function botRun(botRole){
@@ -347,12 +366,16 @@ async function botRun(botRole){
     const newPos = await moveStep(botRole, oldPos, dv);
     
     p.pos = newPos;
-    if(newPos < oldPos) { p.uang+=10; p.hati+=5; }
+    if(newPos < oldPos) { p.uang+=20; p.hati+=10; }
     
     checkTile(p, true);
-    let next = getNextTurn(botRole);
-    game.turn = next; updUI();
-    if(next != 'p1') setTimeout(()=>botRun(next), 1000);
+    if(p.hati >= 100) { showWin(p); return; }
+    
+    setTimeout(() => {
+        let next = getNextTurn(botRole);
+        game.turn = next; updUI();
+        if(next != 'p1') setTimeout(()=>botRun(next), 1000);
+    }, 2000);
 }
 
 function getNextTurn(curr){
@@ -364,26 +387,36 @@ function getNextTurn(curr){
 function checkTile(p, isBot=false){
     const i = p.pos;
     let msg = "";
-    if(i==1){p.uang-=3; p.hati+=5; msg="Martabak (-3 Uang, +5 Hati)";}
-    else if(i==2 || i==7){msg="Dapat Kartu Kesempatan!"; if(!isBot) trigCard("KESEMPATAN", "Bonus Uang Kaget +20!", p);}
-    else if(i==3){p.hati+=5; msg="Dipuji Camer (+5 Hati)";}
-    else if(i==4){p.uang-=2; msg="Bayar Pos Ronda (-2 Uang)";}
-    else if(i==5){p.pos=0; msg="Supir Dadakan! Balik ke Start";}
-    else if(i==6){p.uang-=5; msg="THR Keponakan (-5 Uang)";}
-    else if(i==8){p.hati-=10; msg="Masuk RSJ (-10 Hati)";}
-    else if(i==9){p.uang-=5; msg="Genteng Bocor (-5 Uang)";}
-    else if(i==10){p.uang-=10; msg="Toko Emas KW (-10 Uang)";}
-    else if(i==11){p.hati+=10; msg="Social Experiment Viral (+10 Hati)";}
-    else if(i==12 || i==13){msg="Kartu Extreme!"; if(!isBot) trigCard("EXTREME", "Kena Begal! -15 Uang", p);}
-    else if(i==14){p.hati-=5; msg="Mantan Datang (-5 Hati)";}
-    else if(i==15){p.hati+=20; msg="Nekat Ngelamar (+20 Hati)";}
+    // LOGIC MENANG 100 HATI
+    if(i==1){p.uang-=3; p.hati+=15; msg="Martabak (+15 Hati)";}
+    else if(i==2 || i==7){msg="Dapat Kartu!"; if(!isBot) showCard("KESEMPATAN", "Dapat Rejeki Nomplok +30 Uang!", p);}
+    else if(i==3){p.hati+=20; msg="Dipuji Camer (+20 Hati)";}
+    else if(i==4){p.uang-=5; msg="Pos Ronda (-5 Uang)";}
+    else if(i==5){p.pos=0; msg="Supir Dadakan! Balik Start";}
+    else if(i==6){p.uang-=10; msg="THR Ponakan (-10 Uang)";}
+    else if(i==8){p.hati=0; msg="Masuk RSJ (Hati Reset 0)";}
+    else if(i==9){p.uang-=5; msg="Genteng Bocor";}
+    else if(i==10){p.uang-=15; msg="Emas Palsu (-15 Uang)";}
+    else if(i==11){p.hati+=25; msg="Social Experiment (+25 Hati)";}
+    else if(i==12 || i==13){msg="Kartu Ekstrem!"; if(!isBot) showCard("EKSTREM", "Kena Begal! Uang -20", p);}
+    else if(i==14){p.hati-=15; msg="Mantan Datang (-15 Hati)";}
+    else if(i==15){p.hati+=50; msg="Nekat Ngelamar (+50 Hati)";}
+    
     if(msg) tost((isBot?p.nm+": ":"") + msg);
 }
 
-function trigCard(t, d, p){
-    if(t=="KESEMPATAN") p.uang+=20;
-    if(t=="EXTREME") p.uang-=15;
-    lastCard = {title:t, desc:d};
+function showCard(t, d, p){
+    if(t=="KESEMPATAN") p.uang+=30;
+    if(t=="EKSTREM") p.uang-=20;
+    document.getElementById('c-title').innerText=t;
+    document.getElementById('c-desc').innerText=d;
+    document.getElementById('m-card').style.display='flex';
+}
+
+function showWin(p){
+    document.getElementById('win-name').innerText = p.nm;
+    document.getElementById('win-av').src = p.pic;
+    document.getElementById('m-win').style.display = 'flex';
 }
 
 function updUI(){
@@ -391,7 +424,6 @@ function updUI(){
         const d = game[r];
         const av = document.getElementById('av-'+r);
         const tok = document.getElementById(r+'-tok');
-        
         document.getElementById('nm-'+r).innerText = d && d.j ? d.nm : "Kosong";
         av.src = d && d.j ? d.pic : "";
         document.getElementById('ht-'+r).innerText = d && d.j ? d.hati : "-";
@@ -399,8 +431,11 @@ function updUI(){
         
         if(d && d.j){
             tok.style.display='block';
-            const c = tiles[d.pos];
-            if(!tok.classList.contains('jumping')) { tok.style.left = c.x + '%'; tok.style.top = c.y + '%'; }
+            if(!tok.classList.contains('jumping')) {
+                const c = tiles[d.pos];
+                let ox=0, oy=0; if(r=='p2'){ox=3; oy=-3;} if(r=='p3'){ox=-3; oy=3;}
+                tok.style.left = (c.x + ox) + '%'; tok.style.top = (c.y + oy) + '%';
+            }
         } else { tok.style.display='none'; }
 
         if(game.turn == r && d && d.j) av.classList.add('active-glow'); else av.classList.remove('active-glow');
@@ -411,13 +446,25 @@ function updUI(){
     else { t.innerText = `Giliran ${game[game.turn].nm}...`; t.style.background = "#e74c3c"; }
 }
 
-window.showMyCard = () => {
-    document.getElementById('c-title').innerText = lastCard.title;
-    document.getElementById('c-desc').innerText = lastCard.desc;
-    document.getElementById('m-card').style.display='flex';
+// CHAT
+window.toggleChat = () => { const b=document.getElementById('chat-area'); b.style.display=b.style.display=='block'?'none':'block'; }
+window.sendChat = () => {
+    const txt = document.getElementById('chat-in').value; if(!txt) return;
+    if(rId=='bot'){ showChatBubble('p1', txt); setTimeout(()=>showChatBubble('p2','Siap!'),1000); }
+    else { push(ref(db,`rooms/${rId}/chat`), {role:role, txt:txt}); }
+    document.getElementById('chat-in').value=''; document.getElementById('chat-area').style.display='none';
 }
-window.showInfo = () => document.getElementById('m-info').style.display='flex';
+function initChat(id){
+    if(chatUnsub) chatUnsub(); if(id=='local') return;
+    chatUnsub = onChildAdded(ref(db,`rooms/${id}/chat`), s => { const m=s.val(); showChatBubble(m.role, m.txt); });
+}
+function showChatBubble(r, t){
+    const b = document.getElementById('cb-'+r);
+    if(b){ b.innerText=t; b.style.display='block'; setTimeout(()=>b.style.display='none',3000); }
+}
 
+window.showMyCard = () => tost("Tunggu dapat kartu di papan!");
+window.showInfo = () => document.getElementById('m-info').style.display='flex';
 function show(id){ ['screen-login','screen-lobby','screen-game'].forEach(s=>document.getElementById(s).style.display=s==id?'flex':'none'); }
 function visDice(v){ const c=document.querySelector('.cube'); document.getElementById('dice-scn').style.display='block'; c.style.transform=`rotateX(${Math.random()*720}deg) rotateY(${Math.random()*720}deg)`; setTimeout(()=>{ let x=0,y=0; if(v==2)y=-90; if(v==3)y=-180; if(v==4)y=90; if(v==5)x=-90; if(v==6)x=90; c.style.transform=`rotateX(${x+720}deg) rotateY(${y+720}deg)`; },500); setTimeout(()=>document.getElementById('dice-scn').style.display='none',2000); }
 function tost(m){ const d=document.createElement('div');d.className='t-msg';d.innerText=m;document.getElementById('toast').appendChild(d);setTimeout(()=>d.remove(),3000); }
