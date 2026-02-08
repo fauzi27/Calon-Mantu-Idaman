@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Calon Mantu Idaman - PvP</title>
+    <title>Calon Mantu Idaman - Final Fixed</title>
     <style>
         /* --- RESET & LAYOUT --- */
         body {
@@ -13,7 +13,7 @@
             overflow: hidden;
             display: flex; justify-content: center; align-items: center;
             height: 100dvh;
-            user-select: none; /* Mencegah blok teks saat main cepat */
+            user-select: none; 
         }
 
         #game-container {
@@ -25,10 +25,10 @@
             box-shadow: 0 0 30px rgba(0,0,0,0.8);
         }
 
-        /* --- UI ATAS (AVATAR & STATS) --- */
+        /* --- 1. UI ATAS (AVATAR) - DIGESER 5% --- */
         .avatar-box {
             position: absolute;
-            top: 7.3%; /* KEMBALI KE POSISI AWAL */
+            top: 7.3%; 
             width: 13.5%; aspect-ratio: 1/1;
             border-radius: 50%;
             transform: translate(-50%, -50%);
@@ -38,23 +38,26 @@
             z-index: 5;
             transition: transform 0.3s;
         }
-        /* EFEK GILIRAN AKTIF (Zoom dikit) */
-        .active-turn { transform: translate(-50%, -50%) scale(1.2); border-color: #f1c40f; box-shadow: 0 0 15px #f1c40f; }
+        .active-turn { transform: translate(-50%, -50%) scale(1.15); border-color: #f1c40f; box-shadow: 0 0 15px #f1c40f; }
 
-        /* POSISI DITUKAR SESUAI REQUEST */
-        #p1-avatar { left: 11.5%; background-image: url('https://api.dicebear.com/7.x/avataaars/svg?seed=Felix&backgroundColor=ffdfbf'); } /* KIRI */
-        #p2-avatar { left: 88.5%; background-image: url('https://api.dicebear.com/7.x/avataaars/svg?seed=Grandma&backgroundColor=b6e3f4'); } /* KANAN */
+        /* KIRI: Geser ke kanan (11.5 + 5 = 16.5%) */
+        #p1-avatar { left: 16.5%; background-image: url('https://api.dicebear.com/7.x/avataaars/svg?seed=Felix&backgroundColor=ffdfbf'); } 
+        
+        /* KANAN: Geser ke kiri (88.5 - 5 = 83.5%) */
+        #p2-avatar { left: 83.5%; background-image: url('https://api.dicebear.com/7.x/avataaars/svg?seed=Grandma&backgroundColor=b6e3f4'); } 
 
+        /* --- 2. UI STATS (HATI & UANG) - DIKEMBALIKAN PRESISI --- */
         .stat-box {
             position: absolute;
-            top: 7.3%; /* KEMBALI KE POSISI AWAL */
+            top: 7.3%; /* Center vertikal */
             transform: translate(-50%, -50%);
             width: 16%; text-align: center;
             font-size: 2.1vh; font-weight: 800; color: #5d4037;
             z-index: 6; letter-spacing: -0.5px;
+            /* text-shadow: 0px 1px 0px rgba(255,255,255,0.5); Opsional agar kontras */
         }
-        #ui-hati { left: 38.0%; } 
-        #ui-uang { left: 64.0%; } 
+        #ui-hati { left: 36.0%; } /* Sedikit ke kiri biar pas di pill */
+        #ui-uang { left: 66.0%; } /* Sedikit ke kanan biar pas di pill */
 
         /* --- BIDAK --- */
         .pion {
@@ -68,11 +71,11 @@
         #p1-token { background: #3498db; }
         #p2-token { background: #e74c3c; transform: translate(-30%, -30%) scale(0.8); }
 
-        /* --- TOAST & NOTIFIKASI (PENGGANTI ALERT) --- */
+        /* --- TOAST (NOTIFIKASI) --- */
         #toast-container {
             position: absolute; top: 18%; left: 50%; transform: translateX(-50%);
             display: flex; flex-direction: column; gap: 5px; align-items: center;
-            z-index: 99; width: 80%;
+            z-index: 99; width: 80%; pointer-events: none;
         }
         .toast-msg {
             background: rgba(0,0,0,0.85); color: white; padding: 8px 16px;
@@ -81,11 +84,27 @@
         }
         @keyframes fadeInOut { 0% {opacity:0; transform:translateY(-10px);} 10% {opacity:1; transform:translateY(0);} 90% {opacity:1;} 100% {opacity:0; display:none;} }
 
-        /* --- CARD POPUP --- */
+        /* --- INFO MODAL (STATS PEMAIN) --- */
+        #info-modal {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center;
+            z-index: 200; backdrop-filter: blur(5px);
+        }
+        .info-card {
+            background: white; width: 80%; border-radius: 15px; padding: 20px;
+            border: 4px solid #3498db; text-align: center;
+            box-shadow: 0 0 30px rgba(52, 152, 219, 0.5);
+        }
+        .info-table { width: 100%; margin: 15px 0; border-collapse: collapse; }
+        .info-table th { background: #eee; padding: 8px; font-size: 1.5vh; }
+        .info-table td { border-bottom: 1px solid #ddd; padding: 8px; font-size: 1.8vh; font-weight: bold;}
+        .close-btn { background: #e74c3c; color: white; border: none; padding: 10px 20px; border-radius: 20px; font-weight: bold; cursor: pointer; }
+
+        /* --- KARTU POPUP --- */
         #card-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center;
-            z-index: 100; backdrop-filter: blur(4px);
+            z-index: 100;
         }
         .game-card {
             width: 75%; aspect-ratio: 2/3; border-radius: 15px; padding: 20px;
@@ -94,24 +113,19 @@
             animation: cardPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         @keyframes cardPop { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
         .card-green { background: linear-gradient(135deg, #a8ff78 0%, #78ffd6 100%); color: #006442; }
         .card-yellow { background: linear-gradient(135deg, #fce38a 0%, #f38181 100%); color: #854200; }
         .card-red { background: linear-gradient(135deg, #ff9966 0%, #ff5e62 100%); color: #520002; }
-        .card-orange { background: linear-gradient(135deg, #FFB75E 0%, #ED8F03 100%); color: #632c00; }
-
-        .card-title { font-size: 2.5vh; font-weight: 900; text-transform: uppercase; border-bottom: 2px solid rgba(0,0,0,0.1); padding-bottom: 10px;}
-        .card-body { font-size: 2.2vh; font-weight: 600; flex-grow: 1; display: flex; align-items: center; justify-content: center; }
-        .card-btn { margin-top: 15px; padding: 12px; background: white; border: none; border-radius: 25px; font-weight: bold; cursor: pointer; color: #333; }
 
         /* --- CONTROLS --- */
         .btn-area { position: absolute; z-index: 20; cursor: pointer; border-radius: 15px; }
         #btn-kocok { bottom: 3.5%; left: 50%; transform: translateX(-50%); width: 42%; height: 10%; border-radius: 40px; }
         #btn-kocok:active { background: rgba(255,255,255,0.2); }
         
-        #btn-kartu-menu { bottom: 5%; left: 5%; width: 20%; height: 10%; } 
+        #btn-info { bottom: 5%; right: 5%; width: 20%; height: 10%; } /* Area Klik Info */
+        #btn-kartu-menu { bottom: 5%; left: 5%; width: 20%; height: 10%; }
 
-        /* INDICATOR GILIRAN */
+        /* INDICATOR */
         #turn-bar {
             position: absolute; bottom: 15%; left: 50%; transform: translateX(-50%);
             background: #3498db; color: white; padding: 5px 20px; border-radius: 15px;
@@ -119,7 +133,7 @@
             transition: background 0.3s; z-index: 30;
         }
 
-        /* INVENTORY MODAL */
+        /* INVENTORY */
         #inventory-list {
             position: absolute; bottom: 16%; left: 5%; width: 45%; 
             background: white; border-radius: 10px; padding: 10px;
@@ -131,7 +145,10 @@
 <body>
 
 <div id="game-container">
-    <div id="p1-avatar" class="avatar-box active-turn"></div> <div id="p2-avatar" class="avatar-box"></div> <div id="ui-hati" class="stat-box">0</div>
+    <div id="p1-avatar" class="avatar-box active-turn"></div>
+    <div id="p2-avatar" class="avatar-box"></div>
+    
+    <div id="ui-hati" class="stat-box">0</div>
     <div id="ui-uang" class="stat-box">20</div>
 
     <div id="p1-token" class="pion"></div>
@@ -142,10 +159,29 @@
     
     <div id="card-overlay">
         <div id="active-card" class="game-card card-green">
-            <div class="card-title" id="card-title">JUDUL</div>
-            <div class="card-body" id="card-desc">Deskripsi</div>
-            <div style="background:rgba(255,255,255,0.4); padding:5px; border-radius:5px;" id="card-eff">Efek</div>
-            <button class="card-btn" onclick="closeCard()">AMBIL</button>
+            <h2 id="card-title" style="margin:0; border-bottom:2px solid rgba(0,0,0,0.1);">JUDUL</h2>
+            <div id="card-desc" style="flex-grow:1; display:flex; align-items:center; justify-content:center; font-weight:600;">Deskripsi</div>
+            <div id="card-eff" style="background:rgba(255,255,255,0.5); padding:5px; border-radius:5px;">Efek</div>
+            <button onclick="closeCard()" style="margin-top:10px; padding:10px; border-radius:20px; border:none; font-weight:bold; cursor:pointer;">AMBIL</button>
+        </div>
+    </div>
+
+    <div id="info-modal">
+        <div class="info-card">
+            <h2 style="color:#2c3e50; margin-top:0;">📊 STATISTIK MANTU</h2>
+            <table class="info-table">
+                <thead>
+                    <tr>
+                        <th>Pemain</th>
+                        <th>❤️ Hati</th>
+                        <th>💰 Uang</th>
+                        <th>💢 Omelan</th>
+                    </tr>
+                </thead>
+                <tbody id="stats-body">
+                    </tbody>
+            </table>
+            <button class="close-btn" onclick="toggleInfo()">Tutup</button>
         </div>
     </div>
 
@@ -155,11 +191,12 @@
     </div>
 
     <div id="btn-kocok" class="btn-area" onclick="mainkanGiliran()"></div>
+    <div id="btn-info" class="btn-area" onclick="toggleInfo()"></div>
     <div id="btn-kartu-menu" class="btn-area" onclick="toggleInventory()"></div>
 </div>
 
 <script>
-    // --- 1. KOORDINAT GRID (Fix) ---
+    // --- 1. KOORDINAT GRID ---
     const tiles = [
         { id: 0, x: 11.0, y: 68.3, type: "start", name: "START" },
         { id: 1, x: 30.5, y: 68.3, type: "martabak", name: "Martabak" },
@@ -179,14 +216,14 @@
         { id: 15, x: 11.0, y: 57.1, type: "climax", name: "Nekat Melamar" }
     ];
 
-    // --- 2. DATABASE KARTU ---
+    // --- 2. DATA KARTU ---
     const decks = {
         chance: [
             { title: "Nemu Duit", desc: "Rejeki anak soleh!", eff: "uang", val: 5, text: "+5 Uang" },
             { title: "Salah Kostum", desc: "Pakai piyama ke kondangan.", eff: "hati", val: -3, text: "-3 Hati" }
         ],
         extreme: [
-            { title: "Camer PMS", desc: "Senggol bacok mode on.", eff: "hati", val: -10, text: "-10 Hati" },
+            { title: "Camer PMS", desc: "Senggol bacok mode on.", eff: "omelan", val: 5, text: "+5 Omelan" },
             { title: "Krisis Moneter", desc: "Dompet hilang!", eff: "uang_half", val: 0, text: "Uang Sisa 50%" }
         ],
         special: [
@@ -195,25 +232,22 @@
         ]
     };
 
-    // --- 3. STATE GAME (PvP MODE) ---
-    // Sekarang ada p1 dan p2 (bukan cpu)
-    let p1 = { id: 1, name: "KAMU (P1)", pos: 0, uang: 20, hati: 0, jailed: false, items: [], color: "#3498db" };
-    let p2 = { id: 2, name: "TEMAN (P2)", pos: 0, uang: 20, hati: 0, jailed: false, items: [], color: "#e74c3c" };
+    // --- 3. STATE PEMAIN ---
+    // Ditambahkan property 'omelan' untuk fitur Info Stats
+    let p1 = { id: 1, name: "KAMU (P1)", pos: 0, uang: 20, hati: 0, omelan: 0, jailed: false, items: [], color: "#3498db" };
+    let p2 = { id: 2, name: "TEMAN (P2)", pos: 0, uang: 20, hati: 0, omelan: 0, jailed: false, items: [], color: "#e74c3c" };
     
-    let turnP1 = true; // Giliran siapa?
+    let turnP1 = true;
     let isMoving = false;
     
-    // Init Visual
     updateVisuals();
-    updateStatsUI(p1); // Tampilkan stat P1 di awal
+    updateStatsUI(p1);
 
     // --- 4. ENGINE GAME ---
     function mainkanGiliran() {
         if (isMoving) return;
+        let actor = turnP1 ? p1 : p2;
         
-        let actor = turnP1 ? p1 : p2; // Siapa yang main?
-        
-        // Cek Penjara
         if (actor.jailed) {
             pushToast(`${actor.name} masih di RSJ! Skip.`);
             actor.jailed = false; 
@@ -246,7 +280,6 @@
     function handleTile(actor) {
         let tile = tiles[actor.pos];
         
-        // EFEK KOTAK
         switch (tile.type) {
             case "martabak": actor.uang -= 3; actor.hati += 2; pushToast("Beli Martabak"); break;
             case "trap": pushToast("Supir Dadakan! Balik."); actor.pos = 1; updateVisuals(); break;
@@ -254,21 +287,20 @@
             case "jail": actor.jailed = true; pushToast("Masuk RSJ!"); break;
             case "prank": 
                 if(Math.random()>0.5) { actor.uang+=15; actor.hati+=10; pushToast("Prank Viral! (+Rejeki)"); }
-                else { actor.uang-=10; pushToast("Prank Dihujat! (-Uang)"); }
+                else { actor.uang-=10; actor.omelan+=5; pushToast("Prank Dihujat! (-Uang +Omelan)"); }
                 break;
             case "gamble_gold":
                 if(actor.uang>=10){
                     actor.uang-=10;
                     if(Math.random()>0.5){ actor.hati+=15; pushToast("Emas KW Laku!"); }
-                    else { pushToast("Ketahuan Palsu!"); }
+                    else { actor.omelan+=5; pushToast("Ketahuan Palsu! (+Omelan)"); }
                 } else { pushToast("Uang kurang."); }
                 break;
-            case "bad": actor.hati-=5; pushToast("Mantan Datang -5 Hati"); break;
+            case "bad": actor.hati-=5; actor.omelan+=2; pushToast("Mantan Datang (-Hati +Omelan)"); break;
             case "climax":
                 if(Math.floor(Math.random()*6)+1 === 6) { alert(`${actor.name} MENANG!`); location.reload(); }
                 else { actor.hati-=10; actor.pos=8; actor.jailed=true; pushToast("Ditolak! Masuk RSJ"); updateVisuals(); }
                 break;
-            // KARTU
             case "chance": drawCard("chance", "card-green", actor); return;
             case "special": drawCard("special", "card-yellow", actor); return;
             case "extreme": drawCard("extreme", "card-red", actor); return;
@@ -277,7 +309,7 @@
         switchTurn();
     }
 
-    // --- 5. LOGIC KARTU & ITEM ---
+    // --- 5. LOGIC KARTU & INFO ---
     function drawCard(deckKey, css, actor) {
         let deck = decks[deckKey];
         let card = deck[Math.floor(Math.random()*deck.length)];
@@ -285,12 +317,13 @@
         showCardUI(card, css, () => {
             if(card.eff === "uang") actor.uang += card.val;
             if(card.eff === "hati") actor.hati += card.val;
+            if(card.eff === "omelan") actor.omelan += card.val;
             if(card.eff === "uang_half") actor.uang = Math.floor(actor.uang/2);
             if(card.eff === "item") {
                 actor.items.push(card.title);
-                pushToast("Item disimpan ke Tas!"); // PENGGANTI ALERT
+                pushToast("Item disimpan ke Tas!");
             }
-            updateStatsUI(actor); // Update UI setelah efek kartu
+            updateStatsUI(actor); 
             switchTurn();
         });
     }
@@ -308,23 +341,46 @@
         if(window.tempCb) window.tempCb();
     }
 
-    // --- 6. SISTEM GILIRAN (PvP) ---
+    // FITUR BARU: INFO STATS
+    function toggleInfo() {
+        let modal = document.getElementById('info-modal');
+        let body = document.getElementById('stats-body');
+        
+        if (modal.style.display === 'flex') {
+            modal.style.display = 'none';
+        } else {
+            // Render ulang tabel
+            body.innerHTML = `
+                <tr style="color:${p1.color}">
+                    <td>${p1.name}</td>
+                    <td>${p1.hati}</td>
+                    <td>${p1.uang}</td>
+                    <td>${p1.omelan}</td>
+                </tr>
+                <tr style="color:${p2.color}">
+                    <td>${p2.name}</td>
+                    <td>${p2.hati}</td>
+                    <td>${p2.uang}</td>
+                    <td>${p2.omelan}</td>
+                </tr>
+            `;
+            modal.style.display = 'flex';
+        }
+    }
+
+    // --- 6. UTILS ---
     function switchTurn() {
         isMoving = false;
-        turnP1 = !turnP1; // Tukar giliran
-        
+        turnP1 = !turnP1;
         let nextPlayer = turnP1 ? p1 : p2;
         
-        // Update UI Indikator Giliran
         let bar = document.getElementById('turn-bar');
         bar.innerText = `Giliran: ${nextPlayer.name}`;
         bar.style.background = nextPlayer.color;
         
-        // Highlight Avatar Aktif
         document.getElementById('p1-avatar').classList.toggle('active-turn', turnP1);
         document.getElementById('p2-avatar').classList.toggle('active-turn', !turnP1);
         
-        // Update Stats UI sesuai giliran pemain
         updateStatsUI(nextPlayer);
     }
 
@@ -334,17 +390,15 @@
     }
 
     function updateVisuals() {
-        // P1 Token
         let c1 = tiles[p1.pos];
         document.getElementById('p1-token').style.left = c1.x + "%";
         document.getElementById('p1-token').style.top = c1.y + "%";
-        // P2 Token
+        
         let c2 = tiles[p2.pos];
         document.getElementById('p2-token').style.left = c2.x + "%";
         document.getElementById('p2-token').style.top = c2.y + "%";
     }
 
-    // Notifikasi Toast
     function pushToast(msg) {
         let div = document.createElement('div');
         div.className = "toast-msg";
@@ -353,7 +407,6 @@
         setTimeout(() => div.remove(), 2600);
     }
 
-    // Inventory
     function toggleInventory() {
         let playerNow = turnP1 ? p1 : p2;
         let el = document.getElementById('inventory-list');
