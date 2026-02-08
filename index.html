@@ -3,131 +3,181 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Calon Mantu Online (Asia)</title>
+    <title>Calon Mantu: RPG Mode</title>
     <style>
-        /* --- RESET & LAYOUT --- */
-        body { margin: 0; padding: 0; background-color: #222; font-family: 'Segoe UI', sans-serif; overflow: hidden; display: flex; justify-content: center; align-items: center; height: 100dvh; user-select: none; }
+        /* --- CSS DASAR --- */
+        body { margin: 0; padding: 0; background-color: #2c3e50; font-family: 'Segoe UI', sans-serif; overflow: hidden; display: flex; justify-content: center; align-items: center; height: 100dvh; user-select: none; }
         
-        #game-container { 
-            position: relative; height: 100%; aspect-ratio: 9/16; 
+        #app-container { position: relative; width: 100%; max-width: 480px; height: 100%; background: #fff; overflow: hidden; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
+        
+        /* BACKGROUND GAME */
+        .bg-board {
+            width: 100%; height: 100%;
             background-image: url('https://res.cloudinary.com/dsutaioqw/image/upload/v1770514507/board_gukevw.png'); 
-            background-size: contain; background-repeat: no-repeat; background-position: center; 
-            box-shadow: 0 0 30px rgba(0,0,0,0.8); 
-            perspective: 1000px; 
+            background-size: contain; background-repeat: no-repeat; background-position: center;
+            background-color: #222;
         }
 
-        /* --- UI ATAS (AVATAR & STATS) --- */
-        .avatar-box { 
-            position: absolute; top: 7.3%; width: 13.5%; aspect-ratio: 1/1; 
-            border-radius: 50%; transform: translate(-50%, -50%); 
-            background-color: #ddd; background-size: cover; border: 2px solid white; 
-            z-index: 5; transition: transform 0.3s; 
+        /* --- SCREEN: LOGIN --- */
+        #screen-login {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 2000;
         }
-        .active-turn { transform: translate(-50%, -50%) scale(1.2); border-color: #f1c40f; box-shadow: 0 0 15px #f1c40f; }
+        .login-btn {
+            background: white; color: #444; border: 1px solid #ddd; padding: 15px 30px;
+            border-radius: 30px; font-weight: bold; font-size: 16px; cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 10px;
+            transition: transform 0.1s;
+        }
+        .login-btn:active { transform: scale(0.95); }
+        .login-logo { width: 24px; height: 24px; }
+
+        /* --- SCREEN: MAIN MENU (LOBBY) --- */
+        #screen-lobby {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/cubes.png'), linear-gradient(to bottom, #3498db, #2980b9);
+            display: none; flex-direction: column; align-items: center; padding-top: 50px; z-index: 1000; color: white;
+        }
         
-        #p1-avatar { left: 16.5%; background-image: url('https://api.dicebear.com/7.x/avataaars/svg?seed=Felix&backgroundColor=ffdfbf'); } 
-        #p2-avatar { left: 83.5%; background-image: url('https://api.dicebear.com/7.x/avataaars/svg?seed=Grandma&backgroundColor=b6e3f4'); } 
-
-        /* POSISI STATS (DITURUNKAN 1% SESUAI REQUEST) */
-        .stat-box { 
-            position: absolute; 
-            top: 8.3%; /* SEBELUMNYA 7.3% -> TURUN JADI 8.3% */
-            transform: translate(-50%, -50%); 
-            width: 16%; text-align: center; font-size: 2.1vh; font-weight: 800; color: #5d4037; 
-            z-index: 6; letter-spacing: -0.5px; 
+        /* User Profile Card */
+        .profile-card {
+            background: rgba(255,255,255,0.15); backdrop-filter: blur(5px);
+            padding: 20px; border-radius: 20px; width: 80%; text-align: center;
+            border: 1px solid rgba(255,255,255,0.3); margin-bottom: 40px;
         }
-        #ui-hati { left: 36.0%; } 
-        #ui-uang { left: 66.0%; } 
+        .profile-img { width: 80px; height: 80px; border-radius: 50%; border: 3px solid white; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .profile-name { font-size: 24px; font-weight: bold; margin: 10px 0 5px; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .coin-badge { 
+            background: #f1c40f; color: #d35400; padding: 5px 15px; 
+            border-radius: 20px; font-weight: bold; display: inline-flex; align-items: center; gap: 5px;
+            box-shadow: 0 3px 0 #e67e22;
+        }
 
-        /* --- DADU 3D --- */
+        /* Menu Buttons */
+        .menu-btn {
+            width: 80%; padding: 18px; margin: 10px 0; border: none; border-radius: 15px;
+            font-size: 18px; font-weight: bold; cursor: pointer; text-transform: uppercase;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2); transition: transform 0.1s; position: relative;
+        }
+        .btn-play { background: linear-gradient(to right, #2ecc71, #27ae60); color: white; }
+        .btn-shop { background: linear-gradient(to right, #9b59b6, #8e44ad); color: white; opacity: 0.8; } /* Disabled visual */
+        .btn-logout { background: transparent; border: 2px solid rgba(255,255,255,0.5); color: white; width: 40%; margin-top: 30px; font-size: 14px; padding: 10px; }
+
+        /* --- SCREEN: ROOM JOIN (Overlay) --- */
+        #overlay-join {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); z-index: 1500; display: none;
+            flex-direction: column; justify-content: center; align-items: center;
+        }
+        .room-box { background: white; padding: 25px; border-radius: 20px; width: 80%; text-align: center; }
+        .room-input { width: 90%; padding: 12px; font-size: 18px; text-align: center; border-radius: 10px; border: 2px solid #ddd; margin: 15px 0; font-weight: bold; }
+        
+        /* --- GAME UI ELEMENTS (Dari kode lama) --- */
+        .avatar-game { position: absolute; top: 7.3%; width: 13.5%; aspect-ratio: 1/1; border-radius: 50%; transform: translate(-50%, -50%); background-size: cover; border: 2px solid white; z-index: 5; transition: 0.3s; }
+        .active-turn { transform: translate(-50%, -50%) scale(1.2); border-color: #f1c40f; box-shadow: 0 0 15px #f1c40f; }
+        #p1-av { left: 16.5%; } #p2-av { left: 83.5%; }
+
+        .stat-box { position: absolute; top: 8.3%; transform: translate(-50%, -50%); width: 16%; text-align: center; font-size: 1.8vh; font-weight: 800; color: #5d4037; z-index: 6; }
+        #ui-hati { left: 36.0%; } #ui-uang { left: 66.0%; }
+
+        .pion { position: absolute; width: 7%; aspect-ratio: 1/1; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 5px 10px rgba(0,0,0,0.5); transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 10; transform: translate(-50%, -50%); display: none; }
+        #p1-token { background: #3498db; } #p2-token { background: #e74c3c; transform: translate(-30%, -30%) scale(0.8); }
+
+        /* DICE 3D */
         #dice-scene { position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); width: 80px; height: 80px; z-index: 50; display: none; }
         .cube { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 1s ease-out; }
         .cube__face { position: absolute; width: 80px; height: 80px; background: white; border: 2px solid #ccc; border-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 40px; font-weight: bold; color: #333; box-shadow: inset 0 0 15px rgba(0,0,0,0.1); }
-        .cube__face--1 { transform: rotateY(  0deg) translateZ(40px); }
-        .cube__face--2 { transform: rotateY( 90deg) translateZ(40px); }
-        .cube__face--3 { transform: rotateY(180deg) translateZ(40px); }
-        .cube__face--4 { transform: rotateY(-90deg) translateZ(40px); }
-        .cube__face--5 { transform: rotateX( 90deg) translateZ(40px); }
-        .cube__face--6 { transform: rotateX(-90deg) translateZ(40px); }
-        .dot { width: 15px; height: 15px; background: #e74c3c; border-radius: 50%; display: inline-block; }
-
-        /* --- BIDAK --- */
-        .pion { position: absolute; width: 7%; aspect-ratio: 1/1; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 5px 10px rgba(0,0,0,0.5); transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 10; transform: translate(-50%, -50%); display: none; }
-        #p1-token { background: #3498db; }
-        #p2-token { background: #e74c3c; transform: translate(-30%, -30%) scale(0.8); }
-
-        /* --- STATUS BAR --- */
-        #status-bar-container { position: absolute; bottom: 21%; left: 50%; transform: translateX(-50%); width: 100%; text-align: center; pointer-events: none; z-index: 30; }
-        #turn-bar { display: inline-block; background: #3498db; color: white; padding: 8px 25px; border-radius: 20px; font-size: 2vh; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: 0.3s; }
+        .cube__face--1 { transform: rotateY(0deg) translateZ(40px); } .cube__face--2 { transform: rotateY(90deg) translateZ(40px); } .cube__face--3 { transform: rotateY(180deg) translateZ(40px); }
+        .cube__face--4 { transform: rotateY(-90deg) translateZ(40px); } .cube__face--5 { transform: rotateX(90deg) translateZ(40px); } .cube__face--6 { transform: rotateX(-90deg) translateZ(40px); }
+        .dot { width: 15px; height: 15px; background: #e74c3c; border-radius: 50%; }
 
         /* CONTROLS */
+        #turn-bar { position: absolute; bottom: 21%; left: 50%; transform: translateX(-50%); background: #3498db; color: white; padding: 8px 25px; border-radius: 20px; font-size: 2vh; font-weight: bold; z-index: 30; transition: 0.3s; width: 60%; text-align: center; }
         .btn-area { position: absolute; z-index: 20; cursor: pointer; border-radius: 15px; }
         #btn-kocok { bottom: 3.5%; left: 50%; transform: translateX(-50%); width: 42%; height: 10%; border-radius: 40px; }
-        #btn-kocok:active { background: rgba(255,255,255,0.2); }
-
-        /* LOBBY */
-        #lobby-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(44, 62, 80, 0.95); z-index: 999; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; backdrop-filter: blur(10px); }
-        .lobby-box { background: white; padding: 25px; border-radius: 20px; color: #333; text-align: center; width: 75%; max-width: 320px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        input { padding: 12px; font-size: 18px; width: 85%; margin-bottom: 15px; text-align: center; border: 2px solid #ddd; border-radius: 10px; font-weight: bold; letter-spacing: 1px;}
-        .role-btn { display: block; width: 100%; padding: 15px; margin: 8px 0; border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; font-size: 16px; transition: transform 0.1s; }
-        .role-btn:active { transform: scale(0.95); }
-        .btn-p1 { background: #3498db; } .btn-p2 { background: #e74c3c; }
+        #btn-back { position: absolute; top: 20px; left: 20px; z-index: 100; background: white; padding: 5px 10px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; display: none; }
 
         /* TOAST */
-        #toast-container { position: absolute; top: 15%; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; gap: 5px; align-items: center; z-index: 99; width: 80%; pointer-events: none; }
+        #toast-container { position: absolute; top: 15%; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; gap: 5px; align-items: center; z-index: 2000; width: 80%; pointer-events: none; }
         .toast-msg { background: rgba(0,0,0,0.85); color: white; padding: 8px 16px; border-radius: 20px; font-size: 1.6vh; animation: fadeInOut 2.5s forwards; border: 1px solid rgba(255,255,255,0.2); }
         @keyframes fadeInOut { 0% {opacity:0; transform:translateY(-10px);} 10% {opacity:1; transform:translateY(0);} 90% {opacity:1;} 100% {opacity:0; display:none;} }
     </style>
 </head>
 <body>
 
-<div id="game-container">
-    
-    <div id="lobby-screen">
-        <div class="lobby-box">
-            <h2 style="margin-top:0; color:#2c3e50;">PEJUANG RESTU</h2>
-            <p style="margin-bottom:5px;">Masukkan Kode Room:</p>
-            <input type="text" id="room-input" placeholder="ROOM1" value="ROOM1">
-            <p style="font-size:12px; color:#7f8c8d; margin-top:-10px;">(Samakan kode room di kedua HP)</p>
-            
-            <button class="role-btn btn-p1" onclick="joinGame('p1')">🔵 SAYA PLAYER 1 (Biru)</button>
-            <button class="role-btn btn-p2" onclick="joinGame('p2')">🔴 SAYA PLAYER 2 (Merah)</button>
+<div id="app-container">
+
+    <div id="screen-login">
+        <h1 style="color:#2c3e50; margin-bottom:5px;">Calon Mantu</h1>
+        <p style="color:#7f8c8d; margin-bottom:30px;">Edisi Online RPG</p>
+        <button class="login-btn" onclick="loginGoogle()">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" class="login-logo">
+            Masuk dengan Google
+        </button>
+    </div>
+
+    <div id="screen-lobby">
+        <div class="profile-card">
+            <img id="user-photo" src="" class="profile-img">
+            <div id="user-name" class="profile-name">Loading...</div>
+            <div class="coin-badge">💰 <span id="user-coin">...</span></div>
+        </div>
+
+        <button class="menu-btn btn-play" onclick="openJoinOverlay()">⚔️ MAIN SEKARANG</button>
+        <button class="menu-btn btn-shop" onclick="pushToast('Toko segera hadir!')">🛒 TOKO (Coming Soon)</button>
+        <button class="menu-btn btn-logout" onclick="logout()">Keluar Akun</button>
+    </div>
+
+    <div id="overlay-join">
+        <div class="room-box">
+            <h3>MASUK ROOM</h3>
+            <input type="text" id="room-input" class="room-input" placeholder="Kode Room (Contoh: A1)" value="A1">
+            <div style="display:flex; gap:10px;">
+                <button class="menu-btn btn-play" style="flex:1; font-size:14px;" onclick="joinGame('p1')">Jadi P1 (Biru)</button>
+                <button class="menu-btn btn-play" style="background:#e74c3c; flex:1; font-size:14px;" onclick="joinGame('p2')">Jadi P2 (Merah)</button>
+            </div>
+            <button onclick="document.getElementById('overlay-join').style.display='none'" style="margin-top:15px; background:none; border:none; color:#7f8c8d; font-weight:bold;">Batal</button>
         </div>
     </div>
 
-    <div id="p1-avatar" class="avatar-box"></div>
-    <div id="p2-avatar" class="avatar-box"></div>
-    
-    <div id="ui-hati" class="stat-box">0</div>
-    <div id="ui-uang" class="stat-box">20</div>
+    <div id="screen-game" class="bg-board" style="display:none;">
+        <button id="btn-back" onclick="location.reload()">🏠 Menu</button>
 
-    <div id="p1-token" class="pion"></div>
-    <div id="p2-token" class="pion"></div>
+        <div id="p1-av" class="avatar-game"></div>
+        <div id="p2-av" class="avatar-game"></div>
+        
+        <div id="ui-hati" class="stat-box">0</div>
+        <div id="ui-uang" class="stat-box">20</div>
 
-    <div id="dice-scene">
-        <div class="cube">
-            <div class="cube__face cube__face--1"><div class="dot"></div></div>
-            <div class="cube__face cube__face--2">2</div>
-            <div class="cube__face cube__face--3">3</div>
-            <div class="cube__face cube__face--4">4</div>
-            <div class="cube__face cube__face--5">5</div>
-            <div class="cube__face cube__face--6">6</div>
+        <div id="p1-token" class="pion"></div>
+        <div id="p2-token" class="pion"></div>
+
+        <div id="dice-scene">
+            <div class="cube">
+                <div class="cube__face cube__face--1"><div class="dot"></div></div>
+                <div class="cube__face cube__face--2">2</div>
+                <div class="cube__face cube__face--3">3</div>
+                <div class="cube__face cube__face--4">4</div>
+                <div class="cube__face cube__face--5">5</div>
+                <div class="cube__face cube__face--6">6</div>
+            </div>
         </div>
-    </div>
 
-    <div id="status-bar-container">
         <div id="turn-bar">Menunggu Lawan...</div>
+        <div id="btn-kocok" class="btn-area" onclick="handleRollDice()"></div>
     </div>
-    
+
     <div id="toast-container"></div>
-    <div id="btn-kocok" class="btn-area" onclick="handleRollDice()"></div>
 </div>
 
 <script type="module">
+    // --- 1. FIREBASE IMPORTS ---
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-    import { getDatabase, ref, set, onValue, update } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+    import { getDatabase, ref, set, get, update, onValue } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
 
-    // --- CONFIG FIREBASE (ASIA SINGAPORE) ---
+    // --- 2. CONFIG ---
     const firebaseConfig = {
         apiKey: "AIzaSyCF0Zn-DSK6z3x_4ETIcAwweHk5tR_bpn0",
         authDomain: "mantu-1f6f4.firebaseapp.com",
@@ -135,30 +185,20 @@
         projectId: "mantu-1f6f4",
         storageBucket: "mantu-1f6f4.firebasestorage.app",
         messagingSenderId: "674923969086",
-        appId: "1:674923969086:web:ffb34307261bbfae74af6f",
-        measurementId: "G-W2N2YVDTST"
+        appId: "1:674923969086:web:ffb34307261bbfae74af6f"
     };
 
-    let app, db;
-    try {
-        app = initializeApp(firebaseConfig);
-        db = getDatabase(app);
-        console.log("Firebase Init OK");
-    } catch (e) {
-        alert("Gagal konek Firebase: " + e.message);
-    }
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
 
-    // --- GAME VARIABLES ---
-    let myRole = ""; 
+    // --- 3. GLOBAL VARIABLES ---
+    let currentUser = null; // Data User dari Google
+    let userStats = null;   // Data Koin dari Database
     let roomId = "";
-    
-    let gameState = {
-        turn: 'p1',
-        p1: { pos: 0, uang: 20, hati: 0, joined: false },
-        p2: { pos: 0, uang: 20, hati: 0, joined: false },
-        lastDice: 0
-    };
-
+    let myRole = ""; 
+    let gameState = null;
     const tiles = [
         { id: 0, x: 11.0, y: 68.3 }, { id: 1, x: 30.5, y: 68.3 }, { id: 2, x: 50.0, y: 68.3 }, { id: 3, x: 69.5, y: 68.3 },
         { id: 4, x: 89.0, y: 68.3 }, { id: 5, x: 89.0, y: 57.1 }, { id: 6, x: 89.0, y: 45.8 }, { id: 7, x: 89.0, y: 34.5 },
@@ -166,174 +206,227 @@
         { id: 12, x: 11.0, y: 23.2 }, { id: 13, x: 11.0, y: 34.5 }, { id: 14, x: 11.0, y: 45.8 }, { id: 15, x: 11.0, y: 57.1 }
     ];
 
-    // --- JOIN LOGIC ---
+    // --- 4. AUTH & LOBBY LOGIC ---
+    
+    // Cek Status Login Otomatis
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            currentUser = user;
+            initUserProfile(user);
+        } else {
+            showScreen('screen-login');
+        }
+    });
+
+    window.loginGoogle = () => {
+        signInWithPopup(auth, provider)
+            .then((result) => {
+                pushToast("Login Berhasil!");
+            }).catch((error) => {
+                alert("Login Gagal: " + error.message);
+            });
+    };
+
+    window.logout = () => {
+        signOut(auth).then(() => window.location.reload());
+    };
+
+    async function initUserProfile(user) {
+        // Cek Database User
+        const userRef = ref(db, 'users/' + user.uid);
+        const snapshot = await get(userRef);
+
+        if (snapshot.exists()) {
+            userStats = snapshot.val();
+        } else {
+            // User Baru? Buat Data Awal (Modal 1000)
+            userStats = {
+                name: user.displayName,
+                email: user.email,
+                photo: user.photoURL,
+                koin: 1000,
+                xp: 0
+            };
+            await set(userRef, userStats);
+            pushToast("Selamat Datang! Bonus +1000 Koin");
+        }
+
+        // Update UI Lobby
+        document.getElementById('user-photo').src = userStats.photo || user.photoURL;
+        document.getElementById('user-name').innerText = userStats.name;
+        document.getElementById('user-coin').innerText = userStats.koin.toLocaleString();
+        
+        showScreen('screen-lobby');
+    }
+
+    // --- 5. GAME LOGIC ---
+
+    window.openJoinOverlay = () => {
+        document.getElementById('overlay-join').style.display = 'flex';
+    };
+
     window.joinGame = (role) => {
         const input = document.getElementById('room-input').value.toUpperCase().replace(/\s/g, '');
-        if(!input) return alert("Isi Kode Room dulu!");
+        if(!input) return alert("Isi Kode Room!");
         
         roomId = input;
         myRole = role;
-        
-        document.getElementById('lobby-screen').style.display = 'none';
 
-        // 1. Cek Koneksi ke Room
+        // Tampilkan Board, Sembunyikan Lobby
+        document.getElementById('overlay-join').style.display = 'none';
+        showScreen('screen-game');
+        document.getElementById('btn-back').style.display = 'block';
+
+        // Set Data Pemain di Room (Pakai Foto Asli Google)
+        const playerInfo = {
+            name: userStats.name,
+            photo: userStats.photo, // PENTING: Avatar Google
+            joined: true,
+            pos: 0,
+            uang: 20,
+            hati: 0
+        };
+
+        // Update ke Room
         const roomRef = ref(db, 'rooms/' + roomId);
-        pushToast(`Menghubungkan ke ${roomId}...`);
+        update(ref(db, `rooms/${roomId}/${myRole}`), playerInfo);
 
-        // 2. Tandai saya join (Update)
-        // Kita gunakan .catch untuk cek error
-        update(ref(db, `rooms/${roomId}/${myRole}`), { joined: true })
-            .then(() => pushToast("🔥 Terhubung ke Firebase!"))
-            .catch((err) => {
-                alert("Gagal Update Data: " + err.message);
-                console.error(err);
-            });
-
-        // 3. Listener Data Realtime
+        // Listener Game Loop
         onValue(roomRef, (snapshot) => {
             const data = snapshot.val();
             if(data) {
-                // Data ada, sinkronkan
                 gameState = data;
-                updateScreen();
+                updateGameUI();
             } else {
-                // Room kosong, inisialisasi awal
-                // Hanya dilakukan oleh orang pertama yg masuk
+                // Room baru, init default
                 if(myRole === 'p1') {
-                    let initData = { ...gameState };
-                    initData.p1.joined = true;
-                    set(roomRef, initData);
+                    set(roomRef, {
+                        turn: 'p1',
+                        p1: playerInfo,
+                        p2: { joined: false, pos: 0, uang: 20, hati: 0 }
+                    });
                 }
             }
         });
     };
 
-    // --- GAMEPLAY LOGIC ---
     window.handleRollDice = () => {
-        if(!gameState.p1.joined || !gameState.p2.joined) {
-            pushToast("❌ Lawan belum masuk!"); return;
-        }
-        if(gameState.turn !== myRole) {
-            pushToast("⏳ Sabar, giliran lawan!"); return;
-        }
+        if(!gameState.p1.joined || !gameState.p2.joined) { pushToast("Menunggu Lawan..."); return; }
+        if(gameState.turn !== myRole) { pushToast("Giliran Lawan!"); return; }
 
         const diceVal = Math.floor(Math.random() * 6) + 1;
-        
-        // 1. Animasi Dadu
         rollDiceVisual(diceVal);
 
-        // 2. Logic & Update
         setTimeout(() => {
-            let currentPlayer = gameState[myRole];
+            let p = gameState[myRole];
             let steps = diceVal;
-            let currentPos = currentPlayer.pos;
             
-            // Loop langkah
+            // Gerak
             for(let i=0; i<steps; i++){
-                currentPos++;
-                if(currentPos >= 16) {
-                    currentPos = 0;
-                    currentPlayer.uang += 10;
+                p.pos++;
+                if(p.pos >= 16) {
+                    p.pos = 0;
+                    p.uang += 10;
+                    // FITUR BARU: Tambah Koin Permanen di Database User
+                    addPermanentCoin(50); 
+                    pushToast("Gaji +10 (Bonus Koin +50 disimpan!)");
                 }
             }
-            currentPlayer.pos = currentPos;
             
-            // Efek Simple
-            if(currentPos === 1) { currentPlayer.uang -= 3; currentPlayer.hati += 2; }
+            // Efek Martabak (Contoh)
+            if(p.pos === 1) { p.uang -= 3; p.hati += 2; }
 
+            // Kirim Update
             const nextTurn = (gameState.turn === 'p1') ? 'p2' : 'p1';
-            
-            // Update Server
             const updates = {};
-            updates[`rooms/${roomId}/${myRole}`] = currentPlayer;
+            updates[`rooms/${roomId}/${myRole}`] = p;
             updates[`rooms/${roomId}/turn`] = nextTurn;
             update(ref(db), updates);
 
         }, 1500);
     };
 
-    // --- VISUAL ---
-    function updateScreen() {
-        // Tampilkan Bidak jika Joined
-        if(gameState.p1.joined) {
+    function addPermanentCoin(amount) {
+        if(!currentUser) return;
+        userStats.koin += amount;
+        update(ref(db, 'users/' + currentUser.uid), { koin: userStats.koin });
+        // Update UI Koin di background (kalau user kembali ke menu)
+        document.getElementById('user-coin').innerText = userStats.koin.toLocaleString();
+    }
+
+    // --- 6. VISUAL UPDATE ---
+    function updateGameUI() {
+        // Tampilkan Avatar Asli Google di Board
+        if(gameState.p1.joined && gameState.p1.photo) {
+            document.getElementById('p1-av').style.backgroundImage = `url('${gameState.p1.photo}')`;
             document.getElementById('p1-token').style.display = 'block';
             movePion('p1', gameState.p1.pos);
         }
-        if(gameState.p2.joined) {
+        if(gameState.p2.joined && gameState.p2.photo) {
+            document.getElementById('p2-av').style.backgroundImage = `url('${gameState.p2.photo}')`;
             document.getElementById('p2-token').style.display = 'block';
             movePion('p2', gameState.p2.pos);
         }
 
-        // Update Stats Saya
+        // Stats
         const myData = gameState[myRole];
         if(myData) {
             document.getElementById('ui-uang').innerText = myData.uang;
             document.getElementById('ui-hati').innerText = myData.hati;
         }
 
-        // Status Bar
+        // Turn Bar
         const bar = document.getElementById('turn-bar');
-        
         if(!gameState.p1.joined || !gameState.p2.joined) {
-            bar.innerText = "Menunggu Lawan Join...";
-            bar.style.background = "#95a5a6";
-            return;
-        }
-
-        if(gameState.turn === myRole) {
-            bar.innerText = "Giliranku! (Klik Dadu)";
+            bar.innerText = "Menunggu Lawan...";
+            bar.style.background = "#7f8c8d";
+        } else if(gameState.turn === myRole) {
+            bar.innerText = "GILIRANMU!";
             bar.style.background = (myRole === 'p1') ? '#3498db' : '#e74c3c';
             document.getElementById('btn-kocok').style.pointerEvents = 'auto';
         } else {
-            bar.innerText = `Giliran ${myRole === 'p1' ? 'P2' : 'P1'}...`;
-            bar.style.background = "#7f8c8d";
+            bar.innerText = "GILIRAN LAWAN";
+            bar.style.background = "#95a5a6";
             document.getElementById('btn-kocok').style.pointerEvents = 'none';
         }
-
-        document.getElementById('p1-avatar').classList.toggle('active-turn', gameState.turn === 'p1');
-        document.getElementById('p2-avatar').classList.toggle('active-turn', gameState.turn === 'p2');
+        
+        // Highlight Active
+        document.getElementById('p1-av').classList.toggle('active-turn', gameState.turn === 'p1');
+        document.getElementById('p2-av').classList.toggle('active-turn', gameState.turn === 'p2');
     }
 
     function movePion(role, pos) {
         const coord = tiles[pos];
         const el = document.getElementById(role === 'p1' ? 'p1-token' : 'p2-token');
-        el.style.left = coord.x + "%";
-        el.style.top = coord.y + "%";
+        el.style.left = coord.x + "%"; el.style.top = coord.y + "%";
     }
 
-    function rollDiceVisual(finalVal) {
-        const scene = document.getElementById('dice-scene');
+    // --- HELPER ---
+    function showScreen(screenId) {
+        ['screen-login', 'screen-lobby', 'screen-game'].forEach(id => {
+            document.getElementById(id).style.display = (id === screenId) ? 'flex' : 'none';
+            if(id === 'screen-game' && screenId === 'screen-game') document.getElementById(id).style.display = 'block';
+        });
+    }
+
+    function rollDiceVisual(val) {
+        document.getElementById('dice-scene').style.display = 'block';
         const cube = document.querySelector('.cube');
-        scene.style.display = 'block';
-
-        const xRand = Math.floor(Math.random() * 360 * 5); 
-        const yRand = Math.floor(Math.random() * 360 * 5);
-        cube.style.transition = 'transform 0.5s ease-in';
-        cube.style.transform = `rotateX(${xRand}deg) rotateY(${yRand}deg)`;
-
+        const xR = Math.random()*720, yR = Math.random()*720;
+        cube.style.transition = '0.5s'; cube.style.transform = `rotateX(${xR}deg) rotateY(${yR}deg)`;
+        
         setTimeout(() => {
-            cube.style.transition = 'transform 0.8s cubic-bezier(0.25, 1, 0.5, 1)';
-            let xFinal = 0, yFinal = 0;
-            switch(finalVal) {
-                case 1: xFinal = 0; yFinal = 0; break;
-                case 2: xFinal = 0; yFinal = -90; break;
-                case 3: xFinal = 0; yFinal = -180; break;
-                case 4: xFinal = 0; yFinal = 90; break;
-                case 5: xFinal = -90; yFinal = 0; break;
-                case 6: xFinal = 90; yFinal = 0; break;
-            }
-            cube.style.transform = `rotateX(${xFinal + 720}deg) rotateY(${yFinal + 720}deg)`;
+            cube.style.transition = '0.8s cubic-bezier(0.25,1,0.5,1)';
+            let x=0, y=0;
+            if(val==2) y=-90; if(val==3) y=-180; if(val==4) y=90; if(val==5) x=-90; if(val==6) x=90;
+            cube.style.transform = `rotateX(${x+720}deg) rotateY(${y+720}deg)`;
         }, 500);
-
-        setTimeout(() => { scene.style.display = 'none'; }, 2500);
+        setTimeout(() => document.getElementById('dice-scene').style.display = 'none', 2000);
     }
 
-    function pushToast(msg) {
-        let div = document.createElement('div');
-        div.className = "toast-msg";
-        div.innerText = msg;
-        document.getElementById('toast-container').appendChild(div);
-        setTimeout(() => div.remove(), 2600);
+    window.pushToast = (msg) => {
+        let d = document.createElement('div'); d.className = 'toast-msg'; d.innerText = msg;
+        document.getElementById('toast-container').appendChild(d); setTimeout(() => d.remove(), 2600);
     }
 </script>
 </body>
