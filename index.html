@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Calon Mantu: Final v13</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>Calon Mantu: Final Fix</title>
     <style>
         /* --- 1. SETUP --- */
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap');
         body{margin:0;padding:0;background:#0f1c2e;font-family:'Fredoka',sans-serif;overflow:hidden;display:flex;justify-content:center;align-items:center;height:100dvh;color:#fff;user-select:none;}
         #app{position:relative;width:100%;max-width:500px;height:100%;background:#131d2a;overflow:hidden;box-shadow:0 0 50px #000;}
         
@@ -15,80 +15,80 @@
 
         /* --- 2. LOGIN MEWAH --- */
         #sc-login { 
-            background: radial-gradient(circle at center, #1a2a6c, #b21f1f, #fdbb2d); 
+            background: radial-gradient(circle at center, #141e30, #243b55); 
             z-index: 2000; justify-content: center; align-items: center; text-align: center;
         }
         .hero-title {
-            font-size: 48px; line-height: 1; margin-bottom: 20px;
-            background: linear-gradient(to bottom, #ffd700, #f39c12);
+            font-size: 42px; line-height: 1.1; margin-bottom: 30px;
+            background: linear-gradient(to bottom, #f1c40f, #e67e22);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 5px 0 #8e44ad); transform: rotate(-5deg);
+            filter: drop-shadow(0 4px 0 #d35400); transform: rotate(-3deg);
         }
-        .btn-google {
-            background: white; color: #444; padding: 12px 30px; border-radius: 50px;
+        /* Tombol Google CSS (Anti Error Gambar) */
+        .btn-g-css {
+            background: white; color: #444; padding: 15px 30px; border-radius: 50px;
             font-weight: 700; font-size: 16px; border: none; cursor: pointer;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.3); transition: 0.2s;
-            display: flex; align-items: center; gap: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3); transition: 0.2s; display: flex; align-items: center; gap: 10px;
         }
-        .btn-google:active { transform: scale(0.95); }
-        .g-icon { font-weight: 900; color: #4285F4; font-size: 24px; }
+        .btn-g-css:active { transform: scale(0.95); }
+        .g-letter { font-weight: 900; font-size: 24px; color: #4285F4; }
 
-        /* --- 3. RADAR & LOBBY --- */
+        /* --- 3. LOBBY & RADAR --- */
         #sc-lobby{background:linear-gradient(135deg,#091320,#1c2a3f);z-index:10;}
         #sc-radar { background: rgba(10, 15, 25, 0.98); z-index: 100; justify-content: center; align-items: center; }
         
-        .radar-box { width: 250px; height: 250px; border: 2px solid #2ecc71; border-radius: 50%; position: relative; overflow: hidden; box-shadow: 0 0 30px #2ecc71; margin: 20px auto; background: rgba(0,255,0,0.05); }
+        .radar-box { width: 220px; height: 220px; border: 2px solid #2ecc71; border-radius: 50%; position: relative; overflow: hidden; box-shadow: 0 0 30px #2ecc71; margin: 20px auto; background: rgba(0,255,0,0.05); }
         .radar-scan { width: 50%; height: 2px; background: #2ecc71; position: absolute; top: 50%; left: 50%; transform-origin: 0 0; animation: spin 2s linear infinite; box-shadow: 0 0 15px #fff; }
         @keyframes spin { 100% {transform: rotate(360deg);} }
-        
         .player-found { background: rgba(255,255,255,0.1); padding: 8px 15px; margin: 5px; border-radius: 20px; border: 1px solid #555; display: inline-block; font-size: 14px; }
 
         /* --- 4. GAMEPLAY UI --- */
         #game-header { position: absolute; top: 2%; left: 2%; width: 96%; height: 15%; display: flex; justify-content: space-between; align-items: center; z-index: 10; }
         .p-card { width: 32%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
         
-        /* Avatar & Glow */
         .pc-av { width: 45px; height: 45px; border-radius: 50%; border: 2px solid #fff; margin-bottom: 2px; object-fit: cover; background: #555; transition: 0.3s; }
         .active-glow { border-color: #f1c40f; box-shadow: 0 0 25px #f1c40f; transform: scale(1.15); z-index: 20; }
-        .pc-info { text-align: center; }
-        .pc-name { font-size: 10px; font-weight: bold; text-shadow: 0 1px 2px #000; }
+        .pc-name { font-size: 10px; font-weight: bold; text-shadow: 0 1px 2px #000; overflow:hidden; white-space:nowrap; max-width:90%; }
         .pc-stats { font-size: 10px; background: rgba(0,0,0,0.6); padding: 2px 6px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); margin-top: 2px; }
 
-        /* Bidak/Pion */
-        .pion { position: absolute; width: 6%; aspect-ratio: 1/1; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 5px 10px rgba(0,0,0,0.5); display: none; z-index: 15; transition: left 0.3s, top 0.3s; }
+        /* PION TENGAH KOTAK */
+        .pion { position: absolute; width: 6%; aspect-ratio: 1/1; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 5px 10px rgba(0,0,0,0.5); display: none; z-index: 15; transition: left 0.3s, top 0.3s; margin-left: -3%; margin-top: -3%; /* Center offset fix */ }
         #p1-tok { background: #3498db; } #p2-tok { background: #e74c3c; } #p3-tok { background: #2ecc71; }
         
         .jumping { animation: jump 0.5s ease-in-out; }
         @keyframes jump { 0%{transform:translateY(0) scale(1);} 50%{transform:translateY(-40px) scale(1.3);} 100%{transform:translateY(0) scale(1);} }
 
-        /* Controls */
+        /* CONTROLS */
         #turn-txt { position: absolute; bottom: 13%; left: 50%; transform: translateX(-50%); background: #3498db; padding: 6px 20px; border-radius: 20px; font-weight: bold; font-size: 12px; border: 2px solid #fff; z-index: 15; box-shadow: 0 4px 10px #000; }
-        
         .btn-hide { position: absolute; bottom: 3.5%; width: 25%; height: 9%; cursor: pointer; z-index: 20; background: transparent; border: none; }
         #btn-kocok { left: 50%; transform: translateX(-50%); width: 38%; height: 10%; bottom: 3%; border-radius: 40px; background: transparent; border: none; }
         #btn-kartu { left: 4%; } #btn-info { right: 4%; }
 
-        /* Chat */
+        /* CHAT */
         #chat-btn { position: absolute; bottom: 120px; right: 20px; width: 45px; height: 45px; background: #2ecc71; border-radius: 50%; border: 2px solid #fff; font-size: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 90; box-shadow: 0 4px 8px #000; }
         #chat-box { position: absolute; bottom: 180px; right: 20px; width: 200px; display: none; z-index: 95; }
         #chat-in { width: 70%; padding: 8px; border-radius: 5px; border:none; outline:none; }
         .chat-b { position: absolute; padding: 5px 10px; background: white; color: #000; border-radius: 10px; font-size: 10px; font-weight: bold; display: none; transform: translate(-50%, -160%); box-shadow: 0 2px 5px #000; z-index: 100; text-align: center; min-width: 60px; }
 
-        /* Lobby Edit */
+        /* LOBBY */
         .edit-prof { display: flex; flex-direction: column; align-items: center; gap: 10px; background: rgba(255,255,255,0.05); padding: 20px; border-radius: 15px; margin-bottom: 20px; }
         .edit-av { width: 80px; height: 80px; border-radius: 50%; border: 3px solid #f1c40f; object-fit: cover; }
-        
         .mode-btn { background: rgba(255,255,255,0.1); padding: 15px; margin: 10px 20px; border-radius: 15px; display: flex; align-items: center; cursor: pointer; border: 1px solid rgba(255,255,255,0.2); transition: 0.2s; }
         .mode-btn:active { transform: scale(0.98); background: rgba(255,255,255,0.2); }
 
-        /* Modal */
+        /* MODAL & TOAST */
         .modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 200; display: none; justify-content: center; align-items: center; }
         .box { background: #1c2a3f; padding: 25px; border-radius: 15px; width: 80%; text-align: center; border: 2px solid #f1c40f; }
-        
-        /* Toast */
         #toast { position: absolute; top: 25%; left: 50%; transform: translateX(-50%); z-index: 300; display: flex; flex-direction: column; gap: 5px; align-items: center; width: 90%; pointer-events: none; }
         .msg { background: rgba(0,0,0,0.9); padding: 10px 20px; border-radius: 20px; border: 1px solid #f1c40f; font-size: 13px; animation: fade 3s forwards; }
         @keyframes fade { 0%{opacity:0;transform:translateY(-10px);} 10%{opacity:1;transform:translateY(0);} 90%{opacity:1;} 100%{opacity:0;display:none;} }
+        
+        /* DICE */
+        #dice-scn{position:absolute;top:45%;left:50%;transform:translate(-50%,-50%);width:80px;height:80px;display:none;z-index:50;}
+        .cube{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform 1s;}
+        .face{position:absolute;width:80px;height:80px;background:#fff;border:2px solid #ccc;border-radius:10px;display:flex;justify-content:center;align-items:center;font-size:40px;color:#333;}
+        .f1{transform:rotateY(0deg) translateZ(40px);} .f2{transform:rotateY(90deg) translateZ(40px);} .f3{transform:rotateY(180deg) translateZ(40px);}
+        .f4{transform:rotateY(-90deg) translateZ(40px);} .f5{transform:rotateX(90deg) translateZ(40px);} .f6{transform:rotateX(-90deg) translateZ(40px);}
     </style>
 </head>
 <body>
@@ -96,12 +96,10 @@
 <div id="app">
     <div id="sc-login" class="screen" style="display:flex;">
         <div class="hero-title">CALON MANTU<br>IDAMAN</div>
-        <div style="color:#fff; margin-bottom:40px; letter-spacing:3px;">RPG ONLINE</div>
-        
-        <button class="btn-google" onclick="loginGoogle()">
-            <span class="g-icon">G</span> MASUK AKUN GOOGLE
+        <button class="btn-g-css" onclick="loginGoogle()">
+            <span class="g-letter">G</span> Masuk Akun Google
         </button>
-        <p id="log-err" style="color:red; margin-top:20px; font-size:12px; background:rgba(0,0,0,0.8); padding:5px; display:none;">Cek Domain Firebase!</p>
+        <p id="log-stat" style="margin-top:20px; font-size:12px; color:#aaa;"></p>
     </div>
 
     <div id="sc-lobby" class="screen">
@@ -111,7 +109,7 @@
                 <img id="my-av" class="edit-av" src="" onclick="document.getElementById('f-in').click()">
                 <input type="file" id="f-in" hidden accept="image/*" onchange="upFoto(this)">
                 <input type="text" id="my-name" value="Player" style="background:transparent; border:1px solid #555; color:white; padding:5px; text-align:center;">
-                <button onclick="saveProf()" style="background:#27ae60; border:none; padding:8px 20px; color:white; border-radius:20px; cursor:pointer;">SIMPAN</button>
+                <button onclick="saveProf()" style="background:#27ae60; border:none; padding:8px 20px; color:white; border-radius:20px; cursor:pointer; margin-top:5px;">SIMPAN</button>
             </div>
             <div style="background:#000; padding:5px 15px; border-radius:15px; display:inline-block; border:1px solid gold;">💰 <span id="my-coin">0</span></div>
         </div>
@@ -126,11 +124,11 @@
         </div>
     </div>
 
-    <div id="sc-radar" class="screen">
-        <h2 style="color:#2ecc71;">MENCARI PEMAIN...</h2>
+    <div id="sc-radar" class="screen" style="justify-content:center; align-items:center; text-align:center;">
+        <h2 style="color:#2ecc71;">MENCARI LAWAN...</h2>
         <div class="radar-box"><div class="radar-scan"></div></div>
         <div id="radar-list" style="min-height:50px;"></div>
-        <p style="font-size:12px; color:#aaa;">Klik MULAI jika sudah siap (Sisa slot diisi Bot)</p>
+        <p style="font-size:12px; color:#aaa;">Tunggu pemain lain...</p>
         <button onclick="forceStart()" style="background:#e67e22; border:none; padding:15px 40px; border-radius:30px; color:white; font-weight:bold; font-size:18px; margin-top:10px; box-shadow:0 0 20px #e67e22;">MULAI SEKARANG</button>
     </div>
 
@@ -144,7 +142,6 @@
         <button onclick="location.reload()" style="position:absolute; top:80px; right:10px; background:#c0392b; width:30px; height:30px; border-radius:50%; border:none; color:white; font-weight:bold; z-index:90;">🏠</button>
 
         <div id="p1-tok" class="pion"></div><div id="p2-tok" class="pion"></div><div id="p3-tok" class="pion"></div>
-        
         <div id="dice-scn"><div class="cube"><div class="face f1">1</div><div class="face f2">2</div><div class="face f3">3</div><div class="face f4">4</div><div class="face f5">5</div><div class="face f6">6</div></div></div>
         
         <div id="turn-txt">Menunggu...</div>
@@ -165,12 +162,11 @@
     <div id="m-info" class="modal" onclick="this.style.display='none'">
         <div class="box" onclick="event.stopPropagation()">
             <h3 style="color:#f1c40f;">CARA MENANG</h3>
-            <p>Kumpulkan <b>100 HATI</b> untuk mendapatkan Restu Camer!</p>
+            <p>Kumpulkan <b>100 HATI</b> untuk menang!</p>
             <ul style="text-align:left; font-size:13px;">
                 <li>Start: +10 Hati, +20 Uang.</li>
                 <li>Martabak: +15 Hati.</li>
                 <li>Puji Camer: +20 Hati.</li>
-                <li>RSJ: Hati Reset jadi 0!</li>
                 <li>Nekat Ngelamar: +50 Hati (Jackpot).</li>
             </ul>
             <button onclick="document.getElementById('m-info').style.display='none'" style="background:#3498db; width:100%; padding:10px; border:none; color:white; margin-top:10px;">SIAP</button>
@@ -204,30 +200,48 @@ const cfg = {
 const app=initializeApp(cfg); const db=getDatabase(app); const auth=getAuth(app);
 let user, stats, rId, role, game, chatUnsub;
 const tiles=[{id:0,x:11,y:68.3},{id:1,x:30.5,y:68.3},{id:2,x:50,y:68.3},{id:3,x:69.5,y:68.3},{id:4,x:89,y:68.3},{id:5,x:89,y:57.1},{id:6,x:89,y:45.8},{id:7,x:89,y:34.5},{id:8,x:89,y:23.2},{id:9,x:69.5,y:23.2},{id:10,x:50,y:23.2},{id:11,x:30.5,y:23.2},{id:12,x:11,y:23.2},{id:13,x:11,y:34.5},{id:14,x:11,y:45.8},{id:15,x:11,y:57.1}];
-const botNames=["Dinda_Cans","Pro_Gamer","Kang_Bakso","Sultan_Bintaro","Anak_Jaksel","Wibu_Elite","Mas_Fuad"];
+const botNames=["Sultan_Bintaro","Dinda_Cans","Kang_Bakso","Pro_Player99","Ratu_Gosip","Jomblo_Happy","Anak_Jaksel","Wibu_Elite"];
 
-onAuthStateChanged(auth, u=>{ if(u){user=u; loadProf();}else{show('sc-login');} });
-window.loginGoogle=()=>{ signInWithPopup(auth, new GoogleAuthProvider()).catch(e=>{ document.getElementById('log-err').style.display='block'; }); }
+onAuthStateChanged(auth, u=>{ 
+    if(u){
+        user=u; document.getElementById('log-stat').innerText="Memuat profil...";
+        loadProf();
+    } else {
+        show('sc-login'); 
+    }
+});
+
+window.loginGoogle=()=>{ 
+    document.getElementById('log-stat').innerText="Menghubungkan Google...";
+    signInWithPopup(auth, new GoogleAuthProvider())
+    .catch(e=>{ alert("LOGIN GAGAL: " + e.message + "\n\nSolusi: Cek 'Authorized Domains' di Firebase Console!"); }); 
+}
 
 async function loadProf(){
-    const s=await get(ref(db,'users/'+user.uid));
-    stats=s.val()||{name:user.displayName, photo:user.photoURL, koin:1000};
-    if(!s.exists()) set(ref(db,'users/'+user.uid), stats);
-    document.getElementById('my-av').src=stats.photo;
-    document.getElementById('my-name').value=stats.name;
-    document.getElementById('u-coin').innerText=stats.koin;
-    show('sc-lobby');
+    try {
+        const s=await get(ref(db,'users/'+user.uid));
+        stats=s.val()||{name:user.displayName, photo:user.photoURL, koin:1000};
+        if(!s.exists()) set(ref(db,'users/'+user.uid), stats);
+        document.getElementById('my-av').src=stats.photo;
+        document.getElementById('my-name').value=stats.name;
+        document.getElementById('u-coin').innerText=stats.koin;
+        show('sc-lobby');
+    } catch(err) {
+        alert("DATABASE TERKUNCI!\nBuka Firebase > Build > Realtime Database > Rules.\nUbah 'false' jadi 'true' atau 'auth != null'.");
+        // Tetap masuk lobby (Offline Mode)
+        stats={name:user.displayName, photo:user.photoURL, koin:1000};
+        show('sc-lobby');
+    }
 }
 
 window.upFoto=(i)=>{ if(i.files[0]){ const r=new FileReader(); r.onload=e=>document.getElementById('my-av').src=e.target.result; r.readAsDataURL(i.files[0]); } }
 window.saveProf=()=>{ const n=document.getElementById('my-name').value; const p=document.getElementById('my-av').src; update(ref(db,'users/'+user.uid),{name:n, photo:p}).then(()=>{ stats.name=n; stats.photo=p; tost("Disimpan!"); }); }
 
-// --- MATCHMAKING & RADAR ---
+// --- MATCHMAKING ---
 window.findMatch=async()=>{
     show('sc-radar'); document.getElementById('radar-list').innerHTML=`<div class="player-found">${stats.name} (Kamu)</div>`;
     const s=await get(ref(db,'rooms')); let found=null;
     if(s.exists()){ s.forEach(c=>{ const r=c.val(); if(r.st=='waiting' && (!r.p2.j||!r.p3.j)) found=c.key; }); }
-    
     if(found) joinRoom(found); else createRoom();
 }
 
@@ -251,7 +265,6 @@ function listenRoom(id){
     onValue(ref(db,'rooms/'+id), s=>{
         const d=s.val(); if(!d) return;
         game=d;
-        // Radar Update
         if(d.st=='waiting'){
             let h=""; ['p1','p2','p3'].forEach(r=>{ if(d[r] && d[r].j) h+=`<div class="player-found">${d[r].nm}</div>`; });
             document.getElementById('radar-list').innerHTML=h;
@@ -279,10 +292,10 @@ window.startBot=()=>{
 
 async function move(r, start, steps){
     const el=document.getElementById(r+'-tok'); let c=start;
-    // Smart Offset (Geser jika di kotak sama)
+    // Smart Offset
     let ox=0, oy=0;
-    if(game.p1.pos==game.p2.pos && r=='p2') {ox=3; oy=-3;} 
-    if(game.p1.pos==game.p3.pos && r=='p3') {ox=-3; oy=3;}
+    if(r=='p2' && game.p1.pos==game.p2.pos) {ox=3; oy=-3;} 
+    if(r=='p3' && game.p1.pos==game.p3.pos) {ox=-3; oy=3;}
 
     for(let i=0; i<steps; i++){
         c++; if(c>=16){c=0; tost("Lewat START: +20 Uang +10 Hati");}
