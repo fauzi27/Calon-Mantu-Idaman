@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calon Mantu Idaman - Prototype</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #2c3e50;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* UI Bagian Atas (Stats) */
+        #top-ui {
+            width: 100%;
+            max-width: 500px;
+            background: #fff;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+
+        .player-card {
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            padding: 5px 10px;
+            width: 45%;
+            font-size: 12px;
+        }
+
+        .p1 { border-color: #3498db; background: #ebf5fb; }
+        .p2 { border-color: #e74c3c; background: #fadbd8; }
+        
+        .stat-row { display: flex; justify-content: space-between; margin-bottom: 2px; }
+        .icon { margin-right: 5px; }
+
+        /* Area Game (Canvas) */
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px; /* Simulasi Layar HP */
+            aspect-ratio: 1/1;
+            background: #aaa;
+            margin: 10px 0;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* UI Bagian Bawah (Kontrol) */
+        #bottom-ui {
+            width: 100%;
+            max-width: 500px;
+            background: #fff;
+            padding: 15px;
+            text-align: center;
+            border-radius: 15px 15px 0 0;
+            position: absolute;
+            bottom: 0;
+        }
+
+        #btn-roll {
+            background: #e67e22;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px #d35400;
+            transition: transform 0.1s;
+        }
+
+        #btn-roll:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 #d35400;
+        }
+
+        #btn-roll:disabled {
+            background: #95a5a6;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        #game-log {
+            height: 60px;
+            overflow-y: auto;
+            background: #f1f1f1;
+            margin-bottom: 10px;
+            padding: 5px;
+            border-radius: 5px;
+            font-size: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        .log-entry { margin-bottom: 4px; border-bottom: 1px dashed #ccc; padding-bottom: 2px;}
+        .highlight { color: #d35400; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div id="top-ui">
+        <div class="player-card p1">
+            <div style="font-weight:bold; color:#2980b9;">P1: KAMU (Biru)</div>
+            <div class="stat-row"><span>❤️ Hati:</span> <span id="p1-hati">0</span></div>
+            <div class="stat-row"><span>💰 Uang:</span> <span id="p1-uang">20</span></div>
+            <div class="stat-row"><span>💢 Omelan:</span> <span id="p1-omelan">0</span></div>
+        </div>
+        <div class="player-card p2">
+            <div style="font-weight:bold; color:#c0392b;">P2: SEPUPU (Merah)</div>
+            <div class="stat-row"><span>❤️ Hati:</span> <span id="p2-hati">0</span></div>
+            <div class="stat-row"><span>💰 Uang:</span> <span id="p2-uang">20</span></div>
+            <div class="stat-row"><span>💢 Omelan:</span> <span id="p2-omelan">0</span></div>
+        </div>
+    </div>
+
+    <div id="game-container">
+        <canvas id="gameCanvas" width="1000" height="1000"></canvas>
+    </div>
+
+    <div id="bottom-ui">
+        <div id="game-log">
+            <div class="log-entry">Selamat datang! Silakan kocok dadu.</div>
+        </div>
+        <button id="btn-roll" onclick="playTurn()">KOCOK DADU 🎲</button>
+    </div>
+
+    <script>
+        // --- KONFIGURASI GAME ---
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const boardImage = new Image();
+        
+        // Link gambar dari user
+        boardImage.src = "https://res.cloudinary.com/dsutaioqw/image/upload/v1770514507/board_gukevw.png";
+
+        // Koordinat Tengah Tiap Kotak (Mapping 0-15 Searah Jarum Jam)
+        // Papan 1000x1000, 5x5 Grid. Tiap sel ~200px.
+        // Titik tengah kotak (approx)
+        const tiles = [
+            { id: 0, x: 100, y: 900, name: "START" },           // Kiri Bawah
+            { id: 1, x: 300, y: 900, name: "Martabak" },
+            { id: 2, x: 500, y: 900, name: "Kesempatan" },
+            { id: 3, x: 700, y: 900, name: "Puji Masakan" },
+            { id: 4, x: 900, y: 900, name: "Pos Ronda" },       // Kanan Bawah
+            { id: 5, x: 900, y: 700, name: "Supir Dadakan" },
+            { id: 6, x: 900, y: 500, name: "Pajak THR" },
+            { id: 7, x: 900, y: 300, name: "Kartu Spesial" },
+            { id: 8, x: 900, y: 100, name: "RSJ Stress" },      // Kanan Atas
+            { id: 9, x: 700, y: 100, name: "Genteng Bocor" },
+            { id: 10, x: 500, y: 100, name: "Toko Emas KW" },
+            { id: 11, x: 300, y: 100, name: "PRANK SOSIAL" },
+            { id: 12, x: 100, y: 100, name: "Kartu Ekstrem" },  // Kiri Atas
+            { id: 13, x: 100, y: 300, name: "Mantan Datang" },
+            { id: 14, x: 100, y: 500, name: "Kapan Nikah" },
+            { id: 15, x: 100, y: 700, name: "NEKAT MELAMAR" }
+        ];
+
+        // State Pemain
+        let players = [
+            { id: 0, name: "Kamu", color: "#3498db", pos: 0, uang: 20, hati: 0, omelan: 0, jailed: false },
+            { id: 1, name: "Sepupu", color: "#e74c3c", pos: 0, uang: 20, hati: 0, omelan: 0, jailed: false }
+        ];
+
+        let turn = 0; // 0 = P1, 1 = P2
+        let isMoving = false;
+
+        // --- RENDER FUNCTION ---
+        boardImage.onload = () => { drawGame(); };
+
+        function drawGame() {
+            // 1. Gambar Board
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(boardImage, 0, 0, 1000, 1000);
+
+            // 2. Gambar Pemain (Pion)
+            players.forEach((p, index) => {
+                const tile = tiles[p.pos];
+                
+                // Offset sedikit agar bidak tidak tumpang tindih
+                let offsetX = index === 0 ? -30 : 30; 
+                let offsetY = index === 0 ? -30 : 30;
+
+                ctx.beginPath();
+                ctx.arc(tile.x + offsetX, tile.y + offsetY, 40, 0, 2 * Math.PI);
+                ctx.fillStyle = p.color;
+                ctx.fill();
+                ctx.lineWidth = 5;
+                ctx.strokeStyle = "white";
+                ctx.stroke();
+
+                // Label Nama di atas bidak
+                ctx.fillStyle = "black";
+                ctx.font = "bold 30px Arial";
+                ctx.textAlign = "center";
+                ctx.fillText(index === 0 ? "P1" : "P2", tile.x + offsetX, tile.y + offsetY + 10);
+            });
+        }
+
+        // --- GAME LOGIC ---
+
+        function updateUI() {
+            // P1
+            document.getElementById('p1-hati').innerText = players[0].hati;
+            document.getElementById('p1-uang').innerText = players[0].uang;
+            document.getElementById('p1-omelan').innerText = players[0].omelan;
+            // P2
+            document.getElementById('p2-hati').innerText = players[1].hati;
+            document.getElementById('p2-uang').innerText = players[1].uang;
+            document.getElementById('p2-omelan').innerText = players[1].omelan;
+        }
+
+        function log(msg) {
+            const logDiv = document.getElementById('game-log');
+            const entry = document.createElement('div');
+            entry.className = "log-entry";
+            entry.innerHTML = msg;
+            logDiv.prepend(entry);
+        }
+
+        function playTurn() {
+            if (isMoving) return;
+            isMoving = true;
+            document.getElementById('btn-roll').disabled = true;
+
+            const p = players[turn];
+            log(`Giliran <b>${p.name}</b>...`);
+
+            // Cek Penjara (RSJ)
+            if (p.jailed) {
+                log(`${p.name} masih di RSJ. Skip giliran.`);
+                p.jailed = false; // Keluar penjara turn depan
+                endTurn();
+                return;
+            }
+
+            // Animasi Kocok Dadu (Simulasi)
+            let dice = Math.floor(Math.random() * 6) + 1;
+            log(`${p.name} melempar dadu: <b>Angka ${dice}</b>`);
+
+            // Gerakkan pemain langkah demi langkah
+            let stepsLeft = dice;
+            
+            const moveInterval = setInterval(() => {
+                p.pos++;
+                
+                // Cek Lewat Start (Looping)
+                if (p.pos >= tiles.length) {
+                    p.pos = 0;
+                    p.uang += 20; // Gaji Lewat Start
+                    log(`💰 ${p.name} lewat START, dapat Gaji +20!`);
+                }
+
+                drawGame();
+                stepsLeft--;
+
+                if (stepsLeft <= 0) {
+                    clearInterval(moveInterval);
+                    handleTileEffect(p); // Efek Kotak setelah berhenti
+                    updateUI();
+                    endTurn();
+                }
+            }, 300); // Kecepatan gerak
+        }
+
+        function handleTileEffect(p) {
+            const tile = tiles[p.pos];
+            log(`Berhenti di: <span class="highlight">${tile.name}</span>`);
+
+            // LOGIKA EFEK KOTAK (Sesuai Konsep)
+            switch (p.pos) {
+                case 1: // Martabak
+                    p.uang -= 3; p.hati += 1;
+                    log("Bayar Martabak -3 Uang, Dapat +1 Hati.");
+                    break;
+                case 5: // Supir Dadakan
+                    log("Waduh! Disuruh putar balik ke Martabak.");
+                    p.pos = 1; // Mundur
+                    drawGame();
+                    break;
+                case 6: // Pajak THR
+                    p.uang -= 5;
+                    log("Bagi-bagi THR keponakan. Uang -5.");
+                    break;
+                case 8: // RSJ
+                    p.jailed = true;
+                    log("Masuk RSJ Stress! Hilang giliran berikutnya.");
+                    break;
+                case 9: // Genteng Bocor
+                    if(Math.random() > 0.5) {
+                        p.hati += 8; log("Genteng beres! Camer senang (+8 Hati).");
+                    } else {
+                        p.omelan += 5; p.uang -= 5; log("Jatuh dari atap! (-5 Uang, +5 Omelan).");
+                    }
+                    break;
+                case 10: // Toko Emas KW
+                     // Simulasi Beli
+                     if (p.uang >= 20) {
+                        p.uang -= 20;
+                        if(Math.random() > 0.5) {
+                            p.hati += 15; log("Camer ketipu emas KW! (+15 Hati).");
+                        } else {
+                            p.omelan += 10; log("Ketahuan emas palsu! (+10 Omelan).");
+                        }
+                     } else {
+                         log("Uang gak cukup buat beli emas. Lewat aja.");
+                     }
+                     break;
+                case 11: // PRANK SOSIAL (50:50)
+                    if(Math.random() > 0.5) {
+                        p.hati += 10; p.uang += 10;
+                        log("🎥 Prank SUKSES! Viral positif. (+10 Hati, +10 Uang).");
+                    } else {
+                        p.omelan += 10; p.uang -= 15;
+                        log("🎥 Prank GAGAL! Dihujat netizen. (+10 Omelan, -15 Uang).");
+                    }
+                    break;
+                case 13: // Mantan Datang
+                    p.omelan += 10;
+                    log("💔 Mantan datang! Suasana panas (+10 Omelan).");
+                    break;
+                case 15: // NEKAT MELAMAR
+                    let d1 = Math.floor(Math.random() * 6) + 1;
+                    let d2 = Math.floor(Math.random() * 6) + 1;
+                    log(`Melamar... Dadu: ${d1} & ${d2}`);
+                    if (d1 === 6 && d2 === 6) {
+                        alert(`${p.name} MENANG!! LAMARAN DITERIMA!`);
+                        location.reload();
+                    } else {
+                        p.omelan += 20;
+                        p.pos = 8; // Masuk RSJ
+                        p.jailed = true;
+                        log("DITOLAK! Langsung masuk RSJ (+20 Omelan).");
+                        drawGame();
+                    }
+                    break;
+                default:
+                    // Kotak biasa (Kartu, Pos Ronda, dll)
+                    // Untuk prototype, efeknya random kecil
+                    if(p.pos !== 0) {
+                         log("Tidak ada kejadian besar di sini.");
+                    }
+                    break;
+            }
+
+            // Cek Kalah (Omelan Penuh)
+            if (p.omelan >= 50) {
+                alert(`${p.name} DIUSIR DARI RUMAH CAMER! (Game Over)`);
+                location.reload();
+            }
+        }
+
+        function endTurn() {
+            isMoving = false;
+            document.getElementById('btn-roll').disabled = false;
+            
+            // Ganti Giliran
+            turn = turn === 0 ? 1 : 0;
+            
+            // Jika giliran Bot (P2), otomatis jalan
+            if (turn === 1) {
+                setTimeout(() => {
+                    playTurn();
+                }, 1000);
+            }
+        }
+
+        // Mulai Awal
+        drawGame();
+
+    </script>
+</body>
+</html>
