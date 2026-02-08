@@ -3,82 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Calon Mantu: Social</title>
+    <title>Calon Mantu: Realistic Jump</title>
     <style>
         /* --- 1. BASE STYLES --- */
         body { margin: 0; padding: 0; background-color: #0f1c2e; font-family: 'Segoe UI', Tahoma, sans-serif; overflow: hidden; display: flex; justify-content: center; align-items: center; height: 100dvh; user-select: none; color: white; }
         #app-container { position: relative; width: 100%; max-width: 500px; height: 100%; background: #131d2a; overflow: hidden; box-shadow: 0 0 50px rgba(0,0,0,0.8); }
         
-        /* LOGIN SCREEN */
+        /* LOGIN & LOBBY (Sama seperti sebelumnya) */
         #screen-login { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('https://res.cloudinary.com/dsutaioqw/image/upload/v1770514507/board_gukevw.png'); background-size: cover; z-index: 2000; display: flex; flex-direction: column; justify-content: center; align-items: center; }
         .login-overlay { position: absolute; width: 100%; height: 100%; background: rgba(15, 28, 46, 0.9); backdrop-filter: blur(5px); }
         .login-content { position: relative; z-index: 10; text-align: center; width: 80%; }
         .google-btn { display: flex; align-items: center; justify-content: center; background: white; color: #333; border-radius: 50px; padding: 15px; width: 100%; font-weight: bold; cursor: pointer; border: none; box-shadow: 0 5px 15px rgba(0,0,0,0.3); transition: transform 0.2s; gap: 10px; }
         
-        /* LOBBY SCREEN */
         #screen-lobby { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #091320 0%, #1c2a3f 100%); display: none; flex-direction: column; z-index: 1000; }
-        
         .lobby-header { padding: 20px; display: flex; align-items: center; gap: 15px; background: rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.1); }
         .profile-img { width: 50px; height: 50px; border-radius: 50%; border: 2px solid #f1c40f; }
         .coin-display { margin-left: auto; background: rgba(0,0,0,0.5); padding: 5px 15px; border-radius: 20px; border: 1px solid #f39c12; color: #f1c40f; font-weight: bold; font-size: 14px; }
-
-        /* TAB PANEL (Mode / Friends) */
-        .tab-menu { display: flex; margin-top: 10px; padding: 0 20px; gap: 10px; }
-        .tab-btn { flex: 1; padding: 10px; background: rgba(255,255,255,0.1); border: none; color: #7f8c8d; font-weight: bold; border-radius: 10px 10px 0 0; cursor: pointer; }
-        .tab-btn.active { background: #3498db; color: white; }
-
-        .lobby-content { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .mode-container { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; gap: 20px; padding: 30px; }
+        .mode-card { background: linear-gradient(90deg, #162438 0%, #21334f 100%); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; height: 100px; display: flex; align-items: center; padding: 0 20px; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.3); transition: 0.2s; }
+        .mode-card:active { transform: scale(0.98); }
         
-        /* LIST PEMAIN ONLINE */
-        .player-item { 
-            display: flex; align-items: center; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); transition: 0.2s; 
-        }
-        .player-item:hover { background: rgba(255,255,255,0.1); }
-        .pi-img { width: 40px; height: 40px; border-radius: 50%; margin-right: 10px; }
-        .pi-info { flex-grow: 1; }
-        .pi-name { font-weight: bold; font-size: 14px; display: block; color: white; }
-        .pi-status { font-size: 11px; color: #2ecc71; display: flex; align-items: center; gap: 5px; }
-        .dot { width: 8px; height: 8px; background: #2ecc71; border-radius: 50%; }
-        
-        /* TOMBOL INVITE (+) */
-        .btn-invite {
-            background: #3498db; color: white; width: 35px; height: 35px; border-radius: 50%; border: none; font-size: 20px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
-        }
-        .btn-invite:active { transform: scale(0.9); }
-
-        /* POPUP TERIMA UNDANGAN */
-        #invite-modal {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); z-index: 3000; display: none;
-            flex-direction: column; justify-content: center; align-items: center;
-        }
-        .invite-box {
-            background: #2c3e50; padding: 30px; border-radius: 20px; width: 75%; text-align: center; border: 2px solid #f1c40f; box-shadow: 0 0 30px rgba(241, 196, 15, 0.3); animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        .inviter-img { width: 70px; height: 70px; border-radius: 50%; border: 3px solid white; margin-bottom: 15px; }
-        
-        /* GAME BOARD (Sama) */
+        /* --- GAME BOARD --- */
         #screen-game { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #222 url('https://res.cloudinary.com/dsutaioqw/image/upload/v1770514507/board_gukevw.png') center/contain no-repeat; }
+        
+        /* UI STATS (Fixed Position) */
         .avatar-game { position: absolute; top: 7.7%; width: 12%; aspect-ratio: 1/1; border-radius: 50%; transform: translate(-50%, -50%); background-size: cover; border: 2px solid white; z-index: 5; background-color: #999; }
         #p1-av { left: 16.5%; } #p2-av { left: 83.5%; }
         .stat-box { position: absolute; top: 8.5%; transform: translate(-50%, -50%); width: 14%; text-align: center; font-size: 1.6vh; font-weight: 900; color: #5d4037; z-index: 6; }
         #ui-hati { left: 36.5%; } #ui-uang { left: 66.5%; }
-        .pion { position: absolute; width: 7%; aspect-ratio: 1/1; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 5px 10px rgba(0,0,0,0.5); transition: all 0.3s; z-index: 10; transform: translate(-50%, -50%); display: none; }
-        #p1-token { background: #3498db; } #p2-token { background: #e74c3c; transform: translate(-30%, -30%) scale(0.8); }
+
+        /* --- PION REALISTIS (HOPPING ANIMATION) --- */
+        .pion { 
+            position: absolute; width: 7%; aspect-ratio: 1/1; 
+            border-radius: 50%; border: 3px solid #fff; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.6); 
+            z-index: 10; transform: translate(-50%, -50%); 
+            display: none; 
+            /* Hapus transition default agar bisa dikontrol JS */
+        }
+        #p1-token { background: #3498db; } 
+        #p2-token { background: #e74c3c; transform: translate(-30%, -30%) scale(0.8); }
+
+        /* Kelas Animasi Lompat */
+        .hopping {
+            animation: jumpArc 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        @keyframes jumpArc {
+            0% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -120%) scale(1.3); } /* Naik ke atas & Membesar */
+            100% { transform: translate(-50%, -50%) scale(1); }
+        }
+
         #turn-bar { position: absolute; bottom: 21%; left: 50%; transform: translateX(-50%); background: #3498db; color: white; padding: 10px 30px; border-radius: 25px; font-size: 1.8vh; font-weight: bold; z-index: 30; width: 70%; text-align: center; border: 2px solid rgba(255,255,255,0.2); }
-        .btn-area { position: absolute; z-index: 20; cursor: pointer; }
-        #btn-kocok { bottom: 3.5%; left: 50%; transform: translateX(-50%); width: 42%; height: 10%; border-radius: 40px; }
+        #btn-kocok { position: absolute; bottom: 3.5%; left: 50%; transform: translateX(-50%); width: 42%; height: 10%; border-radius: 40px; cursor: pointer; z-index: 20; }
         #btn-back { position: absolute; top: 20px; left: 20px; z-index: 100; background: white; color: #333; padding: 8px 15px; border-radius: 20px; border: none; font-weight: bold; cursor: pointer; }
+
+        /* JOIN OVERLAY */
+        #overlay-join { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1500; display: none; flex-direction: column; justify-content: center; align-items: center; }
+        .room-box { background: #1c2a3f; padding: 30px; border-radius: 20px; width: 80%; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
+        .room-input { width: 90%; padding: 15px; font-size: 20px; text-align: center; border-radius: 12px; border: none; margin: 20px 0; font-weight: bold; background: #0f1c2e; color: white; }
+
+        /* DICE & TOAST */
         #dice-scene { position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); width: 80px; height: 80px; z-index: 50; display: none; }
         .cube { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 1s ease-out; }
         .cube__face { position: absolute; width: 80px; height: 80px; background: white; border: 2px solid #ccc; border-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 40px; font-weight: bold; color: #333; box-shadow: inset 0 0 15px rgba(0,0,0,0.1); }
         .cube__face--1 { transform: rotateY(0deg) translateZ(40px); } .cube__face--2 { transform: rotateY(90deg) translateZ(40px); } .cube__face--3 { transform: rotateY(180deg) translateZ(40px); }
         .cube__face--4 { transform: rotateY(-90deg) translateZ(40px); } .cube__face--5 { transform: rotateX(90deg) translateZ(40px); } .cube__face--6 { transform: rotateX(-90deg) translateZ(40px); }
         .dot { width: 15px; height: 15px; background: #e74c3c; border-radius: 50%; }
-
-        /* TOAST */
-        #toast-container { position: absolute; top: 10%; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; gap: 5px; align-items: center; z-index: 2000; width: 90%; pointer-events: none; }
+        
+        #toast-container { position: absolute; top: 15%; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; gap: 5px; align-items: center; z-index: 2000; width: 90%; pointer-events: none; }
         .toast-msg { background: rgba(0,0,0,0.85); color: white; padding: 10px 20px; border-radius: 25px; font-size: 14px; animation: fadeInOut 2.5s forwards; border: 1px solid rgba(255,255,255,0.2); text-align: center; }
         @keyframes fadeInOut { 0% {opacity:0; transform:translateY(-10px);} 10% {opacity:1; transform:translateY(0);} 90% {opacity:1;} 100% {opacity:0; display:none;} }
     </style>
@@ -101,65 +94,45 @@
     <div id="screen-lobby">
         <div class="lobby-header">
             <img id="user-photo" src="" class="profile-img">
-            <div>
-                <h4 id="user-name" style="margin:0;">User</h4>
-                <small style="color:#bdc3c7;">Online</small>
-            </div>
+            <div><h4 id="user-name" style="margin:0;">User</h4><small style="color:#2ecc71;">Online</small></div>
             <div class="coin-display">💰 <span id="user-coin">0</span></div>
         </div>
 
-        <div class="tab-menu">
-            <button class="tab-btn active" onclick="switchTab('play')">PLAY</button>
-            <button class="tab-btn" onclick="switchTab('friends')">ONLINE <span id="online-count">(0)</span></button>
-        </div>
-
-        <div id="tab-play" class="lobby-content">
-            <div class="player-item" onclick="startBotMode()" style="cursor:pointer; background:linear-gradient(90deg, #2c3e50, #34495e);">
+        <div class="mode-container">
+            <div class="mode-card" onclick="startBotMode()" style="border-left:5px solid #3498db;">
                 <div style="font-size:30px; margin-right:15px;">🤖</div>
-                <div class="pi-info">
-                    <span class="pi-name" style="font-size:16px;">VS KOMPUTER</span>
-                    <small style="color:#bdc3c7;">Latihan Offline</small>
-                </div>
-                <div style="background:#3498db; padding:5px 15px; border-radius:15px; font-weight:bold;">START</div>
+                <div><h4>LATIHAN</h4><small>Lawan Komputer</small></div>
             </div>
-            
-            <p style="text-align:center; color:#7f8c8d; font-size:12px; margin-top:20px;">
-                Untuk main dengan teman, buka tab <b>ONLINE</b> dan klik tombol <b>(+)</b> pada nama teman.
-            </p>
-            
-            <button onclick="logout()" style="margin-top:auto; background:rgba(231,76,60,0.2); border:1px solid #c0392b; color:white; padding:15px; border-radius:10px;">KELUAR AKUN</button>
+            <div class="mode-card" onclick="openJoinOverlay()" style="border-left:5px solid #e74c3c;">
+                <div style="font-size:30px; margin-right:15px;">⚔️</div>
+                <div><h4>CUSTOM ROOM</h4><small>Main Online</small></div>
+            </div>
         </div>
-
-        <div id="tab-friends" class="lobby-content" style="display:none;">
-            <div id="online-list">
-                </div>
-        </div>
+        <button onclick="logout()" style="margin:20px; padding:15px; background:rgba(231,76,60,0.2); border:1px solid #c0392b; color:white; border-radius:10px;">KELUAR</button>
     </div>
 
-    <div id="invite-modal">
-        <div class="invite-box">
-            <img id="inviter-photo" src="" class="inviter-img">
-            <h3 style="color:#white; margin-top:0;">TANTANGAN DITERIMA!</h3>
-            <p style="color:#bdc3c7;"><b id="inviter-name">Fauzi</b> mengajak main bareng.</p>
-            
-            <div style="display:flex; gap:10px; margin-top:20px;">
-                <button onclick="acceptInvite()" style="flex:1; background:#2ecc71; border:none; padding:12px; border-radius:10px; font-weight:bold; color:white; cursor:pointer;">TERIMA</button>
-                <button onclick="rejectInvite()" style="flex:1; background:#e74c3c; border:none; padding:12px; border-radius:10px; font-weight:bold; color:white; cursor:pointer;">TOLAK</button>
+    <div id="overlay-join">
+        <div class="room-box">
+            <h3 style="color:#ecf0f1;">CUSTOM ROOM</h3>
+            <input type="text" id="room-input" class="room-input" placeholder="MANTU1" value="MANTU1">
+            <div style="display:flex; gap:10px;">
+                <button onclick="joinGame('p1')" style="flex:1; padding:10px; background:#3498db; border:none; color:white; border-radius:10px;">P1</button>
+                <button onclick="joinGame('p2')" style="flex:1; padding:10px; background:#e74c3c; border:none; color:white; border-radius:10px;">P2</button>
             </div>
+            <button onclick="document.getElementById('overlay-join').style.display='none'" style="margin-top:20px; background:none; border:none; color:#7f8c8d;">BATAL</button>
         </div>
     </div>
 
     <div id="screen-game">
-        <button id="btn-back" onclick="exitGame()">🏠 Lobby</button>
-        <div id="p1-av" class="avatar-game"></div>
-        <div id="p2-av" class="avatar-game"></div>
-        <div id="ui-hati" class="stat-box">0</div>
-        <div id="ui-uang" class="stat-box">20</div>
-        <div id="p1-token" class="pion"></div>
-        <div id="p2-token" class="pion"></div>
+        <button id="btn-back" onclick="location.reload()">🏠</button>
+        <div id="p1-av" class="avatar-game"></div><div id="p2-av" class="avatar-game"></div>
+        <div id="ui-hati" class="stat-box">0</div><div id="ui-uang" class="stat-box">20</div>
+        <div id="p1-token" class="pion"></div><div id="p2-token" class="pion"></div>
+
         <div id="dice-scene"><div class="cube"><div class="cube__face cube__face--1"><div class="dot"></div></div><div class="cube__face cube__face--2">2</div><div class="cube__face cube__face--3">3</div><div class="cube__face cube__face--4">4</div><div class="cube__face cube__face--5">5</div><div class="cube__face cube__face--6">6</div></div></div>
+        
         <div id="turn-bar">Menunggu...</div>
-        <div id="btn-kocok" class="btn-area" onclick="handleRollDice()"></div>
+        <div id="btn-kocok" onclick="handleRollDice()"></div>
     </div>
 
     <div id="toast-container"></div>
@@ -167,7 +140,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-    import { getDatabase, ref, set, get, update, onValue, onDisconnect, remove } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+    import { getDatabase, ref, set, get, update, onValue } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
 
     const firebaseConfig = {
@@ -186,234 +159,222 @@
     const provider = new GoogleAuthProvider();
 
     let currentUser = null, userStats = null;
-    let isVsBot = false;
+    let isVsBot = false, isAnimating = false;
     let roomId = "", myRole = "", gameState = null;
-    let currentInvite = null; // Data undangan yang masuk
 
     const tiles = [{id:0,x:11,y:68.3},{id:1,x:30.5,y:68.3},{id:2,x:50,y:68.3},{id:3,x:69.5,y:68.3},{id:4,x:89,y:68.3},{id:5,x:89,y:57.1},{id:6,x:89,y:45.8},{id:7,x:89,y:34.5},{id:8,x:89,y:23.2},{id:9,x:69.5,y:23.2},{id:10,x:50,y:23.2},{id:11,x:30.5,y:23.2},{id:12,x:11,y:23.2},{id:13,x:11,y:34.5},{id:14,x:11,y:45.8},{id:15,x:11,y:57.1}];
 
-    // --- AUTH & SETUP ---
-    onAuthStateChanged(auth, (user) => {
-        if (user) { 
-            currentUser = user; 
-            initUserProfile(user); 
-            setupPresence(user);
-            listenForInvites(user.uid); // Mulai dengarkan "telpon" masuk
-        } else { showScreen('screen-login'); }
-    });
-
+    onAuthStateChanged(auth, u => { if(u){ currentUser=u; initProfile(u); } else document.getElementById('screen-login').style.display='flex'; });
     window.loginGoogle = () => signInWithPopup(auth, provider).catch(e => alert(e.message));
     window.logout = () => signOut(auth).then(()=>location.reload());
 
-    async function initUserProfile(user) {
-        const userRef = ref(db, 'users/' + user.uid);
-        const s = await get(userRef);
-        if (s.exists()) userStats = s.val();
-        else {
-            userStats = { name: user.displayName, photo: user.photoURL, koin: 1000 };
-            await set(userRef, userStats);
-        }
+    async function initProfile(u) {
+        const r = ref(db,'users/'+u.uid); const s = await get(r);
+        userStats = s.exists() ? s.val() : {name:u.displayName, photo:u.photoURL, koin:1000};
+        if(!s.exists()) await set(r, userStats);
         document.getElementById('user-photo').src = userStats.photo;
         document.getElementById('user-name').innerText = userStats.name.split(' ')[0];
-        document.getElementById('user-coin').innerText = userStats.koin.toLocaleString();
-        showScreen('screen-lobby');
-        listenOnlinePlayers();
+        document.getElementById('user-coin').innerText = userStats.koin;
+        document.getElementById('screen-login').style.display='none'; document.getElementById('screen-lobby').style.display='flex';
     }
 
-    // --- INVITE SYSTEM LOGIC (NEW) ---
-
-    // 1. Tampilkan Tombol (+) di List Player
-    function listenOnlinePlayers() {
-        const allStatusRef = ref(db, 'status');
-        onValue(allStatusRef, (snapshot) => {
-            const listDiv = document.getElementById('online-list');
-            listDiv.innerHTML = ""; 
-            let count = 0;
-            
-            snapshot.forEach((child) => {
-                const p = child.val();
-                if(child.key !== currentUser.uid) { // Jangan tampilkan diri sendiri
-                    const item = document.createElement('div');
-                    item.className = 'player-item';
-                    item.innerHTML = `
-                        <img src="${p.photo}" class="pi-img">
-                        <div class="pi-info">
-                            <span class="pi-name">${p.name}</span>
-                            <span class="pi-status"><span class="dot"></span> Online</span>
-                        </div>
-                        <button class="btn-invite" onclick="sendInvite('${child.key}', '${p.name}')">+</button>
-                    `;
-                    listDiv.appendChild(item);
-                    count++;
-                }
-            });
-            document.getElementById('online-count').innerText = `(${count})`;
-        });
-    }
-
-    // 2. Fungsi Mengirim Undangan
-    window.sendInvite = (targetUid, targetName) => {
-        const newRoomId = "ROOM_" + Date.now(); // Buat ID Room unik
-        const inviteData = {
-            fromUid: currentUser.uid,
-            fromName: userStats.name,
-            fromPhoto: userStats.photo,
-            roomId: newRoomId
-        };
-        
-        // Tulis ke mailbox teman
-        set(ref(db, 'invites/' + targetUid), inviteData);
-        
-        pushToast(`Mengundang ${targetName}...`);
-        
-        // Penantang (Sender) langsung masuk room sebagai P1
-        joinRoom(newRoomId, 'p1'); 
-    };
-
-    // 3. Fungsi Mendengarkan Undangan Masuk
-    function listenForInvites(myUid) {
-        onValue(ref(db, 'invites/' + myUid), (snapshot) => {
-            if(snapshot.exists()) {
-                currentInvite = snapshot.val();
-                // Tampilkan Modal
-                document.getElementById('inviter-photo').src = currentInvite.fromPhoto;
-                document.getElementById('inviter-name').innerText = currentInvite.fromName;
-                document.getElementById('invite-modal').style.display = 'flex';
-            }
-        });
-    }
-
-    // 4. Terima / Tolak
-    window.acceptInvite = () => {
-        if(!currentInvite) return;
-        // Hapus undangan agar tidak muncul lagi
-        remove(ref(db, 'invites/' + currentUser.uid));
-        document.getElementById('invite-modal').style.display = 'none';
-        
-        // Masuk room sebagai P2
-        joinRoom(currentInvite.roomId, 'p2');
-    };
-
-    window.rejectInvite = () => {
-        remove(ref(db, 'invites/' + currentUser.uid));
-        document.getElementById('invite-modal').style.display = 'none';
-        pushToast("Undangan ditolak.");
-    };
-
-    // --- GAME LOBBY LOGIC ---
-    window.switchTab = (tab) => {
-        document.getElementById('tab-play').style.display = (tab === 'play') ? 'flex' : 'none';
-        document.getElementById('tab-friends').style.display = (tab === 'friends') ? 'flex' : 'none';
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        event.target.classList.add('active');
-    }
-
-    // --- GAME ENGINE ---
+    // --- GAME ENGINE (GERAKAN LOMPAT) ---
     
-    // Fungsi Generik Masuk Room (Dipakai Invite & Manual)
-    function joinRoom(id, role) {
-        isVsBot = false;
-        roomId = id; 
-        myRole = role;
-        showScreen('screen-game');
+    // Fungsi Gerak Langkah-demi-Langkah (Async)
+    async function movePionStep(role, startPos, steps) {
+        const token = document.getElementById(role === 'p1' ? 'p1-token' : 'p2-token');
+        let current = startPos;
         
-        const playerInfo = { name: userStats.name, photo: userStats.photo, joined: true, pos: 0, uang: 20, hati: 0 };
-        const roomRef = ref(db, 'rooms/' + roomId);
-        
-        update(ref(db, `rooms/${roomId}/${myRole}`), playerInfo);
-
-        onValue(roomRef, (snap) => {
-            const data = snap.val();
-            if(data) { gameState = data; updateGameUI(); }
-            else if(myRole === 'p1') {
-                set(roomRef, { turn: 'p1', p1: playerInfo, p2: { joined: false, pos: 0, uang: 20, hati: 0 } });
+        // Loop setiap langkah
+        for(let i=0; i < steps; i++) {
+            current++;
+            if(current >= 16) { 
+                current = 0; 
+                // Efek Lewat Start langsung visual
+                pushToast(role === myRole ? "Lewat Start: +10 Uang, +5 Hati" : "Lawan Lewat Start");
             }
-        });
+            
+            // 1. Update Posisi CSS
+            const coord = tiles[current];
+            token.style.left = coord.x + "%";
+            token.style.top = coord.y + "%";
+            
+            // 2. Trigger Animasi Lompat
+            token.classList.remove('hopping'); 
+            void token.offsetWidth; // Trigger reflow
+            token.classList.add('hopping');
+            
+            // 3. Tunggu animasi selesai (300ms) sebelum langkah berikutnya
+            await new Promise(r => setTimeout(r, 300));
+        }
+        return current;
     }
 
+    // --- GAMEPLAY HANDLER ---
+    window.handleRollDice = async () => {
+        if(isAnimating || gameState.turn !== myRole) return;
+        isAnimating = true;
+
+        const diceVal = Math.floor(Math.random() * 6) + 1;
+        rollDiceVisual(diceVal);
+
+        // Tunggu dadu selesai muter
+        await new Promise(r => setTimeout(r, 1500));
+
+        // PROSES GERAK PLAYER (ANIMASI)
+        let p = gameState[myRole];
+        const oldPos = p.pos;
+        const newPos = await movePionStep(myRole, oldPos, diceVal);
+        
+        // Update Data Sementara
+        p.pos = newPos;
+        if(newPos < oldPos) { p.uang += 10; p.hati += 5; } // Logic Start di data
+
+        // PROSES EFEK (SETELAH MENDARAT)
+        applyEffect(p);
+
+        // KIRIM DATA / SWITCH TURN
+        const nextTurn = (gameState.turn === 'p1') ? 'p2' : 'p1';
+        
+        if(isVsBot) {
+            gameState.turn = nextTurn;
+            updateUI();
+            isAnimating = false;
+            if(nextTurn === 'p2') setTimeout(botLogic, 1000);
+        } else {
+            const u = {}; 
+            u[`rooms/${roomId}/${myRole}`] = p; 
+            u[`rooms/${roomId}/turn`] = nextTurn;
+            await update(ref(db), u);
+            isAnimating = false;
+        }
+    };
+
+    // --- LOGIKA BOT (MIRIP PLAYER) ---
+    async function botLogic() {
+        pushToast("Giliran Komputer...");
+        const diceVal = Math.floor(Math.random() * 6) + 1;
+        rollDiceVisual(diceVal);
+        await new Promise(r => setTimeout(r, 1500));
+
+        let p = gameState.p2;
+        const oldPos = p.pos;
+        const newPos = await movePionStep('p2', oldPos, diceVal);
+        
+        p.pos = newPos;
+        if(newPos < oldPos) { p.uang += 10; p.hati += 5; }
+        
+        applyEffect(p, true); // True = isBot
+
+        gameState.turn = 'p1';
+        updateUI();
+    }
+
+    // --- LOGIKA EFEK (TERPUSAT) ---
+    function applyEffect(p, isBot = false) {
+        const pos = p.pos;
+        let msg = "";
+
+        if(pos === 1) { p.uang -= 2; p.hati += 5; msg = "Beli Martabak (-2 Uang, +5 Hati)"; }
+        else if(pos === 3) { p.hati += 5; msg = "Dipuji Camer (+5 Hati)"; }
+        else if(pos === 5) { p.pos = 1; msg = "Supir Dadakan! Balik ke Pos 1"; movePionVisual(isBot?'p2':'p1', 1); }
+        else if(pos === 6) { p.uang -= 5; msg = "THR Keponakan (-5 Uang)"; }
+        else if(pos === 9) {
+            if(Math.random() > 0.4) { p.hati += 8; msg = "Genteng Beres (+8 Hati)"; }
+            else { p.uang -= 3; msg = "Jatuh dari Genteng (-3 Uang)"; }
+        }
+        else if(pos === 11) {
+            if(Math.random() > 0.3) { p.uang += 10; p.hati += 10; msg = "Prank Viral! (+Uang +Hati)"; }
+            else { p.hati -= 5; msg = "Prank Gagal (-5 Hati)"; }
+        }
+        else if(pos === 13) { p.hati -= 2; msg = "Mantan Datang (-2 Hati)"; }
+        else if(pos === 15) {
+             const roll = Math.floor(Math.random()*6)+1;
+             if(roll === 6) { alert(isBot ? "BOT MENANG!" : "KAMU MENANG!"); location.reload(); }
+             else { p.hati -= 5; msg = "Lamaran Ditolak (-5 Hati)"; }
+        }
+
+        if(msg) pushToast(isBot ? "Bot: " + msg : msg);
+    }
+
+    // --- SETUP GAME ---
     window.startBotMode = () => {
         isVsBot = true; myRole = 'p1';
         gameState = {
             turn: 'p1',
             p1: { name: userStats.name, photo: userStats.photo, joined: true, pos: 0, uang: 20, hati: 0 },
-            p2: { name: "Komputer", photo: "https://api.dicebear.com/7.x/bottts/svg?seed=Bot", joined: true, pos: 0, uang: 20, hati: 0 }
+            p2: { name: "Bot", photo: "https://api.dicebear.com/7.x/bottts/svg?seed=Felix", joined: true, pos: 0, uang: 20, hati: 0 }
         };
-        showScreen('screen-game'); updateGameUI();
+        startGameUI();
     };
 
-    window.handleRollDice = () => {
-        if(gameState.turn !== myRole) { pushToast("Giliran Lawan!"); return; }
-        const diceVal = Math.floor(Math.random() * 6) + 1;
-        rollDiceVisual(diceVal);
-        setTimeout(() => {
-            let p = gameState[myRole];
-            for(let i=0; i<diceVal; i++){
-                p.pos++;
-                if(p.pos >= 16) { p.pos = 0; p.uang += 10; p.hati += 5; if(!isVsBot) pushToast("Gaji +10, Hati +5"); }
-            }
-            // Simple Tile Logic
-            if(p.pos===1){p.uang-=2;p.hati+=5;}
-            else if(p.pos===3){p.hati+=5;}
-            else if(p.pos===5){p.pos=1;}
-            else if(p.pos===6){p.uang-=5;}
-            else if(p.pos===11){if(Math.random()>0.3){p.uang+=15;p.hati+=10;}else{p.hati-=5;}}
-            
-            const nextTurn = (gameState.turn === 'p1') ? 'p2' : 'p1';
-            
-            if(isVsBot) {
-                gameState.turn = nextTurn; updateGameUI();
-                if(nextTurn === 'p2') setTimeout(botTurn, 1500);
-            } else {
-                const u = {}; u[`rooms/${roomId}/${myRole}`] = p; u[`rooms/${roomId}/turn`] = nextTurn;
-                update(ref(db), u);
-            }
-        }, 1500);
-    };
-
-    function botTurn() {
-        pushToast("Komputer jalan...");
-        setTimeout(() => {
-            const d = Math.floor(Math.random() * 6) + 1;
-            rollDiceVisual(d);
-            setTimeout(() => {
-                let p = gameState.p2;
-                for(let i=0; i<d; i++){ p.pos++; if(p.pos>=16){p.pos=0;p.uang+=10;p.hati+=5;} }
-                gameState.turn = 'p1'; updateGameUI();
-            }, 1500);
-        }, 1000);
-    }
-
-    function setupPresence(user) {
-        const myStatusRef = ref(db, 'status/' + user.uid);
-        const connectedRef = ref(db, '.info/connected');
-        onValue(connectedRef, (snap) => {
-            if (snap.val() === true) {
-                set(myStatusRef, { name: user.displayName, photo: user.photoURL, state: 'online' });
-                onDisconnect(myStatusRef).remove();
-            }
-        });
-    }
-
-    // VISUAL
-    function updateGameUI() {
-        if(gameState.p1.joined) { document.getElementById('p1-av').style.backgroundImage = `url('${gameState.p1.photo}')`; document.getElementById('p1-token').style.display = 'block'; movePion('p1', gameState.p1.pos); }
-        if(gameState.p2.joined) { document.getElementById('p2-av').style.backgroundImage = `url('${gameState.p2.photo}')`; document.getElementById('p2-token').style.display = 'block'; movePion('p2', gameState.p2.pos); }
-        const myData = gameState[myRole];
-        if(myData) { document.getElementById('ui-uang').innerText = myData.uang; document.getElementById('ui-hati').innerText = myData.hati; }
+    window.openJoinOverlay = () => document.getElementById('overlay-join').style.display='flex';
+    window.joinGame = (role) => {
+        isVsBot = false; roomId = document.getElementById('room-input').value; myRole = role;
+        document.getElementById('overlay-join').style.display='none';
         
+        const pData = { name: userStats.name, photo: userStats.photo, joined: true, pos: 0, uang: 20, hati: 0 };
+        const rRef = ref(db, 'rooms/'+roomId);
+        update(ref(db, `rooms/${roomId}/${myRole}`), pData);
+        
+        onValue(rRef, (s) => {
+            const d = s.val();
+            if(d) { 
+                gameState = d; 
+                // Jika ini update dari lawan, sync posisi
+                if(gameState.turn === myRole) isAnimating = false; // Giliranku, buka kunci animasi
+                updateUI(); 
+            } else if(myRole==='p1') set(rRef, {turn:'p1', p1:pData, p2:{joined:false,pos:0,uang:20,hati:0}});
+        });
+        startGameUI();
+    };
+
+    function startGameUI() {
+        document.getElementById('screen-lobby').style.display='none';
+        document.getElementById('screen-game').style.display='block';
+        updateUI();
+    }
+
+    function updateUI() {
+        if(gameState.p1.joined) {
+            document.getElementById('p1-av').style.backgroundImage = `url('${gameState.p1.photo}')`;
+            document.getElementById('p1-token').style.display = 'block';
+            if(!isAnimating) movePionVisual('p1', gameState.p1.pos); // Sync biasa jika tdk animasi
+        }
+        if(gameState.p2.joined) {
+            document.getElementById('p2-av').style.backgroundImage = `url('${gameState.p2.photo}')`;
+            document.getElementById('p2-token').style.display = 'block';
+            if(!isAnimating) movePionVisual('p2', gameState.p2.pos);
+        }
+        
+        // Update Stats UI
+        const myData = gameState[myRole];
+        if(myData) {
+            document.getElementById('ui-uang').innerText = myData.uang;
+            document.getElementById('ui-hati').innerText = myData.hati;
+        }
+
         const bar = document.getElementById('turn-bar');
-        if(gameState.turn === myRole) { bar.innerText = "GILIRANMU!"; bar.style.background = "#3498db"; document.getElementById('btn-kocok').style.pointerEvents = 'auto'; }
-        else { bar.innerText = isVsBot ? "KOMPUTER..." : "LAWAN..."; bar.style.background = "#7f8c8d"; document.getElementById('btn-kocok').style.pointerEvents = 'none'; }
+        if(gameState.turn === myRole) {
+            bar.innerText = "GILIRANMU!"; bar.style.background = "#3498db";
+            document.getElementById('btn-kocok').style.pointerEvents = 'auto';
+        } else {
+            bar.innerText = isVsBot ? "KOMPUTER..." : "LAWAN...";
+            bar.style.background = "#7f8c8d";
+            document.getElementById('btn-kocok').style.pointerEvents = 'none';
+        }
         
         document.getElementById('p1-av').classList.toggle('active-turn', gameState.turn === 'p1');
         document.getElementById('p2-av').classList.toggle('active-turn', gameState.turn === 'p2');
     }
 
-    function movePion(role, pos) { const coord = tiles[pos]; const el = document.getElementById(role === 'p1' ? 'p1-token' : 'p2-token'); el.style.left = coord.x + "%"; el.style.top = coord.y + "%"; }
-    function showScreen(id) { ['screen-login', 'screen-lobby', 'screen-game'].forEach(s => document.getElementById(s).style.display = (s === id) ? 'flex' : 'none'); if(id==='screen-game') document.getElementById(id).style.display='block'; }
-    window.exitGame = () => { location.reload(); };
-    function rollDiceVisual(val) { document.getElementById('dice-scene').style.display = 'block'; const cube = document.querySelector('.cube'); const xR = Math.random()*720, yR = Math.random()*720; cube.style.transition = '0.5s'; cube.style.transform = `rotateX(${xR}deg) rotateY(${yR}deg)`; setTimeout(() => { cube.style.transition = '0.8s cubic-bezier(0.25,1,0.5,1)'; let x=0, y=0; if(val==2) y=-90; if(val==3) y=-180; if(val==4) y=90; if(val==5) x=-90; if(val==6) x=90; cube.style.transform = `rotateX(${x+720}deg) rotateY(${y+720}deg)`; }, 500); setTimeout(() => document.getElementById('dice-scene').style.display = 'none', 2000); }
-    window.pushToast = (msg) => { let d = document.createElement('div'); d.className = 'toast-msg'; d.innerText = msg; document.getElementById('toast-container').appendChild(d); setTimeout(() => d.remove(), 2600); }
+    function movePionVisual(role, pos) {
+        const c = tiles[pos]; const el = document.getElementById(role==='p1'?'p1-token':'p2-token');
+        el.style.left = c.x + "%"; el.style.top = c.y + "%";
+    }
+
+    function rollDiceVisual(val) { document.getElementById('dice-scene').style.display='block'; const c = document.querySelector('.cube'); c.style.transition='0.5s'; c.style.transform=`rotateX(${Math.random()*720}deg) rotateY(${Math.random()*720}deg)`; setTimeout(()=>{ c.style.transition='0.8s cubic-bezier(0.25,1,0.5,1)'; let x=0,y=0; if(val==2)y=-90;if(val==3)y=-180;if(val==4)y=90;if(val==5)x=-90;if(val==6)x=90; c.style.transform=`rotateX(${x+720}deg) rotateY(${y+720}deg)`; },500); setTimeout(()=>document.getElementById('dice-scene').style.display='none',2000); }
+    window.pushToast=(m)=>{const d=document.createElement('div');d.className='toast-msg';d.innerText=m;document.getElementById('toast-container').appendChild(d);setTimeout(()=>d.remove(),2500);}
 </script>
 </body>
 </html>
