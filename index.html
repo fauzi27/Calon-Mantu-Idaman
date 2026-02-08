@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mantu Idaman: 3 Players</title>
+    <title>Mantu Idaman: Final</title>
     <style>
-        /* --- 1. CSS UTAMA --- */
+        /* --- CSS UTAMA --- */
         body{margin:0;padding:0;background:#0f1c2e;font-family:'Segoe UI',sans-serif;overflow:hidden;display:flex;justify-content:center;align-items:center;height:100dvh;color:#fff;user-select:none;}
         #app{position:relative;width:100%;max-width:500px;height:100%;background:#131d2a;overflow:hidden;box-shadow:0 0 50px #000;}
         
@@ -13,49 +13,47 @@
         .screen{position:absolute;top:0;left:0;width:100%;height:100%;display:none;flex-direction:column;}
         #sc-login{background:url('https://res.cloudinary.com/dsutaioqw/image/upload/v1770557809/utama_l86cnu.png') center/cover;z-index:20;justify-content:center;align-items:center;}
         #sc-lobby{background:linear-gradient(135deg,#091320,#1c2a3f);z-index:10;}
-        /* BACKGROUND BARU */
         #sc-game{background:url('https://res.cloudinary.com/dsutaioqw/image/upload/v1770557809/utama_l86cnu.png') center/contain no-repeat #222;}
 
-        /* HEADER 3 PEMAIN (BARU) */
-        #game-header {
-            position: absolute; top: 2%; left: 2.5%; width: 95%; height: 16%;
-            display: flex; justify-content: space-between; align-items: center;
-            z-index: 10;
-        }
-        .p-card {
-            width: 32%; height: 100%;
-            background: rgba(0,0,0,0.3); border-radius: 10px;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            position: relative; border: 1px solid rgba(255,255,255,0.2);
-            transition: 0.3s;
-        }
-        .p-card.active-turn { background: rgba(241, 196, 15, 0.2); border-color: #f1c40f; box-shadow: 0 0 10px #f1c40f; transform: scale(1.05); z-index: 20; }
+        /* HEADER 3 PEMAIN */
+        #game-header { position: absolute; top: 2%; left: 2.5%; width: 95%; height: 16%; display: flex; justify-content: space-between; align-items: center; z-index: 10; }
+        .p-card { width: 32%; height: 100%; background: rgba(0,0,0,0.4); border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; border: 1px solid rgba(255,255,255,0.1); }
         
-        .pc-av { width: 35px; height: 35px; border-radius: 50%; border: 2px solid #fff; margin-bottom: 2px; object-fit: cover; }
-        .pc-name { font-size: 10px; font-weight: bold; margin-bottom: 2px; white-space: nowrap; overflow: hidden; max-width: 90%; }
-        .pc-stats { display: flex; gap: 5px; font-size: 11px; font-weight: bold; }
-        .st-val { background: rgba(0,0,0,0.5); padding: 2px 5px; border-radius: 5px; }
+        /* AVATAR FIX (GLOW DI SINI) */
+        .pc-av { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #fff; margin-bottom: 3px; object-fit: cover; transition: 0.3s; }
+        .active-turn .pc-av { border-color: #f1c40f; box-shadow: 0 0 15px #f1c40f; transform: scale(1.1); }
+        
+        .pc-name { font-size: 10px; font-weight: bold; margin-bottom: 3px; white-space: nowrap; overflow: hidden; max-width: 90%; }
+        .pc-stats { display: flex; gap: 5px; font-size: 10px; font-weight: bold; }
+        .st-val { background: rgba(0,0,0,0.6); padding: 2px 6px; border-radius: 4px; }
+
+        /* MODAL (INFO, KARTU, EDIT) */
+        .modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 200; display: none; justify-content: center; align-items: center; flex-direction: column; }
+        .box { background: #1c2a3f; padding: 20px; border-radius: 15px; width: 80%; text-align: center; border: 2px solid #f1c40f; max-height: 80%; overflow-y: auto; }
+        .card-img { width: 120px; height: 160px; background: #fff; margin: 10px auto; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #333; font-weight: bold; box-shadow: 0 0 20px rgba(255,215,0,0.5); }
+
+        /* LOBBY EDIT */
+        .edit-area { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-bottom: 20px; }
+        .edit-av { width: 80px; height: 80px; border-radius: 50%; border: 3px solid #f1c40f; object-fit: cover; }
+        .inp-name { background: rgba(255,255,255,0.1); border: 1px solid #555; padding: 8px; color: white; border-radius: 5px; text-align: center; }
+        
+        /* TOMBOL GAME */
+        .btn-act { position: absolute; bottom: 20px; width: 28%; height: 50px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; color: #333; box-shadow: 0 4px 0 rgba(0,0,0,0.5); transition: 0.1s; }
+        .btn-act:active { transform: translateY(4px); box-shadow: none; }
+        #btn-kartu { left: 5%; background: #ecf0f1; }
+        #btn-info { right: 5%; background: #ecf0f1; }
+        #btn-kocok { left: 50%; transform: translateX(-50%); width: 35%; height: 60px; background: #e67e22; color: white; font-size: 18px; bottom: 15px; border-radius: 30px; }
 
         /* PION */
         .pion { position: absolute; width: 6%; aspect-ratio: 1/1; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 3px 5px rgba(0,0,0,0.5); display: none; transition: 0.3s; z-index: 8; }
-        #p1-tok { background: #3498db; }
-        #p2-tok { background: #e74c3c; transform: translate(5px, -5px); } /* Geser dikit biar gak numpuk */
-        #p3-tok { background: #2ecc71; transform: translate(-5px, 5px); }
+        #p1-tok { background: #3498db; } #p2-tok { background: #e74c3c; transform: translate(4px,-4px); } #p3-tok { background: #2ecc71; transform: translate(-4px,4px); }
 
-        /* KOMPONEN LAIN */
+        /* LAINNYA */
         .btn-g{background:#fff;color:#333;display:flex;align-items:center;gap:10px;padding:15px 30px;border-radius:30px;font-size:16px;border:none;font-weight:bold;cursor:pointer;}
-        .header{padding:15px;display:flex;align-items:center;gap:15px;background:rgba(255,255,255,0.05);}
-        .avatar{width:50px;height:50px;border-radius:50%;border:2px solid #f1c40f;}
-        .card{background:rgba(255,255,255,0.05);padding:15px;border-radius:12px;margin:10px 20px;display:flex;align-items:center;cursor:pointer;border:1px solid rgba(255,255,255,0.1);}
-        .btn{padding:12px;border:none;border-radius:10px;font-weight:bold;cursor:pointer;color:#fff;}
-
-        /* CHAT FLOATING */
-        .chat-bubble { position: absolute; padding: 6px 10px; border-radius: 10px; background: rgba(0,0,0,0.8); color: #fff; font-size: 10px; max-width: 80px; z-index: 100; text-align: center; display: none; border: 1px solid #fff; }
+        .mode-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; padding: 15px; display: flex; align-items: center; cursor: pointer; margin: 10px 20px; }
         
-        #chat-input-area { position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%); width: 80%; display: none; z-index: 95; }
-        #chat-in { width: 75%; padding: 10px; border-radius: 20px 0 0 20px; border: none; outline: none; background: rgba(0,0,0,0.8); color: white; }
-        #chat-send { width: 20%; padding: 10px; border-radius: 0 20px 20px 0; border: none; background: #2ecc71; color: white; font-weight: bold; cursor: pointer; }
-
+        #turn-txt { position: absolute; bottom: 18%; left: 50%; transform: translateX(-50%); background: #3498db; padding: 5px 20px; border-radius: 20px; font-weight: bold; font-size: 12px; width: 60%; text-align: center; }
+        
         /* DICE & TOAST */
         #dice-scn{position:absolute;top:45%;left:50%;transform:translate(-50%,-50%);width:80px;height:80px;display:none;z-index:50;}
         .cube{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform 1s;}
@@ -63,12 +61,9 @@
         .f1{transform:rotateY(0deg) translateZ(40px);} .f2{transform:rotateY(90deg) translateZ(40px);} .f3{transform:rotateY(180deg) translateZ(40px);}
         .f4{transform:rotateY(-90deg) translateZ(40px);} .f5{transform:rotateX(90deg) translateZ(40px);} .f6{transform:rotateX(-90deg) translateZ(40px);}
         
-        #toast{position:absolute;top:25%;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:5px;align-items:center;z-index:99;width:90%;pointer-events:none;}
-        .t-msg{background:rgba(0,0,0,0.85);color:#fff;padding:8px 16px;border-radius:20px;font-size:14px;animation:fade 3s forwards;border:1px solid #777;}
+        #toast{position:absolute;top:20%;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:5px;align-items:center;z-index:150;width:90%;pointer-events:none;}
+        .t-msg{background:rgba(0,0,0,0.9);color:#fff;padding:8px 16px;border-radius:20px;font-size:12px;animation:fade 3s forwards;border:1px solid #f1c40f;}
         @keyframes fade{0%{opacity:0;transform:translateY(-10px);}10%{opacity:1;transform:translateY(0);}90%{opacity:1;}100%{opacity:0;display:none;}}
-
-        .modal{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:200;display:none;justify-content:center;align-items:center;}
-        .box{background:#1c2a3f;padding:25px;border-radius:15px;width:70%;text-align:center;border:2px solid #f1c40f;}
     </style>
 </head>
 <body>
@@ -77,29 +72,29 @@
     <div id="sc-login" class="screen" style="display:flex;">
         <h1 style="color:#f1c40f; text-shadow:0 0 10px #000; margin-bottom:20px;">CALON MANTU</h1>
         <button class="btn-g" onclick="doLogin()">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" width="20"> Login Google
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" width="20"> Masuk dengan Google
         </button>
     </div>
 
     <div id="sc-lobby" class="screen">
-        <div class="header">
-            <img id="u-pic" src="" class="avatar">
-            <div><b id="u-name">User</b><br><small style="color:#2ecc71;">Online</small></div>
-            <div style="margin-left:auto;">💰 <span id="u-coin">0</span></div>
-        </div>
-        
-        <div style="display:flex; padding:10px; gap:10px;">
-            <button class="btn" onclick="tab('play')" style="flex:1;background:#3498db;">PLAY</button>
-            <button class="btn" onclick="tab('online')" style="flex:1;background:rgba(255,255,255,0.1);">ONLINE (+)</button>
+        <div style="padding:20px; text-align:center;">
+            <div class="edit-area">
+                <img id="edit-av" class="edit-av" src="" onclick="document.getElementById('file-in').click()">
+                <input type="file" id="file-in" style="display:none" accept="image/*" onchange="uploadAv(this)">
+                <input type="text" id="edit-name" class="inp-name" placeholder="Nama Kamu">
+                <button onclick="saveProfile()" style="background:#27ae60; border:none; color:white; padding:5px 15px; border-radius:5px; cursor:pointer;">SIMPAN PROFIL</button>
+            </div>
+            <div style="background:#000; padding:5px; border-radius:10px; display:inline-block;">💰 <span id="u-coin">0</span></div>
         </div>
 
-        <div id="tab-play">
-            <div class="card" onclick="startBot()" style="border-left:5px solid #3498db;">
-                <span style="font-size:30px;margin-right:15px;">🤖</span>
-                <div><b>LATIHAN 3 ORANG</b><br><small>Kamu vs 2 Bot</small></div>
-            </div>
+        <div class="mode-card" onclick="startBot()">
+            <span style="font-size:30px;margin-right:15px;">🤖</span>
+            <div><b>LATIHAN 3 ORANG</b><br><small>Vs 2 Bot</small></div>
         </div>
-        <div id="tab-online" style="display:none; padding:0 20px;"><div id="list-ol"></div></div>
+        <div class="mode-card" onclick="openRoomModal()">
+            <span style="font-size:30px;margin-right:15px;">🌍</span>
+            <div><b>MAIN ONLINE</b><br><small>3 Orang (Otomatis)</small></div>
+        </div>
     </div>
 
     <div id="sc-game" class="screen">
@@ -107,59 +102,71 @@
             <div id="card-p1" class="p-card">
                 <img id="av-p1" class="pc-av" src="">
                 <div id="nm-p1" class="pc-name">P1</div>
-                <div class="pc-stats"><span class="st-val">❤️ <span id="ht-p1">0</span></span> <span class="st-val">💰 <span id="mn-p1">0</span></span></div>
-                <div id="chat-p1" class="chat-bubble">Msg...</div>
+                <div class="pc-stats"><span class="st-val">❤️<span id="ht-p1">0</span></span> <span class="st-val">💰<span id="mn-p1">0</span></span></div>
             </div>
             <div id="card-p2" class="p-card">
                 <img id="av-p2" class="pc-av" src="">
                 <div id="nm-p2" class="pc-name">P2</div>
-                <div class="pc-stats"><span class="st-val">❤️ <span id="ht-p2">0</span></span> <span class="st-val">💰 <span id="mn-p2">0</span></span></div>
-                <div id="chat-p2" class="chat-bubble">Msg...</div>
+                <div class="pc-stats"><span class="st-val">❤️<span id="ht-p2">0</span></span> <span class="st-val">💰<span id="mn-p2">0</span></span></div>
             </div>
             <div id="card-p3" class="p-card">
                 <img id="av-p3" class="pc-av" src="">
                 <div id="nm-p3" class="pc-name">Kosong</div>
-                <div class="pc-stats"><span class="st-val">❤️ <span id="ht-p3">-</span></span> <span class="st-val">💰 <span id="mn-p3">-</span></span></div>
-                <div id="chat-p3" class="chat-bubble">Msg...</div>
+                <div class="pc-stats"><span class="st-val">❤️<span id="ht-p3">-</span></span> <span class="st-val">💰<span id="mn-p3">-</span></span></div>
             </div>
         </div>
 
-        <button onclick="goHome()" style="position:absolute; bottom:20px; right:20px; background:#e74c3c; border:none; border-radius:50%; width:40px; height:40px; cursor:pointer; font-weight:bold; box-shadow:0 2px 5px #000; z-index:90;">🏠</button>
+        <button onclick="goHome()" style="position:absolute; top:80px; right:10px; background:#c0392b; border:none; border-radius:50%; width:30px; height:30px; cursor:pointer; color:white; z-index:90;">🏠</button>
         
-        <div id="p1-tok" class="pion"></div>
-        <div id="p2-tok" class="pion"></div>
-        <div id="p3-tok" class="pion"></div>
-        
+        <div id="p1-tok" class="pion"></div><div id="p2-tok" class="pion"></div><div id="p3-tok" class="pion"></div>
         <div id="dice-scn"><div class="cube"><div class="face f1">1</div><div class="face f2">2</div><div class="face f3">3</div><div class="face f4">4</div><div class="face f5">5</div><div class="face f6">6</div></div></div>
         
-        <div id="turn-txt" style="position:absolute;bottom:22%;left:50%;transform:translateX(-50%);background:#3498db;padding:8px 20px;border-radius:20px;font-weight:bold;box-shadow:0 3px 10px #000;width:80%;text-align:center;">Menunggu...</div>
-        <div onclick="rollD()" style="position:absolute;bottom:4%;left:50%;transform:translateX(-50%);width:40%;height:10%;border-radius:30px;cursor:pointer;z-index:20;"></div>
-
-        <button onclick="toggleChatInput()" style="position:absolute;bottom:140px;right:20px;background:#27ae60;width:50px;height:50px;border-radius:50%;border:none;color:#fff;font-size:24px;box-shadow:0 4px 10px #000;cursor:pointer;z-index:90;">💬</button>
-        <div id="chat-input-area">
-            <input id="chat-in" type="text" placeholder="Ketik pesan..." autocomplete="off">
-            <button id="chat-send" onclick="sendChat()">KIRIM</button>
-        </div>
+        <div id="turn-txt">Menunggu...</div>
         
+        <button id="btn-kartu" class="btn-act" onclick="showMyCard()">🃏 KARTU</button>
+        <button id="btn-kocok" class="btn-act" onclick="rollD()">KOCOK</button>
+        <button id="btn-info" class="btn-act" onclick="showInfo()">ℹ️ INFO</button>
+
         <div id="toast"></div>
     </div>
 
-    <div id="m-inv" class="modal">
+    <div id="m-room" class="modal">
         <div class="box">
-            <img id="inv-pic" class="avatar" style="width:70px;height:70px;">
-            <h3 id="inv-nm">Nama</h3>
-            <p>Mengajak Duel!</p>
-            <div style="display:flex; gap:10px; margin-top:20px;">
-                <button onclick="accInv()" class="btn" style="background:#2ecc71;flex:1;">TERIMA</button>
-                <button onclick="rejInv()" class="btn" style="background:#e74c3c;flex:1;">TOLAK</button>
+            <h3>MASUK ROOM</h3>
+            <input type="text" id="room-code" placeholder="Nama Room (Cth: MANTU)" style="padding:10px; width:80%; text-align:center; margin-bottom:10px; border-radius:5px; border:none;">
+            <div style="display:flex; gap:10px; justify-content:center;">
+                <button onclick="joinOnline()" style="background:#27ae60; border:none; padding:10px 20px; color:white; border-radius:5px;">GABUNG</button>
+                <button onclick="document.getElementById('m-room').style.display='none'" style="background:#c0392b; border:none; padding:10px 20px; color:white; border-radius:5px;">BATAL</button>
             </div>
+        </div>
+    </div>
+
+    <div id="m-card" class="modal" onclick="this.style.display='none'">
+        <div class="box" onclick="event.stopPropagation()">
+            <h3 id="c-title">KARTU KESEMPATAN</h3>
+            <div class="card-img">?</div>
+            <p id="c-desc">Isi kartu...</p>
+            <button onclick="document.getElementById('m-card').style.display='none'" style="background:#3498db; border:none; padding:10px; width:100%; color:white; border-radius:5px;">TUTUP</button>
+        </div>
+    </div>
+
+    <div id="m-info" class="modal" onclick="this.style.display='none'">
+        <div class="box" style="text-align:left; font-size:12px;">
+            <h3 style="text-align:center;">ATURAN MAIN</h3>
+            <ul style="padding-left:20px;">
+                <li>Kocok dadu untuk jalan.</li>
+                <li>Setiap lewat START dapat Gaji & Hati.</li>
+                <li>Kumpulkan Hati sebanyak mungkin untuk menang.</li>
+                <li>Hati-hati dengan kotak Ekstrem!</li>
+                <li>Gunakan Kartu spesial untuk menjebak lawan.</li>
+            </ul>
         </div>
     </div>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-import { getDatabase, ref, set, get, update, onValue, push, onChildAdded, remove, onDisconnect } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+import { getDatabase, ref, set, get, update, onValue, onDisconnect } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
 import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
 
 const cfg = {
@@ -170,14 +177,11 @@ const cfg = {
     appId: "1:674923969086:web:ffb34307261bbfae74af6f"
 };
 
-const app = initializeApp(cfg);
-const db = getDatabase(app);
-const auth = getAuth(app);
-let user, stats, rId, role, game, chatUnsub;
-// Tiles Y disesuaikan sedikit karena header besar
+const app = initializeApp(cfg); const db = getDatabase(app); const auth = getAuth(app);
+let user, stats, rId, role, game, lastCard = {title:"Belum Ada", desc:"Kamu belum dapat kartu."};
 const tiles = [{id:0,x:11,y:68.3},{id:1,x:30.5,y:68.3},{id:2,x:50,y:68.3},{id:3,x:69.5,y:68.3},{id:4,x:89,y:68.3},{id:5,x:89,y:57.1},{id:6,x:89,y:45.8},{id:7,x:89,y:34.5},{id:8,x:89,y:23.2},{id:9,x:69.5,y:23.2},{id:10,x:50,y:23.2},{id:11,x:30.5,y:23.2},{id:12,x:11,y:23.2},{id:13,x:11,y:34.5},{id:14,x:11,y:45.8},{id:15,x:11,y:57.1}];
 
-onAuthStateChanged(auth, u => { if(u){ user=u; loadProf(); setupPres(); listenInv(); } else { show('sc-login'); } });
+onAuthStateChanged(auth, u => { if(u){ user=u; loadProf(); } else { show('sc-login'); } });
 window.doLogin = () => signInWithPopup(auth, new GoogleAuthProvider());
 window.goHome = () => location.reload();
 
@@ -185,102 +189,108 @@ async function loadProf(){
     const s = await get(ref(db,'users/'+user.uid));
     stats = s.val() || {name:user.displayName, photo:user.photoURL, koin:1000};
     if(!s.exists()) set(ref(db,'users/'+user.uid), stats);
-    document.getElementById('u-pic').src = stats.photo;
-    document.getElementById('u-name').innerText = stats.name.split(' ')[0];
+    
+    document.getElementById('edit-av').src = stats.photo;
+    document.getElementById('edit-name').value = stats.name;
     document.getElementById('u-coin').innerText = stats.koin;
-    show('sc-lobby'); listenOnline();
+    show('sc-lobby');
 }
-function setupPres(){
-    const r = ref(db,'status/'+user.uid); onDisconnect(r).remove();
-    set(r, {name:user.displayName, photo:user.photoURL, online:true});
-}
-window.tab = (t) => {
-    document.getElementById('tab-play').style.display = t=='play'?'block':'none';
-    document.getElementById('tab-online').style.display = t=='online'?'block':'none';
-};
-function listenOnline(){
-    onValue(ref(db,'status'), s => {
-        const l = document.getElementById('list-ol'); l.innerHTML='';
-        s.forEach(c => {
-            if(c.key!==user.uid){
-                const p=c.val();
-                l.innerHTML += `<div class="card" style="margin:5px 0;padding:10px;">
-                    <img src="${p.photo}" style="width:30px;height:30px;border-radius:50%;margin-right:10px;">
-                    <div style="flex:1;"><b>${p.name}</b></div>
-                    <button onclick="sendInv('${c.key}','${p.name}')" style="background:#2ecc71;border:none;border-radius:50%;width:30px;height:30px;color:#fff;font-weight:bold;">+</button>
-                </div>`;
-            }
-        });
-    });
-}
-window.sendInv = (uid, nm) => {
-    const id = "R"+Date.now();
-    // Default P1 vs P2 (P3 inactive)
-    const d = {pos:0, uang:20, hati:0, j:true, nm:stats.name, pic:stats.photo};
-    set(ref(db,`rooms/${id}`), {turn:'p1', p1:d, p2:{j:false}, p3:{j:false}}); 
-    set(ref(db,'invites/'+uid), {from:stats.name, pic:stats.photo, rid:id});
-    tost("Mengajak "+nm+"...");
-    join(id,'p1');
-};
-function listenInv(){
-    onValue(ref(db,'invites/'+user.uid), s => {
-        if(s.exists()){
-            const d=s.val(); window.invD=d;
-            document.getElementById('inv-nm').innerText=d.from;
-            document.getElementById('inv-pic').src=d.pic;
-            document.getElementById('m-inv').style.display='flex';
-        }
-    });
-}
-window.accInv = () => { remove(ref(db,'invites/'+user.uid)); document.getElementById('m-inv').style.display='none'; join(window.invD.rid,'p2'); };
-window.rejInv = () => { remove(ref(db,'invites/'+user.uid)); document.getElementById('m-inv').style.display='none'; };
 
-// --- 3 PLAYER ENGINE ---
-window.startBot = () => { 
-    rId='bot'; role='p1'; 
+// EDIT PROFILE
+window.uploadAv = (input) => {
+    const file = input.files[0];
+    if(file){
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            // Resize image simple logic (canvas) could be added here to save space
+            document.getElementById('edit-av').src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+}
+window.saveProfile = () => {
+    const newName = document.getElementById('edit-name').value;
+    const newPic = document.getElementById('edit-av').src;
+    if(newPic.length > 500000) return alert("Foto terlalu besar! Pilih foto kecil.");
+    
+    update(ref(db,'users/'+user.uid), {name:newName, photo:newPic}).then(()=>{
+        stats.name = newName; stats.photo = newPic;
+        alert("Profil Disimpan!");
+    });
+}
+
+// GAME LOGIC
+window.startBot = () => {
+    rId='bot'; role='p1';
     game={
-        turn:'p1', 
-        p1:{pos:0, uang:20, hati:0, j:true, nm:stats.name, pic:stats.photo}, 
+        turn:'p1',
+        p1:{pos:0, uang:20, hati:0, j:true, nm:stats.name, pic:stats.photo},
         p2:{pos:0, uang:20, hati:0, j:true, nm:"Bot A", pic:"https://api.dicebear.com/7.x/bottts/svg?seed=A"},
         p3:{pos:0, uang:20, hati:0, j:true, nm:"Bot B", pic:"https://api.dicebear.com/7.x/bottts/svg?seed=B"}
-    }; 
-    show('sc-game'); updUI(); initChat('local'); 
-};
+    };
+    show('sc-game'); updUI();
+}
 
-function join(id, rl){
-    rId=id; role=rl; show('sc-game');
-    const d = {pos:0, uang:20, hati:0, j:true, nm:stats.name, pic:stats.photo};
-    update(ref(db,`rooms/${id}/${rl}`), d);
-    onValue(ref(db,`rooms/${id}`), s => {
+window.openRoomModal = () => document.getElementById('m-room').style.display='flex';
+window.joinOnline = async () => {
+    const code = document.getElementById('room-code').value.toUpperCase();
+    if(!code) return alert("Isi nama room!");
+    
+    document.getElementById('m-room').style.display='none';
+    rId = code;
+    
+    // Auto Slot Check
+    const rRef = ref(db, 'rooms/'+rId);
+    const snap = await get(rRef);
+    let myP = 'p1';
+    
+    if(snap.exists()){
+        const d = snap.val();
+        if(!d.p1.j) myP = 'p1';
+        else if(!d.p2.j) myP = 'p2';
+        else if(!d.p3.j) myP = 'p3';
+        else return alert("Room Penuh!");
+    }
+    
+    role = myP;
+    const pData = {pos:0, uang:20, hati:0, j:true, nm:stats.name, pic:stats.photo};
+    
+    // Init Room jika baru
+    if(myP=='p1' && !snap.exists()){
+        set(rRef, {
+            turn:'p1', 
+            p1:pData, 
+            p2:{j:false, pos:0, uang:20, hati:0}, 
+            p3:{j:false, pos:0, uang:20, hati:0}
+        });
+    } else {
+        update(ref(db, `rooms/${rId}/${myP}`), pData);
+    }
+    
+    show('sc-game');
+    onValue(rRef, (s) => {
         const v = s.val(); if(v){ game=v; updUI(); }
     });
-    initChat(id);
 }
 
 window.rollD = () => {
-    if(game.turn!==role) return;
+    if(game.turn !== role) return tost("Bukan giliranmu!");
     const dv = Math.floor(Math.random()*6)+1;
     visDice(dv);
     setTimeout(()=>{
         let p = game[role];
         for(let i=0; i<dv; i++){ p.pos++; if(p.pos>=16){p.pos=0; p.uang+=10; p.hati+=5; tost("Gaji +10, Hati +5");} }
+        
         checkTile(p);
         
         let next = getNextTurn(game.turn);
-        
         if(rId=='bot'){ 
             game.turn=next; updUI(); 
-            if(next!='p1') setTimeout(() => botRun(next), 1500); 
-        } else { 
-            update(ref(db,`rooms/${rId}`), {turn:next, [role]:p}); 
+            if(next!='p1') setTimeout(()=>botRun(next), 1500); 
+        } else {
+            update(ref(db,`rooms/${rId}`), {turn:next, [role]:p});
         }
     }, 1500);
-};
-
-function getNextTurn(curr){
-    if(curr=='p1') return game.p2.j ? 'p2' : 'p1';
-    if(curr=='p2') return game.p3.j ? 'p3' : 'p1';
-    if(curr=='p3') return 'p1';
 }
 
 function botRun(botRole){
@@ -288,85 +298,98 @@ function botRun(botRole){
     const dv = Math.floor(Math.random()*6)+1; visDice(dv);
     setTimeout(()=>{
         let p = game[botRole];
-        for(let i=0; i<dv; i++){ p.pos++; if(p.pos>=16){p.pos=0;p.uang+=10;p.hati+=5;} }
+        for(let i=0; i<dv; i++){ p.pos++; if(p.pos>=16){p.pos=0; p.uang+=10; p.hati+=5;} }
         checkTile(p, true);
-        
         let next = getNextTurn(botRole);
         game.turn = next; updUI();
-        
-        if(next != 'p1') setTimeout(() => botRun(next), 1500); // Lanjut ke Bot berikutnya jika ada
+        if(next != 'p1') setTimeout(()=>botRun(next), 1500);
     },1500);
 }
 
+function getNextTurn(curr){
+    if(curr=='p1') return game.p2.j ? 'p2' : (game.p3.j ? 'p3' : 'p1');
+    if(curr=='p2') return game.p3.j ? 'p3' : 'p1';
+    if(curr=='p3') return 'p1';
+}
+
+// LOGIC TILES SESUAI GAMBAR
 function checkTile(p, isBot=false){
     const i = p.pos;
     let msg = "";
-    if(i==1){p.uang-=2;p.hati+=5; msg="Beli Martabak";}
-    else if(i==3){p.hati+=5; msg="Dipuji Camer";}
-    else if(i==5){p.pos=1; msg="Supir Dadakan!";}
-    else if(i==6){p.uang-=5; msg="THR Ponakan";}
-    else if(i==9){p.hati+=8; msg="Genteng Beres";}
-    else if(i==11){p.uang+=10; msg="Prank Viral";}
-    else if(i==13){p.hati-=3; msg="Mantan Datang";}
-    if(msg) tost((isBot? (p.nm+": "):"") + msg);
+    // 0:START, 1:Start(Mulai), 2:Martabak, 3:Kesempatan, 4:Puji, 5:Pos Ronda, 6:Supir(Snake), 7:THR, 8:Spesial, 9:RSJ, 10:Genteng, 11:Emas, 12:Social, 13:Extreme, 14:Mantan, 15:Kapan Nikah
+    // Code Index (Array 0-15) Mapping:
+    // Board Visual 1(Mulai) is Index 0 in Array Logic.
+    
+    if(i==1) { p.uang-=3; p.hati+=5; msg="Beli Martabak (-3 Uang)"; }
+    else if(i==2 || i==7) { trigCard('KESEMPATAN', 'Ambil Kartu Kesempatan', p); msg="Dapat Kartu!"; }
+    else if(i==3) { p.hati+=5; msg="Dipuji Camer (+5 Hati)"; }
+    else if(i==4) { p.uang-=2; msg="Iuran Pos Ronda"; }
+    else if(i==5) { p.pos=0; msg="Supir Dadakan! Balik Start"; }
+    else if(i==6) { p.uang-=5; msg="THR Keponakan (-5 Uang)"; }
+    else if(i==7) { trigCard('SPESIAL', 'Kartu Spesial!', p); }
+    else if(i==8) { p.hati-=5; msg="Masuk RSJ (-5 Hati)"; }
+    else if(i==9) { p.uang-=5; msg="Genteng Bocor (-5 Uang)"; }
+    else if(i==10) { p.uang-=10; msg="Beli Emas Palsu (-10 Uang)"; }
+    else if(i==11) { p.hati+=10; msg="Social Experiment Viral (+10 Hati)"; }
+    else if(i==12) { trigCard('EKSTREM', 'Kartu Ekstrem!', p); }
+    else if(i==13) { p.hati-=10; msg="Mantan Datang (-10 Hati)"; }
+    else if(i==14) { trigCard('PRANK', 'Ditanya Kapan Nikah?', p); }
+    else if(i==15) { p.hati+=20; msg="Nekat Ngelamar (+20 Hati)"; }
+
+    if(msg && !isBot) tost(msg);
 }
 
+function trigCard(type, desc, p){
+    // Random effect simple
+    if(type=='PRANK') { p.hati-=5; desc="Ditanya Kapan Nikah? (-5 Hati)"; }
+    if(type=='EKSTREM') { p.uang-=10; desc="Kena Begal! (-10 Uang)"; }
+    lastCard = {title:type, desc:desc};
+    // Tampilkan modal jika player asli
+    if(game.turn == role) {
+        document.getElementById('c-title').innerText = type;
+        document.getElementById('c-desc').innerText = desc;
+        document.getElementById('m-card').style.display = 'flex';
+    }
+}
+
+// UI UPDATE
 function updUI(){
     ['p1','p2','p3'].forEach(r => {
         const d = game[r];
         const card = document.getElementById('card-'+r);
         const tok = document.getElementById(r+'-tok');
         
-        // Reset Card UI
         document.getElementById('nm-'+r).innerText = d && d.j ? d.nm : "Kosong";
         document.getElementById('av-'+r).src = d && d.j ? d.pic : "";
         document.getElementById('ht-'+r).innerText = d && d.j ? d.hati : "-";
         document.getElementById('mn-'+r).innerText = d && d.j ? d.uang : "-";
         
-        // Token di Board
         if(d && d.j){
             tok.style.display='block';
             const c = tiles[d.pos];
-            tok.style.left = c.x + '%'; 
-            tok.style.top = c.y + '%';
-        } else {
-            tok.style.display='none';
-        }
+            tok.style.left = c.x + '%'; tok.style.top = c.y + '%';
+        } else { tok.style.display='none'; }
 
-        // Highlight Active Card
+        // Glow Logic (Avatar Only)
         if(game.turn == r && d && d.j) card.classList.add('active-turn'); else card.classList.remove('active-turn');
     });
     
-    // Status Bar Bawah
     const t = document.getElementById('turn-txt');
     if(game.turn == role) { t.innerText = "GILIRANMU!"; t.style.background = "#2ecc71"; }
     else { t.innerText = `Giliran ${game[game.turn].nm}...`; t.style.background = "#e74c3c"; }
 }
 
-function initChat(id){
-    if(chatUnsub) chatUnsub();
-    if(id == 'local') return;
-    chatUnsub = onChildAdded(ref(db,`rooms/${id}/chat`), s => { const m=s.val(); showBubble(m.role, m.txt); });
+// MODALS
+window.showMyCard = () => {
+    document.getElementById('c-title').innerText = lastCard.title;
+    document.getElementById('c-desc').innerText = lastCard.desc;
+    document.getElementById('m-card').style.display='flex';
 }
-window.toggleChatInput = () => { const b=document.getElementById('chat-input-area'); b.style.display = b.style.display=='flex'?'none':'flex'; };
-window.sendChat = () => {
-    const i = document.getElementById('chat-in'); const txt = i.value; if(!txt) return;
-    if(rId=='bot'){ showBubble('p1', txt); setTimeout(()=> showBubble('p2', "Haha!"), 1000); } 
-    else { push(ref(db,`rooms/${rId}/chat`), {role:role, txt:txt}); }
-    i.value=''; document.getElementById('chat-input-area').style.display='none';
-};
-function showBubble(role, txt){
-    const b = document.getElementById(`chat-${role}`);
-    if(b){ b.innerText = txt; b.style.display = 'block'; setTimeout(() => { b.style.display = 'none'; }, 3000); }
-}
+window.showInfo = () => document.getElementById('m-info').style.display='flex';
 
+// UTIL
 function show(id){ ['sc-login','sc-lobby','sc-game'].forEach(s=>document.getElementById(s).style.display=s==id?'flex':'none'); }
-function visDice(v){
-    const c=document.querySelector('.cube'); document.getElementById('dice-scn').style.display='block';
-    c.style.transform=`rotateX(${Math.random()*720}deg) rotateY(${Math.random()*720}deg)`;
-    setTimeout(()=>{ let x=0,y=0; if(v==2)y=-90; if(v==3)y=-180; if(v==4)y=90; if(v==5)x=-90; if(v==6)x=90; c.style.transform=`rotateX(${x+720}deg) rotateY(${y+720}deg)`; },500);
-    setTimeout(()=>document.getElementById('dice-scn').style.display='none',2000);
-}
+function visDice(v){ const c=document.querySelector('.cube'); document.getElementById('dice-scn').style.display='block'; c.style.transform=`rotateX(${Math.random()*720}deg) rotateY(${Math.random()*720}deg)`; setTimeout(()=>{ let x=0,y=0; if(v==2)y=-90; if(v==3)y=-180; if(v==4)y=90; if(v==5)x=-90; if(v==6)x=90; c.style.transform=`rotateX(${x+720}deg) rotateY(${y+720}deg)`; },500); setTimeout(()=>document.getElementById('dice-scn').style.display='none',2000); }
 function tost(m){ const d=document.createElement('div');d.className='t-msg';d.innerText=m;document.getElementById('toast').appendChild(d);setTimeout(()=>d.remove(),3000); }
 </script>
 </body>
