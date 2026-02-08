@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mantu Idaman: Final</title>
+    <title>Mantu Idaman: Final Release</title>
     <style>
         /* --- CSS DASAR --- */
         body{margin:0;padding:0;background:#0f1c2e;font-family:'Segoe UI',sans-serif;overflow:hidden;display:flex;justify-content:center;align-items:center;height:100dvh;color:#fff;user-select:none;}
@@ -19,44 +19,55 @@
         #game-header { position: absolute; top: 2%; left: 2%; width: 96%; height: 15%; display: flex; justify-content: space-between; align-items: center; z-index: 10; }
         .p-card { width: 32%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
         
-        /* AVATAR STYLE (FIX) */
-        .pc-av { width: 45px; height: 45px; border-radius: 50%; border: 2px solid #fff; margin-bottom: 2px; object-fit: cover; transition: 0.3s; box-sizing: border-box; }
-        /* Glow Hanya di Avatar */
-        .active-glow { border-color: #f1c40f; box-shadow: 0 0 20px #f1c40f; transform: scale(1.1); z-index: 20; }
+        /* AVATAR STYLE */
+        .pc-av { width: 42px; height: 42px; border-radius: 50%; border: 2px solid #fff; margin-bottom: 2px; object-fit: cover; transition: 0.3s; box-sizing: border-box; background: #555; }
+        /* Glow Hanya di Lingkaran Avatar */
+        .active-glow { border-color: #f1c40f; box-shadow: 0 0 20px #f1c40f; transform: scale(1.15); z-index: 20; }
         
-        .pc-name { font-size: 11px; font-weight: bold; margin-bottom: 2px; text-shadow: 0 1px 3px #000; white-space: nowrap; overflow: hidden; max-width: 90%; }
-        .pc-stats { display: flex; gap: 4px; font-size: 10px; font-weight: bold; }
+        .pc-name { font-size: 10px; font-weight: bold; margin-bottom: 2px; text-shadow: 0 1px 3px #000; white-space: nowrap; overflow: hidden; max-width: 90%; }
+        .pc-stats { display: flex; gap: 4px; font-size: 9px; font-weight: bold; }
         .st-val { background: rgba(0,0,0,0.7); padding: 2px 5px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); }
 
-        /* --- PION & ANIMASI --- */
+        /* --- PION & ANIMASI LOMPAT (N) --- */
         .pion { position: absolute; width: 6%; aspect-ratio: 1/1; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.6); display: none; z-index: 15; }
-        #p1-tok { background: #3498db; } #p2-tok { background: #e74c3c; transform: translate(3px, -3px); } #p3-tok { background: #2ecc71; transform: translate(-3px, 3px); }
+        #p1-tok { background: #3498db; } #p2-tok { background: #e74c3c; } #p3-tok { background: #2ecc71; }
         
-        /* Animasi Lompat (N-Shape) */
-        .jumping { animation: jumpAnim 0.3s ease-in-out; }
-        @keyframes jumpAnim { 0% { transform: translateY(0) scale(1); } 50% { transform: translateY(-20px) scale(1.2); } 100% { transform: translateY(0) scale(1); } }
+        /* Animasi Lompat Tinggi */
+        .jumping { animation: jumpHigh 0.4s ease-in-out; }
+        @keyframes jumpHigh { 
+            0% { transform: translateY(0) scale(1); } 
+            50% { transform: translateY(-40px) scale(1.3); } /* Naik Tinggi */
+            100% { transform: translateY(0) scale(1); } 
+        }
 
-        /* --- TOMBOL TRANSPARAN (OVERLAY) --- */
-        .btn-overlay { position: absolute; bottom: 3.5%; width: 25%; height: 8%; cursor: pointer; border-radius: 15px; z-index: 20; background: transparent; border: none; }
-        .btn-overlay:active { background: rgba(255,255,255,0.2); } /* Efek klik dikit */
+        /* --- TOMBOL GAMEPLAY (TRANSPARAN) --- */
+        /* Tombol ini tidak terlihat (overlay), mengikuti gambar di background */
+        .btn-overlay { position: absolute; bottom: 3.5%; width: 25%; height: 9%; cursor: pointer; z-index: 20; background: transparent; border: none; }
+        .btn-overlay:active { background: rgba(255,255,255,0.1); border-radius: 15px; } 
         #btn-kartu { left: 4%; }
         #btn-info { right: 4%; }
-        #btn-kocok { left: 50%; transform: translateX(-50%); width: 38%; height: 10%; bottom: 3%; border-radius: 40px; }
+        /* Tombol Kocok tetap berwarna karena tombol utama */
+        #btn-kocok { left: 50%; transform: translateX(-50%); width: 38%; height: 10%; bottom: 3%; border-radius: 40px; background: transparent; border:none; }
 
-        /* UI TEXT */
-        #turn-txt { position: absolute; bottom: 20%; left: 50%; transform: translateX(-50%); background: #3498db; padding: 8px 25px; border-radius: 20px; font-weight: bold; font-size: 14px; box-shadow: 0 3px 10px #000; text-align: center; width: 60%; z-index: 15; }
+        /* UI TEXT GILIRAN (SUDAH DINAIKKAN) */
+        #turn-txt { 
+            position: absolute; bottom: 22%; /* Naik dari 18% */
+            left: 50%; transform: translateX(-50%); 
+            background: #3498db; padding: 8px 25px; border-radius: 20px; 
+            font-weight: bold; font-size: 14px; box-shadow: 0 3px 10px #000; 
+            text-align: center; min-width: 150px; z-index: 15; border: 2px solid white;
+        }
 
-        /* --- LOBBY & EDIT --- */
+        /* --- LOBBY & MODAL --- */
         .edit-area { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-bottom: 20px; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 15px; }
         .edit-av { width: 90px; height: 90px; border-radius: 50%; border: 3px solid #f1c40f; object-fit: cover; }
         .inp-name { background: rgba(0,0,0,0.5); border: 1px solid #555; padding: 10px; color: white; border-radius: 8px; text-align: center; width: 80%; font-weight: bold; }
         .mode-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; padding: 15px; display: flex; align-items: center; cursor: pointer; margin: 10px 20px; transition: 0.2s; }
         .mode-card:active { transform: scale(0.98); background: rgba(255,255,255,0.1); }
 
-        /* MODAL */
         .modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 200; display: none; justify-content: center; align-items: center; }
-        .box { background: #1c2a3f; padding: 25px; border-radius: 15px; width: 80%; max-height: 80%; overflow-y: auto; text-align: center; border: 2px solid #f1c40f; color: #ecf0f1; }
-        .info-list { text-align: left; font-size: 13px; line-height: 1.6; padding-left: 20px; }
+        .box { background: #1c2a3f; padding: 25px; border-radius: 15px; width: 85%; max-height: 85%; overflow-y: auto; text-align: center; border: 2px solid #f1c40f; color: #ecf0f1; }
+        .info-list { text-align: left; font-size: 13px; line-height: 1.5; padding-left: 20px; margin-top: 5px;}
         
         /* DICE & TOAST */
         #dice-scn{position:absolute;top:45%;left:50%;transform:translate(-50%,-50%);width:80px;height:80px;display:none;z-index:50;}
@@ -66,7 +77,7 @@
         .f4{transform:rotateY(-90deg) translateZ(40px);} .f5{transform:rotateX(90deg) translateZ(40px);} .f6{transform:rotateX(-90deg) translateZ(40px);}
         
         #toast{position:absolute;top:25%;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:5px;align-items:center;z-index:150;width:90%;pointer-events:none;}
-        .t-msg{background:rgba(0,0,0,0.9);color:#fff;padding:8px 16px;border-radius:20px;font-size:12px;animation:fade 3s forwards;border:1px solid #f1c40f;}
+        .t-msg{background:rgba(0,0,0,0.9);color:#fff;padding:10px 20px;border-radius:25px;font-size:13px;animation:fade 3s forwards;border:1px solid #f1c40f; text-align: center;}
         @keyframes fade{0%{opacity:0;transform:translateY(-10px);}10%{opacity:1;transform:translateY(0);}90%{opacity:1;}100%{opacity:0;display:none;}}
         
         .btn-g{background:#fff;color:#333;display:flex;align-items:center;gap:10px;padding:15px 30px;border-radius:30px;font-size:16px;border:none;font-weight:bold;cursor:pointer;}
@@ -80,25 +91,26 @@
         <button class="btn-g" onclick="doLogin()">
             <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" width="20"> Masuk dengan Google
         </button>
+        <p id="login-err" style="color:red; font-weight:bold; font-size:12px; margin-top:10px; background:rgba(0,0,0,0.8); padding:5px; display:none;"></p>
     </div>
 
     <div id="sc-lobby" class="screen">
-        <h3 style="text-align:center; margin-top:20px; color:#f1c40f;">PROFIL PEJUANG</h3>
+        <h3 style="text-align:center; margin-top:20px; color:#f1c40f; letter-spacing:1px;">PROFIL PEJUANG</h3>
         <div class="edit-area">
             <img id="edit-av" class="edit-av" src="" onclick="document.getElementById('file-in').click()">
             <input type="file" id="file-in" style="display:none" accept="image/*" onchange="uploadAv(this)">
             <input type="text" id="edit-name" class="inp-name" placeholder="Nama Kamu">
-            <div style="font-size:12px; color:#bdc3c7;">Klik foto untuk ganti (Bebas Size)</div>
-            <button onclick="saveProfile()" style="background:#27ae60; border:none; color:white; padding:10px 25px; border-radius:8px; font-weight:bold; cursor:pointer; width:100%;">SIMPAN & MAIN</button>
+            <div style="font-size:11px; color:#bdc3c7; margin-top:5px;">Tap foto untuk ganti (Bebas Size)</div>
+            <button onclick="saveProfile()" style="background:#27ae60; border:none; color:white; padding:12px 30px; border-radius:25px; font-weight:bold; cursor:pointer; margin-top:10px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">SIMPAN & MAIN</button>
         </div>
 
         <div class="mode-card" onclick="startBot()">
             <span style="font-size:30px;margin-right:15px;">🤖</span>
-            <div><b>LATIHAN (3 PEMAIN)</b><br><small>Vs 2 Bot Komputer</small></div>
+            <div><b>LATIHAN (3 ORANG)</b><br><small>Vs 2 Bot Komputer</small></div>
         </div>
         <div class="mode-card" onclick="openRoomModal()">
             <span style="font-size:30px;margin-right:15px;">🌍</span>
-            <div><b>MAIN ONLINE</b><br><small>Mabar 3 Orang Realtime</small></div>
+            <div><b>MAIN ONLINE</b><br><small>Mabar Realtime</small></div>
         </div>
     </div>
 
@@ -109,7 +121,7 @@
             <div class="p-card"><img id="av-p3" class="pc-av" src=""><div id="nm-p3" class="pc-name">Kosong</div><div class="pc-stats"><span class="st-val">❤️<span id="ht-p3">-</span></span> <span class="st-val">💰<span id="mn-p3">-</span></span></div></div>
         </div>
 
-        <button onclick="goHome()" style="position:absolute; top:80px; right:10px; background:#c0392b; border:none; border-radius:50%; width:30px; height:30px; cursor:pointer; color:white; z-index:90;">🏠</button>
+        <button onclick="goHome()" style="position:absolute; top:80px; right:10px; background:#c0392b; border:none; border-radius:50%; width:30px; height:30px; cursor:pointer; color:white; z-index:90; box-shadow:0 2px 5px #000;">🏠</button>
         
         <div id="p1-tok" class="pion"></div><div id="p2-tok" class="pion"></div><div id="p3-tok" class="pion"></div>
         <div id="dice-scn"><div class="cube"><div class="face f1">1</div><div class="face f2">2</div><div class="face f3">3</div><div class="face f4">4</div><div class="face f5">5</div><div class="face f6">6</div></div></div>
@@ -126,10 +138,10 @@
     <div id="m-room" class="modal">
         <div class="box">
             <h3>MASUK ROOM</h3>
-            <input type="text" id="room-code" placeholder="Ketik Kode (Cth: MANTU)" style="padding:10px; width:80%; text-align:center; margin-bottom:15px; border-radius:8px; border:none;">
+            <input type="text" id="room-code" placeholder="Ketik Kode (Cth: MANTU)" style="padding:12px; width:80%; text-align:center; margin-bottom:15px; border-radius:8px; border:none; font-weight:bold;">
             <div style="display:flex; gap:10px; justify-content:center;">
-                <button onclick="joinOnline()" style="background:#27ae60; border:none; padding:10px 20px; color:white; border-radius:5px;">GABUNG</button>
-                <button onclick="document.getElementById('m-room').style.display='none'" style="background:#c0392b; border:none; padding:10px 20px; color:white; border-radius:5px;">BATAL</button>
+                <button onclick="joinOnline()" style="background:#27ae60; border:none; padding:10px 20px; color:white; border-radius:5px; font-weight:bold;">GABUNG</button>
+                <button onclick="document.getElementById('m-room').style.display='none'" style="background:#c0392b; border:none; padding:10px 20px; color:white; border-radius:5px; font-weight:bold;">BATAL</button>
             </div>
         </div>
     </div>
@@ -137,29 +149,34 @@
     <div id="m-card" class="modal" onclick="this.style.display='none'">
         <div class="box" onclick="event.stopPropagation()">
             <h3 id="c-title" style="color:#f1c40f;">KOLEKSI KARTU</h3>
-            <div style="font-size:50px; margin:20px;">🃏</div>
+            <div style="font-size:60px; margin:20px;">🃏</div>
             <p id="c-desc">Kamu belum mendapatkan kartu spesial.</p>
-            <button onclick="document.getElementById('m-card').style.display='none'" style="background:#3498db; border:none; padding:10px; width:100%; color:white; border-radius:5px; margin-top:20px;">TUTUP</button>
+            <button onclick="document.getElementById('m-card').style.display='none'" style="background:#3498db; border:none; padding:10px; width:100%; color:white; border-radius:5px; margin-top:20px; font-weight:bold;">TUTUP</button>
         </div>
     </div>
 
     <div id="m-info" class="modal" onclick="this.style.display='none'">
         <div class="box" onclick="event.stopPropagation()">
-            <h3 style="color:#f1c40f; border-bottom:1px solid #555; padding-bottom:10px;">INFORMASI PERMAINAN</h3>
-            <div style="text-align:left; max-height:300px; overflow-y:auto;">
-                <p><b>🏆 CARA MENANG:</b><br>Kumpulkan <b>HATI</b> terbanyak hingga permainan selesai, atau dapatkan kartu "Nekat Ngelamar" dengan sukses.</p>
+            <h3 style="color:#f1c40f; border-bottom:1px solid #555; padding-bottom:10px; margin-top:0;">INFORMASI PERMAINAN</h3>
+            <div style="text-align:left; max-height:400px; overflow-y:auto;">
+                <p style="background:rgba(255,255,255,0.1); padding:10px; border-radius:10px;">
+                    <b>🏆 CARA MENANG:</b><br>
+                    Jadilah pemain dengan <b>HATI terbanyak</b> saat permainan berakhir (misal: semua pemain bangkrut atau bosan), atau dapatkan Jackpot di kotak "Nekat Ngelamar".
+                </p>
+                
                 <p><b>🎲 ATURAN MAIN:</b></p>
                 <ul class="info-list">
-                    <li>Setiap pemain mulai dengan 20 Uang.</li>
-                    <li>Setiap melewati <b>START</b>, dapat Gaji (+10 Uang) & (+5 Hati).</li>
-                    <li>Kotak <b>Martabak & Puji Camer</b> menambah Hati.</li>
-                    <li>Hati-hati kotak <b>Mantan & Emas Palsu</b> (Mengurangi Hati/Uang).</li>
-                    <li>Jika masuk <b>Pos Ronda</b>, harus bayar denda.</li>
-                    <li>Jika masuk <b>RSJ</b>, Hati berkurang drastis.</li>
+                    <li>Modal awal: <b>20 Uang</b>.</li>
+                    <li>Setiap lewat <b>START</b>: Dapat <b>+10 Uang & +5 Hati</b>.</li>
+                    <li><b>Martabak & Puji Camer:</b> Menambah Hati (disukai Camer).</li>
+                    <li><b>Mantan & Emas Palsu:</b> Mengurangi Hati/Uang (dilarang Camer).</li>
+                    <li><b>Pos Ronda:</b> Wajib bayar iuran keamanan.</li>
+                    <li><b>RSJ:</b> Hati hancur (-10), harus mulai dari nol lagi mencari cinta.</li>
+                    <li><b>Kartu Kesempatan:</b> Bisa untung besar atau buntung!</li>
                 </ul>
-                <p><b>👥 ONLINE:</b><br>Bisa dimainkan maksimal 3 orang dalam satu Room.</p>
+                <p style="font-size:11px; color:#bbb;">Tips: Jangan sampai uang habis (0), karena kamu tidak bisa beli Martabak!</p>
             </div>
-            <button onclick="document.getElementById('m-info').style.display='none'" style="background:#3498db; border:none; padding:10px; width:100%; color:white; border-radius:5px; margin-top:10px;">PAHAM</button>
+            <button onclick="document.getElementById('m-info').style.display='none'" style="background:#3498db; border:none; padding:10px; width:100%; color:white; border-radius:5px; margin-top:10px; font-weight:bold;">SAYA PAHAM</button>
         </div>
     </div>
 </div>
@@ -179,11 +196,18 @@ const cfg = {
 
 const app = initializeApp(cfg); const db = getDatabase(app); const auth = getAuth(app);
 let user, stats, rId, role, game, lastCard = {title:"Belum Ada", desc:"Belum dapat kartu."};
-// TILES COORDINATES (Based on Layout)
+// TILES COORDINATES
 const tiles = [{id:0,x:11,y:68.3},{id:1,x:30.5,y:68.3},{id:2,x:50,y:68.3},{id:3,x:69.5,y:68.3},{id:4,x:89,y:68.3},{id:5,x:89,y:57.1},{id:6,x:89,y:45.8},{id:7,x:89,y:34.5},{id:8,x:89,y:23.2},{id:9,x:69.5,y:23.2},{id:10,x:50,y:23.2},{id:11,x:30.5,y:23.2},{id:12,x:11,y:23.2},{id:13,x:11,y:34.5},{id:14,x:11,y:45.8},{id:15,x:11,y:57.1}];
 
 onAuthStateChanged(auth, u => { if(u){ user=u; loadProf(); } else { show('sc-login'); } });
-window.doLogin = () => signInWithPopup(auth, new GoogleAuthProvider());
+window.doLogin = () => {
+    signInWithPopup(auth, new GoogleAuthProvider())
+    .catch(e => {
+        const err = document.getElementById('login-err');
+        err.style.display = 'block';
+        err.innerText = "Error: " + e.message + "\n(Cek Domain di Firebase!)";
+    });
+};
 window.goHome = () => location.reload();
 
 async function loadProf(){
@@ -197,7 +221,7 @@ async function loadProf(){
     show('sc-lobby');
 }
 
-// UPLOAD NO LIMIT
+// UPLOAD UNLIMITED
 window.uploadAv = (input) => {
     const file = input.files[0];
     if(file){
@@ -239,7 +263,7 @@ window.joinOnline = async () => {
     
     if(snap.exists()){
         const d = snap.val();
-        if(!d.p1.j) myP='p1'; else if(!d.p2.j) myP='p2'; else if(!d.p3.j) myP='p3'; else return alert("Room Penuh (Max 3)!");
+        if(!d.p1.j) myP='p1'; else if(!d.p2.j) myP='p2'; else if(!d.p3.j) myP='p3'; else return alert("Room Penuh!");
     }
     
     role = myP;
@@ -255,25 +279,29 @@ window.joinOnline = async () => {
     onValue(rRef, (s) => { const v=s.val(); if(v){ game=v; updUI(); } });
 }
 
-// MOVEMENT ENGINE (JUMP ANIMATION)
+// MOVEMENT ENGINE (JUMP N-SHAPE)
 async function moveStep(role, start, steps){
     const el = document.getElementById(role+'-tok');
     let curr = start;
     
+    // Geser sedikit posisi token lawan agar tidak bertumpuk total
+    let offsetX = 0; let offsetY = 0;
+    if(role=='p2') { offsetX = 3; offsetY = -3; }
+    if(role=='p3') { offsetX = -3; offsetY = 3; }
+
     for(let i=0; i<steps; i++){
         curr++;
         if(curr >= 16) { curr = 0; tost("Lewat START: +10 Uang, +5 Hati"); }
         
         // Animasi Lompat
-        el.style.transition = "none"; // Reset transition
+        el.style.transition = "none"; 
         el.classList.add('jumping');
         
-        // Pindah Posisi
         const c = tiles[curr];
-        el.style.left = c.x + '%';
-        el.style.top = c.y + '%';
+        el.style.left = (c.x + offsetX) + '%';
+        el.style.top = (c.y + offsetY) + '%';
         
-        await new Promise(r => setTimeout(r, 300)); // Tunggu animasi
+        await new Promise(r => setTimeout(r, 400)); // Delay biar kerasa lompatnya
         el.classList.remove('jumping');
     }
     return curr;
@@ -283,15 +311,14 @@ window.rollD = async () => {
     if(game.turn !== role) return tost("Tunggu Giliranmu!");
     const dv = Math.floor(Math.random()*6)+1;
     visDice(dv);
-    
-    await new Promise(r => setTimeout(r, 1500)); // Tunggu dadu
+    await new Promise(r => setTimeout(r, 1500)); 
     
     let p = game[role];
     const oldPos = p.pos;
     const newPos = await moveStep(role, oldPos, dv);
     
     p.pos = newPos;
-    if(newPos < oldPos) { p.uang+=10; p.hati+=5; } // Logic Start
+    if(newPos < oldPos) { p.uang+=10; p.hati+=5; }
     
     checkTile(p);
     
@@ -318,7 +345,6 @@ async function botRun(botRole){
     if(newPos < oldPos) { p.uang+=10; p.hati+=5; }
     
     checkTile(p, true);
-    
     let next = getNextTurn(botRole);
     game.turn = next; updUI();
     if(next != 'p1') setTimeout(()=>botRun(next), 1000);
@@ -333,9 +359,8 @@ function getNextTurn(curr){
 function checkTile(p, isBot=false){
     const i = p.pos;
     let msg = "";
-    // LOGIC LENGKAP 1-16
-    if(i==1){p.uang-=3; p.hati+=5; msg="Martabak (-3 Uang, +5 Hati)";}
-    else if(i==2 || i==7){msg="Dapat Kartu Kesempatan!"; if(!isBot) trigCard("KESEMPATAN", "Bonus Uang Kaget +20!", p);}
+    if(i==1){p.uang-=3; p.hati+=5; msg="Martabak (-3 Uang)";}
+    else if(i==2 || i==7){msg="Dapat Kartu!"; if(!isBot) trigCard("KESEMPATAN", "Bonus Uang Kaget +20!", p);}
     else if(i==3){p.hati+=5; msg="Dipuji Camer (+5 Hati)";}
     else if(i==4){p.uang-=2; msg="Bayar Pos Ronda (-2 Uang)";}
     else if(i==5){p.pos=0; msg="Supir Dadakan! Balik ke Start";}
@@ -347,7 +372,6 @@ function checkTile(p, isBot=false){
     else if(i==12 || i==13){msg="Kartu Extreme!"; if(!isBot) trigCard("EXTREME", "Kena Begal! -15 Uang", p);}
     else if(i==14){p.hati-=5; msg="Mantan Datang (-5 Hati)";}
     else if(i==15){p.hati+=20; msg="Nekat Ngelamar (+20 Hati)";}
-    
     if(msg) tost((isBot?p.nm+": ":"") + msg);
 }
 
@@ -368,13 +392,20 @@ function updUI(){
         document.getElementById('ht-'+r).innerText = d && d.j ? d.hati : "-";
         document.getElementById('mn-'+r).innerText = d && d.j ? d.uang : "-";
         
+        // Posisikan Token hanya jika tidak sedang animasi lompat (agar tidak konflik)
         if(d && d.j){
             tok.style.display='block';
-            const c = tiles[d.pos];
-            if(!elInAnim(tok)) { tok.style.left = c.x + '%'; tok.style.top = c.y + '%'; }
+            if(!tok.classList.contains('jumping')) {
+                const c = tiles[d.pos];
+                // Offset agar tidak bertumpuk
+                let ox=0, oy=0;
+                if(r=='p2'){ox=3; oy=-3;} if(r=='p3'){ox=-3; oy=3;}
+                tok.style.left = (c.x + ox) + '%'; 
+                tok.style.top = (c.y + oy) + '%';
+            }
         } else { tok.style.display='none'; }
 
-        // GLOW ONLY AVATAR
+        // Glow Logic
         if(game.turn == r && d && d.j) av.classList.add('active-glow'); else av.classList.remove('active-glow');
     });
     
@@ -383,16 +414,8 @@ function updUI(){
     else { t.innerText = `Giliran ${game[game.turn].nm}...`; t.style.background = "#e74c3c"; }
 }
 
-function elInAnim(el) { return el.classList.contains('jumping'); }
-
-// MODALS
-window.showMyCard = () => {
-    document.getElementById('c-title').innerText = lastCard.title;
-    document.getElementById('c-desc').innerText = lastCard.desc;
-    document.getElementById('m-card').style.display='flex';
-}
+window.showMyCard = () => { document.getElementById('c-title').innerText=lastCard.title; document.getElementById('c-desc').innerText=lastCard.desc; document.getElementById('m-card').style.display='flex'; }
 window.showInfo = () => document.getElementById('m-info').style.display='flex';
-
 function show(id){ ['sc-login','sc-lobby','sc-game'].forEach(s=>document.getElementById(s).style.display=s==id?'flex':'none'); }
 function visDice(v){ const c=document.querySelector('.cube'); document.getElementById('dice-scn').style.display='block'; c.style.transform=`rotateX(${Math.random()*720}deg) rotateY(${Math.random()*720}deg)`; setTimeout(()=>{ let x=0,y=0; if(v==2)y=-90; if(v==3)y=-180; if(v==4)y=90; if(v==5)x=-90; if(v==6)x=90; c.style.transform=`rotateX(${x+720}deg) rotateY(${y+720}deg)`; },500); setTimeout(()=>document.getElementById('dice-scn').style.display='none',2000); }
 function tost(m){ const d=document.createElement('div');d.className='t-msg';d.innerText=m;document.getElementById('toast').appendChild(d);setTimeout(()=>d.remove(),3000); }
