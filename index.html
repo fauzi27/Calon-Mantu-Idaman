@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Calon Mantu: RPG Online</title>
+    <title>Calon Mantu: Social Lobby</title>
     <style>
-        /* --- RESET & LAYOUT --- */
-        body { margin: 0; padding: 0; background-color: #2c3e50; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; overflow: hidden; display: flex; justify-content: center; align-items: center; height: 100dvh; user-select: none; }
+        /* --- CSS DASAR --- */
+        body { margin: 0; padding: 0; background-color: #2c3e50; font-family: 'Segoe UI', Roboto, sans-serif; overflow: hidden; display: flex; justify-content: center; align-items: center; height: 100dvh; user-select: none; }
         
         #app-container { position: relative; width: 100%; max-width: 480px; height: 100%; background: #fff; overflow: hidden; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
         
-        /* BACKGROUND GAME */
+        /* BACKGROUND */
         .bg-board {
             width: 100%; height: 100%;
             background-image: url('https://res.cloudinary.com/dsutaioqw/image/upload/v1770514507/board_gukevw.png'); 
@@ -18,114 +18,97 @@
             background-color: #222;
         }
 
-        /* --- SCREEN: LOGIN (REDESIGN) --- */
+        /* --- SCREEN: LOGIN --- */
         #screen-login {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: radial-gradient(circle at center, #ffffff 0%, #f0f2f5 100%);
             display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 2000;
         }
-        
-        .game-logo-text {
-            font-size: 32px; font-weight: 900; color: #2c3e50; margin-bottom: 5px;
-            text-transform: uppercase; letter-spacing: 2px;
-        }
-        .game-sub-text {
-            font-size: 16px; color: #7f8c8d; margin-bottom: 40px; font-weight: 600;
-        }
-
-        /* GOOGLE BUTTON RESMI (Modern Style) */
-        .google-btn {
-            display: flex; align-items: center; justify-content: center;
-            background-color: #fff; color: #3c4043;
-            border-radius: 40px; border: 1px solid #dadce0;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            padding: 12px 24px; height: 55px; cursor: pointer;
-            font-family: 'Google Sans', Roboto, arial, sans-serif; 
-            font-weight: 600; font-size: 16px;
-            width: 85%; max-width: 320px;
-            transition: all 0.2s ease;
-            position: relative; overflow: hidden;
-        }
-        .google-btn:active { background-color: #f1f3f4; transform: scale(0.98); box-shadow: 0 2px 3px rgba(0,0,0,0.1); }
+        .game-logo-text { font-size: 32px; font-weight: 900; color: #2c3e50; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 2px; }
+        .google-btn { display: flex; align-items: center; justify-content: center; background-color: #fff; color: #3c4043; border-radius: 40px; border: 1px solid #dadce0; box-shadow: 0 4px 6px rgba(0,0,0,0.1); padding: 12px 24px; height: 55px; cursor: pointer; font-weight: 600; font-size: 16px; width: 85%; max-width: 320px; transition: all 0.2s ease; }
+        .google-btn:active { transform: scale(0.98); }
         .google-icon { margin-right: 12px; width: 24px; height: 24px; }
-        
-        /* Animasi Loading di Tombol */
-        .btn-loading { pointer-events: none; opacity: 0.7; }
-        .btn-loading::after {
-            content: ""; position: absolute; right: 20px;
-            width: 20px; height: 20px; border: 3px solid #ddd;
-            border-top: 3px solid #3498db; border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* --- SCREEN: LOBBY & MENU --- */
+        /* --- SCREEN: LOBBY (REVAMPED) --- */
         #screen-lobby {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: url('https://www.transparenttextures.com/patterns/cubes.png'), linear-gradient(135deg, #3498db, #2980b9);
-            display: none; flex-direction: column; align-items: center; padding-top: 60px; z-index: 1000; color: white;
+            display: none; flex-direction: column; padding: 20px; box-sizing: border-box; z-index: 1000; color: white;
         }
         
-        .profile-card {
-            background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
-            padding: 25px; border-radius: 25px; width: 80%; text-align: center;
-            border: 1px solid rgba(255,255,255,0.2); margin-bottom: 40px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        /* Header Profil Kecil di Atas */
+        .lobby-header {
+            display: flex; align-items: center; justify-content: space-between;
+            background: rgba(255,255,255,0.1); backdrop-filter: blur(5px);
+            padding: 10px 15px; border-radius: 15px; width: 100%; margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.2); box-sizing: border-box;
         }
-        .profile-img { width: 90px; height: 90px; border-radius: 50%; border: 4px solid white; box-shadow: 0 5px 15px rgba(0,0,0,0.2); object-fit: cover; }
-        .profile-name { font-size: 22px; font-weight: bold; margin: 15px 0 8px; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-        .coin-badge { 
-            background: #f1c40f; color: #d35400; padding: 8px 20px; 
-            border-radius: 30px; font-weight: bold; display: inline-flex; align-items: center; gap: 8px;
-            box-shadow: 0 4px 0 #e67e22; font-size: 18px;
-        }
+        .mini-profile { display: flex; align-items: center; gap: 10px; }
+        .mini-img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid white; }
+        .mini-coin { background: #f1c40f; color: #d35400; padding: 5px 12px; border-radius: 15px; font-weight: bold; font-size: 14px; display: flex; align-items: center; gap: 5px; }
 
-        .menu-btn {
-            width: 80%; padding: 20px; margin: 10px 0; border: none; border-radius: 18px;
-            font-size: 18px; font-weight: 800; cursor: pointer; text-transform: uppercase;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.25); transition: transform 0.1s; letter-spacing: 1px;
+        /* AREA DAFTAR ONLINE */
+        .online-panel {
+            flex-grow: 1; background: rgba(0,0,0,0.2); border-radius: 15px;
+            padding: 15px; display: flex; flex-direction: column; overflow: hidden;
+            margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1);
         }
-        .btn-play { background: linear-gradient(to right, #2ecc71, #27ae60); color: white; }
-        .btn-play:active { transform: scale(0.95); }
-        .btn-shop { background: linear-gradient(to right, #9b59b6, #8e44ad); color: white; opacity: 0.7; }
-        .btn-logout { background: transparent; border: 2px solid rgba(255,255,255,0.4); color: white; width: 40%; margin-top: auto; margin-bottom: 30px; font-size: 14px; padding: 10px; }
+        .panel-title { font-size: 14px; font-weight: bold; color: #bdc3c7; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; }
+        
+        #online-list {
+            flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;
+            padding-right: 5px; /* Space for scrollbar */
+        }
+        /* Custom Scrollbar */
+        #online-list::-webkit-scrollbar { width: 5px; }
+        #online-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 10px; }
 
-        /* --- JOIN OVERLAY --- */
-        #overlay-join {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); z-index: 1500; display: none;
-            flex-direction: column; justify-content: center; align-items: center;
+        /* Kartu Pemain Online */
+        .player-card {
+            background: white; color: #333; padding: 10px; border-radius: 12px;
+            display: flex; align-items: center; gap: 10px; transition: transform 0.1s;
+            cursor: pointer; position: relative;
         }
+        .player-card:active { transform: scale(0.98); background: #f0f0f0; }
+        .pc-img { width: 35px; height: 35px; border-radius: 50%; border: 2px solid #ddd; object-fit: cover;}
+        .pc-info { flex-grow: 1; }
+        .pc-name { font-weight: bold; font-size: 14px; display: block; }
+        .pc-status { font-size: 11px; color: #27ae60; display: flex; align-items: center; gap: 4px; }
+        .status-dot { width: 8px; height: 8px; background: #2ecc71; border-radius: 50%; display: inline-block; box-shadow: 0 0 5px #2ecc71; }
+        
+        /* Tombol Aksi Lobby */
+        .lobby-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
+        .action-btn {
+            padding: 15px; border: none; border-radius: 15px; color: white;
+            font-weight: bold; font-size: 14px; cursor: pointer; text-transform: uppercase;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: 0.1s;
+        }
+        .btn-play { background: linear-gradient(to right, #2ecc71, #27ae60); grid-column: span 2; font-size: 18px; }
+        .btn-shop { background: linear-gradient(to right, #e67e22, #d35400); }
+        .btn-out { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); }
+
+        /* --- JOIN OVERLAY & GAME (Sama seperti sebelumnya) --- */
+        #overlay-join { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1500; display: none; flex-direction: column; justify-content: center; align-items: center; }
         .room-box { background: white; padding: 30px; border-radius: 20px; width: 80%; text-align: center; }
         .room-input { width: 90%; padding: 15px; font-size: 20px; text-align: center; border-radius: 12px; border: 2px solid #ddd; margin: 20px 0; font-weight: bold; outline: none; }
-        .room-input:focus { border-color: #3498db; }
-
-        /* --- GAME BOARD --- */
+        
         .avatar-game { position: absolute; top: 7.3%; width: 13.5%; aspect-ratio: 1/1; border-radius: 50%; transform: translate(-50%, -50%); background-size: cover; border: 2px solid white; z-index: 5; transition: 0.3s; background-color: #ccc;}
         .active-turn { transform: translate(-50%, -50%) scale(1.25); border-color: #f1c40f; box-shadow: 0 0 20px #f1c40f; z-index: 6;}
         #p1-av { left: 16.5%; } #p2-av { left: 83.5%; }
-        
         .stat-box { position: absolute; top: 8.3%; transform: translate(-50%, -50%); width: 16%; text-align: center; font-size: 1.8vh; font-weight: 800; color: #5d4037; z-index: 6; }
         #ui-hati { left: 36.0%; } #ui-uang { left: 66.0%; }
-        
         .pion { position: absolute; width: 7%; aspect-ratio: 1/1; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 5px 10px rgba(0,0,0,0.5); transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 10; transform: translate(-50%, -50%); display: none; }
         #p1-token { background: #3498db; } #p2-token { background: #e74c3c; transform: translate(-30%, -30%) scale(0.8); }
-        
-        /* 3D DICE */
+        #turn-bar { position: absolute; bottom: 21%; left: 50%; transform: translateX(-50%); background: #3498db; color: white; padding: 10px 30px; border-radius: 25px; font-size: 1.8vh; font-weight: bold; z-index: 30; transition: 0.3s; width: 70%; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .btn-area { position: absolute; z-index: 20; cursor: pointer; border-radius: 15px; }
+        #btn-kocok { bottom: 3.5%; left: 50%; transform: translateX(-50%); width: 42%; height: 10%; border-radius: 40px; }
+        #btn-back { position: absolute; top: 20px; left: 20px; z-index: 100; background: white; padding: 8px 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; display: none; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         #dice-scene { position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); width: 80px; height: 80px; z-index: 50; display: none; }
         .cube { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 1s ease-out; }
         .cube__face { position: absolute; width: 80px; height: 80px; background: white; border: 2px solid #ccc; border-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 40px; font-weight: bold; color: #333; box-shadow: inset 0 0 15px rgba(0,0,0,0.1); }
         .cube__face--1 { transform: rotateY(0deg) translateZ(40px); } .cube__face--2 { transform: rotateY(90deg) translateZ(40px); } .cube__face--3 { transform: rotateY(180deg) translateZ(40px); }
         .cube__face--4 { transform: rotateY(-90deg) translateZ(40px); } .cube__face--5 { transform: rotateX(90deg) translateZ(40px); } .cube__face--6 { transform: rotateX(-90deg) translateZ(40px); }
         .dot { width: 15px; height: 15px; background: #e74c3c; border-radius: 50%; }
-
-        /* CONTROLS */
-        #turn-bar { position: absolute; bottom: 21%; left: 50%; transform: translateX(-50%); background: #3498db; color: white; padding: 10px 30px; border-radius: 25px; font-size: 1.8vh; font-weight: bold; z-index: 30; transition: 0.3s; width: 70%; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
-        .btn-area { position: absolute; z-index: 20; cursor: pointer; border-radius: 15px; }
-        #btn-kocok { bottom: 3.5%; left: 50%; transform: translateX(-50%); width: 42%; height: 10%; border-radius: 40px; }
-        #btn-back { position: absolute; top: 20px; left: 20px; z-index: 100; background: white; padding: 8px 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; display: none; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-
-        /* TOAST */
         #toast-container { position: absolute; top: 15%; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; gap: 5px; align-items: center; z-index: 2000; width: 90%; pointer-events: none; }
         .toast-msg { background: rgba(0,0,0,0.85); color: white; padding: 10px 20px; border-radius: 25px; font-size: 14px; animation: fadeInOut 2.5s forwards; border: 1px solid rgba(255,255,255,0.2); text-align: center; }
         @keyframes fadeInOut { 0% {opacity:0; transform:translateY(-10px);} 10% {opacity:1; transform:translateY(0);} 90% {opacity:1;} 100% {opacity:0; display:none;} }
@@ -137,8 +120,6 @@
 
     <div id="screen-login">
         <div class="game-logo-text">CALON MANTU</div>
-        <div class="game-sub-text">RPG Online Edition</div>
-        
         <button id="btn-login" class="google-btn" onclick="loginGoogle()">
             <svg class="google-icon" viewBox="0 0 24 24">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -148,46 +129,54 @@
             </svg>
             Masuk dengan Google
         </button>
-        <p style="font-size:12px; color:#95a5a6; margin-top:20px;">Aman & Terhubung ke Firebase</p>
     </div>
 
     <div id="screen-lobby">
-        <div class="profile-card">
-            <img id="user-photo" src="" class="profile-img">
-            <div id="user-name" class="profile-name">Loading...</div>
-            <div class="coin-badge">💰 <span id="user-coin">0</span></div>
+        <div class="lobby-header">
+            <div class="mini-profile">
+                <img id="user-photo" src="" class="mini-img">
+                <span id="user-name" style="font-weight:bold;">Loading...</span>
+            </div>
+            <div class="mini-coin">💰 <span id="user-coin">0</span></div>
         </div>
 
-        <button class="menu-btn btn-play" onclick="openJoinOverlay()">⚔️ MULAI MAIN</button>
-        <button class="menu-btn btn-shop" onclick="pushToast('Toko Skin Segera Hadir!')">🛒 TOKO SKIN</button>
-        <button class="menu-btn btn-logout" onclick="logout()">Ganti Akun</button>
+        <div class="online-panel">
+            <div class="panel-title">
+                <span>🟢 Sedang Online</span>
+                <span id="online-count">0 Player</span>
+            </div>
+            <div id="online-list">
+                </div>
+        </div>
+
+        <div class="lobby-actions">
+            <button class="action-btn btn-play" onclick="openJoinOverlay()">⚔️ BUAT / GABUNG ROOM</button>
+            <button class="action-btn btn-shop" onclick="pushToast('Fitur Toko Segera Hadir!')">🛒 TOKO</button>
+            <button class="action-btn btn-out" onclick="logout()">KELUAR</button>
+        </div>
     </div>
 
     <div id="overlay-join">
         <div class="room-box">
-            <h3 style="color:#2c3e50; margin-top:0;">MASUK ROOM</h3>
-            <p style="color:#7f8c8d; font-size:14px;">Masukkan kode yang sama dengan teman</p>
-            <input type="text" id="room-input" class="room-input" placeholder="Contoh: MANTU1" value="MANTU1">
+            <h3>MASUK ROOM</h3>
+            <p style="color:#7f8c8d; font-size:14px;">Masukkan kode room:</p>
+            <input type="text" id="room-input" class="room-input" placeholder="MANTU1" value="MANTU1">
             <div style="display:flex; gap:10px;">
-                <button class="menu-btn btn-play" style="flex:1; font-size:14px; padding:15px;" onclick="joinGame('p1')">🔵 P1 (Biru)</button>
-                <button class="menu-btn btn-play" style="background:linear-gradient(to right, #e74c3c, #c0392b); flex:1; font-size:14px; padding:15px;" onclick="joinGame('p2')">🔴 P2 (Merah)</button>
+                <button class="action-btn btn-play" style="flex:1; font-size:14px;" onclick="joinGame('p1')">P1 (Biru)</button>
+                <button class="action-btn btn-shop" style="flex:1; font-size:14px; background:#e74c3c;" onclick="joinGame('p2')">P2 (Merah)</button>
             </div>
-            <button onclick="document.getElementById('overlay-join').style.display='none'" style="margin-top:20px; background:none; border:none; color:#95a5a6; font-weight:bold; cursor:pointer;">BATAL</button>
+            <button onclick="document.getElementById('overlay-join').style.display='none'" style="margin-top:20px; background:none; border:none; color:#ccc; cursor:pointer;">BATAL</button>
         </div>
     </div>
 
     <div id="screen-game" class="bg-board" style="display:none;">
         <button id="btn-back" onclick="location.reload()">🏠 Keluar</button>
-
         <div id="p1-av" class="avatar-game"></div>
         <div id="p2-av" class="avatar-game"></div>
-        
         <div id="ui-hati" class="stat-box">0</div>
         <div id="ui-uang" class="stat-box">20</div>
-
         <div id="p1-token" class="pion"></div>
         <div id="p2-token" class="pion"></div>
-
         <div id="dice-scene">
             <div class="cube">
                 <div class="cube__face cube__face--1"><div class="dot"></div></div>
@@ -198,7 +187,6 @@
                 <div class="cube__face cube__face--6">6</div>
             </div>
         </div>
-
         <div id="turn-bar">Menunggu Lawan...</div>
         <div id="btn-kocok" class="btn-area" onclick="handleRollDice()"></div>
     </div>
@@ -207,12 +195,11 @@
 </div>
 
 <script type="module">
-    // --- 1. FIREBASE IMPORTS ---
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-    import { getDatabase, ref, set, get, update, onValue } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+    import { getDatabase, ref, set, get, update, onValue, onDisconnect, remove } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
 
-    // --- 2. CONFIG (PASTIKAN DATABASE URL BENAR) ---
+    // --- CONFIG FIREBASE ---
     const firebaseConfig = {
         apiKey: "AIzaSyCF0Zn-DSK6z3x_4ETIcAwweHk5tR_bpn0",
         authDomain: "mantu-1f6f4.firebaseapp.com",
@@ -228,124 +215,114 @@
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
 
-    // --- 3. VARIABLES ---
     let currentUser = null; 
     let userStats = null;
     let roomId = "";
     let myRole = ""; 
     let gameState = null;
-    const tiles = [
-        { id: 0, x: 11.0, y: 68.3 }, { id: 1, x: 30.5, y: 68.3 }, { id: 2, x: 50.0, y: 68.3 }, { id: 3, x: 69.5, y: 68.3 },
-        { id: 4, x: 89.0, y: 68.3 }, { id: 5, x: 89.0, y: 57.1 }, { id: 6, x: 89.0, y: 45.8 }, { id: 7, x: 89.0, y: 34.5 },
-        { id: 8, x: 89.0, y: 23.2 }, { id: 9, x: 69.5, y: 23.2 }, { id: 10, x: 50.0, y: 23.2 }, { id: 11, x: 30.5, y: 23.2 },
-        { id: 12, x: 11.0, y: 23.2 }, { id: 13, x: 11.0, y: 34.5 }, { id: 14, x: 11.0, y: 45.8 }, { id: 15, x: 11.0, y: 57.1 }
-    ];
+    const tiles = [{id:0,x:11,y:68.3},{id:1,x:30.5,y:68.3},{id:2,x:50,y:68.3},{id:3,x:69.5,y:68.3},{id:4,x:89,y:68.3},{id:5,x:89,y:57.1},{id:6,x:89,y:45.8},{id:7,x:89,y:34.5},{id:8,x:89,y:23.2},{id:9,x:69.5,y:23.2},{id:10,x:50,y:23.2},{id:11,x:30.5,y:23.2},{id:12,x:11,y:23.2},{id:13,x:11,y:34.5},{id:14,x:11,y:45.8},{id:15,x:11,y:57.1}];
 
-    // --- 4. AUTH LOGIC ---
-    
-    // Auto-Login Check
+    // --- AUTH & PRESENCE SYSTEM ---
     onAuthStateChanged(auth, (user) => {
         if (user) {
             currentUser = user;
             initUserProfile(user);
+            setupPresence(user); // AKTIFKAN SISTEM ONLINE
         } else {
             showScreen('screen-login');
         }
     });
 
-    window.loginGoogle = () => {
-        const btn = document.getElementById('btn-login');
-        btn.classList.add('btn-loading'); // Efek loading
-        
-        signInWithPopup(auth, provider)
-            .then((result) => {
-                pushToast("Login Berhasil!");
-            })
-            .catch((error) => {
-                btn.classList.remove('btn-loading');
-                console.error(error);
-                // ERROR HANDLING KHUSUS
-                if (error.code === 'auth/unauthorized-domain') {
-                    alert("GAGAL LOGIN: Domain 'fauzi27.github.io' belum diizinkan di Firebase Console > Auth > Settings.");
-                } else if (error.code === 'auth/popup-closed-by-user') {
-                    pushToast("Login dibatalkan.");
-                } else {
-                    alert("Error: " + error.message);
+    // SISTEM ONLINE/OFFLINE (PRESENCE)
+    function setupPresence(user) {
+        const myStatusRef = ref(db, 'status/' + user.uid);
+        const connectedRef = ref(db, '.info/connected');
+
+        onValue(connectedRef, (snap) => {
+            if (snap.val() === true) {
+                // Jika konek, simpan data ke folder 'status/'
+                set(myStatusRef, {
+                    name: user.displayName,
+                    photo: user.photoURL,
+                    state: 'online',
+                    last_changed: Date.now()
+                });
+                // Jika putus, otomatis hapus data diri
+                onDisconnect(myStatusRef).remove();
+            }
+        });
+    }
+
+    // LOAD DAFTAR PEMAIN ONLINE DI LOBBY
+    function listenOnlinePlayers() {
+        const allStatusRef = ref(db, 'status');
+        onValue(allStatusRef, (snapshot) => {
+            const listDiv = document.getElementById('online-list');
+            listDiv.innerHTML = ""; // Bersihkan list
+            
+            let count = 0;
+            snapshot.forEach((child) => {
+                const p = child.val();
+                // Jangan tampilkan diri sendiri di list (opsional)
+                if(child.key !== currentUser.uid) {
+                    const item = document.createElement('div');
+                    item.className = 'player-card';
+                    item.innerHTML = `
+                        <img src="${p.photo}" class="pc-img">
+                        <div class="pc-info">
+                            <span class="pc-name">${p.name}</span>
+                            <span class="pc-status"><span class="status-dot"></span> Online</span>
+                        </div>
+                    `;
+                    item.onclick = () => pushToast(`Mengajak ${p.name.split(' ')[0]} main... (Fitur segera!)`);
+                    listDiv.appendChild(item);
+                    count++;
                 }
             });
-    };
+            document.getElementById('online-count').innerText = (count + 1) + " Player"; // +1 Diri sendiri
+        });
+    }
 
-    window.logout = () => {
-        signOut(auth).then(() => window.location.reload());
+    window.loginGoogle = () => {
+        signInWithPopup(auth, provider).catch((error) => alert(error.message));
     };
+    window.logout = () => signOut(auth).then(()=>location.reload());
 
     async function initUserProfile(user) {
         const userRef = ref(db, 'users/' + user.uid);
         const snapshot = await get(userRef);
-
-        if (snapshot.exists()) {
-            userStats = snapshot.val();
-        } else {
-            userStats = {
-                name: user.displayName,
-                email: user.email,
-                photo: user.photoURL,
-                koin: 1000,
-                xp: 0
-            };
+        if (snapshot.exists()) userStats = snapshot.val();
+        else {
+            userStats = { name: user.displayName, email: user.email, photo: user.photoURL, koin: 1000, xp: 0 };
             await set(userRef, userStats);
-            pushToast("Selamat Datang! Bonus +1000 Koin");
         }
-
-        document.getElementById('user-photo').src = userStats.photo || user.photoURL;
-        document.getElementById('user-name').innerText = userStats.name;
+        document.getElementById('user-photo').src = userStats.photo;
+        document.getElementById('user-name').innerText = userStats.name.split(' ')[0]; // Ambil nama depan aja biar rapi
         document.getElementById('user-coin').innerText = userStats.koin.toLocaleString();
         
         showScreen('screen-lobby');
+        listenOnlinePlayers(); // Mulai dengarkan siapa yang online
     }
 
-    // --- 5. GAME LOGIC ---
-
-    window.openJoinOverlay = () => {
-        document.getElementById('overlay-join').style.display = 'flex';
-    };
-
+    // --- GAME LOGIC ---
+    window.openJoinOverlay = () => document.getElementById('overlay-join').style.display = 'flex';
     window.joinGame = (role) => {
         const input = document.getElementById('room-input').value.toUpperCase().replace(/\s/g, '');
         if(!input) return alert("Isi Kode Room!");
-        
-        roomId = input;
-        myRole = role;
-
+        roomId = input; myRole = role;
         document.getElementById('overlay-join').style.display = 'none';
         showScreen('screen-game');
         document.getElementById('btn-back').style.display = 'block';
 
-        const playerInfo = {
-            name: userStats.name,
-            photo: userStats.photo,
-            joined: true,
-            pos: 0,
-            uang: 20,
-            hati: 0
-        };
-
+        const playerInfo = { name: userStats.name, photo: userStats.photo, joined: true, pos: 0, uang: 20, hati: 0 };
         const roomRef = ref(db, 'rooms/' + roomId);
         update(ref(db, `rooms/${roomId}/${myRole}`), playerInfo);
 
         onValue(roomRef, (snapshot) => {
             const data = snapshot.val();
-            if(data) {
-                gameState = data;
-                updateGameUI();
-            } else {
-                if(myRole === 'p1') {
-                    set(roomRef, {
-                        turn: 'p1',
-                        p1: playerInfo,
-                        p2: { joined: false, pos: 0, uang: 20, hati: 0 }
-                    });
-                }
+            if(data) { gameState = data; updateGameUI(); }
+            else if(myRole === 'p1') {
+                set(roomRef, { turn: 'p1', p1: playerInfo, p2: { joined: false, pos: 0, uang: 20, hati: 0 } });
             }
         });
     };
@@ -353,32 +330,18 @@
     window.handleRollDice = () => {
         if(!gameState.p1.joined || !gameState.p2.joined) { pushToast("Menunggu Lawan..."); return; }
         if(gameState.turn !== myRole) { pushToast("Giliran Lawan!"); return; }
-
         const diceVal = Math.floor(Math.random() * 6) + 1;
         rollDiceVisual(diceVal);
-
         setTimeout(() => {
-            let p = gameState[myRole];
-            let steps = diceVal;
-            
+            let p = gameState[myRole]; let steps = diceVal;
             for(let i=0; i<steps; i++){
                 p.pos++;
-                if(p.pos >= 16) {
-                    p.pos = 0;
-                    p.uang += 10;
-                    addPermanentCoin(50); 
-                    pushToast("Gaji +10 (Bonus Koin +50 disimpan!)");
-                }
+                if(p.pos >= 16) { p.pos = 0; p.uang += 10; addPermanentCoin(50); pushToast("Gaji +10 (Bonus +50 Koin!)"); }
             }
-            
             if(p.pos === 1) { p.uang -= 3; p.hati += 2; }
-
             const nextTurn = (gameState.turn === 'p1') ? 'p2' : 'p1';
-            const updates = {};
-            updates[`rooms/${roomId}/${myRole}`] = p;
-            updates[`rooms/${roomId}/turn`] = nextTurn;
+            const updates = {}; updates[`rooms/${roomId}/${myRole}`] = p; updates[`rooms/${roomId}/turn`] = nextTurn;
             update(ref(db), updates);
-
         }, 1500);
     };
 
@@ -389,75 +352,29 @@
         document.getElementById('user-coin').innerText = userStats.koin.toLocaleString();
     }
 
-    // --- 6. VISUAL UPDATE ---
     function updateGameUI() {
         if(gameState.p1.joined && gameState.p1.photo) {
             document.getElementById('p1-av').style.backgroundImage = `url('${gameState.p1.photo}')`;
-            document.getElementById('p1-token').style.display = 'block';
-            movePion('p1', gameState.p1.pos);
+            document.getElementById('p1-token').style.display = 'block'; movePion('p1', gameState.p1.pos);
         }
         if(gameState.p2.joined && gameState.p2.photo) {
             document.getElementById('p2-av').style.backgroundImage = `url('${gameState.p2.photo}')`;
-            document.getElementById('p2-token').style.display = 'block';
-            movePion('p2', gameState.p2.pos);
+            document.getElementById('p2-token').style.display = 'block'; movePion('p2', gameState.p2.pos);
         }
-
         const myData = gameState[myRole];
-        if(myData) {
-            document.getElementById('ui-uang').innerText = myData.uang;
-            document.getElementById('ui-hati').innerText = myData.hati;
-        }
-
+        if(myData) { document.getElementById('ui-uang').innerText = myData.uang; document.getElementById('ui-hati').innerText = myData.hati; }
         const bar = document.getElementById('turn-bar');
-        if(!gameState.p1.joined || !gameState.p2.joined) {
-            bar.innerText = "Menunggu Lawan...";
-            bar.style.background = "#7f8c8d";
-        } else if(gameState.turn === myRole) {
-            bar.innerText = "GILIRANMU!";
-            bar.style.background = (myRole === 'p1') ? '#3498db' : '#e74c3c';
-            document.getElementById('btn-kocok').style.pointerEvents = 'auto';
-        } else {
-            bar.innerText = "GILIRAN LAWAN";
-            bar.style.background = "#95a5a6";
-            document.getElementById('btn-kocok').style.pointerEvents = 'none';
-        }
-        
+        if(!gameState.p1.joined || !gameState.p2.joined) { bar.innerText = "Menunggu Lawan..."; bar.style.background = "#7f8c8d"; }
+        else if(gameState.turn === myRole) { bar.innerText = "GILIRANMU!"; bar.style.background = (myRole === 'p1') ? '#3498db' : '#e74c3c'; document.getElementById('btn-kocok').style.pointerEvents = 'auto'; }
+        else { bar.innerText = "GILIRAN LAWAN"; bar.style.background = "#95a5a6"; document.getElementById('btn-kocok').style.pointerEvents = 'none'; }
         document.getElementById('p1-av').classList.toggle('active-turn', gameState.turn === 'p1');
         document.getElementById('p2-av').classList.toggle('active-turn', gameState.turn === 'p2');
     }
 
-    function movePion(role, pos) {
-        const coord = tiles[pos];
-        const el = document.getElementById(role === 'p1' ? 'p1-token' : 'p2-token');
-        el.style.left = coord.x + "%"; el.style.top = coord.y + "%";
-    }
-
-    function showScreen(screenId) {
-        ['screen-login', 'screen-lobby', 'screen-game'].forEach(id => {
-            document.getElementById(id).style.display = (id === screenId) ? 'flex' : 'none';
-            if(id === 'screen-game' && screenId === 'screen-game') document.getElementById(id).style.display = 'block';
-        });
-    }
-
-    function rollDiceVisual(val) {
-        document.getElementById('dice-scene').style.display = 'block';
-        const cube = document.querySelector('.cube');
-        const xR = Math.random()*720, yR = Math.random()*720;
-        cube.style.transition = '0.5s'; cube.style.transform = `rotateX(${xR}deg) rotateY(${yR}deg)`;
-        
-        setTimeout(() => {
-            cube.style.transition = '0.8s cubic-bezier(0.25,1,0.5,1)';
-            let x=0, y=0;
-            if(val==2) y=-90; if(val==3) y=-180; if(val==4) y=90; if(val==5) x=-90; if(val==6) x=90;
-            cube.style.transform = `rotateX(${x+720}deg) rotateY(${y+720}deg)`;
-        }, 500);
-        setTimeout(() => document.getElementById('dice-scene').style.display = 'none', 2000);
-    }
-
-    window.pushToast = (msg) => {
-        let d = document.createElement('div'); d.className = 'toast-msg'; d.innerText = msg;
-        document.getElementById('toast-container').appendChild(d); setTimeout(() => d.remove(), 2600);
-    }
+    function movePion(role, pos) { const coord = tiles[pos]; const el = document.getElementById(role === 'p1' ? 'p1-token' : 'p2-token'); el.style.left = coord.x + "%"; el.style.top = coord.y + "%"; }
+    function showScreen(screenId) { ['screen-login', 'screen-lobby', 'screen-game'].forEach(id => { document.getElementById(id).style.display = (id === screenId) ? 'flex' : 'none'; if(id === 'screen-game' && screenId === 'screen-game') document.getElementById(id).style.display = 'block'; }); }
+    function rollDiceVisual(val) { document.getElementById('dice-scene').style.display = 'block'; const cube = document.querySelector('.cube'); const xR = Math.random()*720, yR = Math.random()*720; cube.style.transition = '0.5s'; cube.style.transform = `rotateX(${xR}deg) rotateY(${yR}deg)`; setTimeout(() => { cube.style.transition = '0.8s cubic-bezier(0.25,1,0.5,1)'; let x=0, y=0; if(val==2) y=-90; if(val==3) y=-180; if(val==4) y=90; if(val==5) x=-90; if(val==6) x=90; cube.style.transform = `rotateX(${x+720}deg) rotateY(${y+720}deg)`; }, 500); setTimeout(() => document.getElementById('dice-scene').style.display = 'none', 2000); }
+    window.pushToast = (msg) => { let d = document.createElement('div'); d.className = 'toast-msg'; d.innerText = msg; document.getElementById('toast-container').appendChild(d); setTimeout(() => d.remove(), 2600); }
 </script>
 </body>
 </html>
