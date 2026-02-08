@@ -3,59 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mantu Idaman: Chat Update</title>
+    <title>Mantu Idaman: Final Fix</title>
     <style>
-        /* --- 1. CSS COMPACT --- */
-        body{margin:0;padding:0;background:#0f1c2e;font-family:sans-serif;overflow:hidden;display:flex;justify-content:center;align-items:center;height:100dvh;color:#fff;user-select:none;}
+        /* --- 1. CSS COMPACT & RESPONSIVE --- */
+        body{margin:0;padding:0;background:#0f1c2e;font-family:'Segoe UI',sans-serif;overflow:hidden;display:flex;justify-content:center;align-items:center;height:100dvh;color:#fff;user-select:none;}
         #app{position:relative;width:100%;max-width:500px;height:100%;background:#131d2a;overflow:hidden;box-shadow:0 0 50px #000;}
         
-        /* SCREENS */
+        /* LAYAR */
         .screen{position:absolute;top:0;left:0;width:100%;height:100%;display:none;flex-direction:column;}
         #sc-login{background:url('https://res.cloudinary.com/dsutaioqw/image/upload/v1770514507/board_gukevw.png') center/cover;z-index:20;justify-content:center;align-items:center;}
         #sc-lobby{background:linear-gradient(135deg,#091320,#1c2a3f);z-index:10;}
         #sc-game{background:url('https://res.cloudinary.com/dsutaioqw/image/upload/v1770514507/board_gukevw.png') center/contain no-repeat #222;}
 
-        /* COMPONENTS */
+        /* KOMPONEN */
         .btn{padding:12px;border:none;border-radius:10px;font-weight:bold;cursor:pointer;color:#fff;transition:0.2s;}
-        .btn-g{background:#fff;color:#333;display:flex;align-items:center;gap:10px;padding:15px 30px;border-radius:30px;}
+        .btn-g{background:#fff;color:#333;display:flex;align-items:center;gap:10px;padding:15px 30px;border-radius:30px;font-size:16px;}
         .header{padding:15px;display:flex;align-items:center;gap:15px;background:rgba(255,255,255,0.05);}
         .avatar{width:50px;height:50px;border-radius:50%;border:2px solid #f1c40f;}
         .card{background:rgba(255,255,255,0.05);padding:15px;border-radius:12px;margin:10px 20px;display:flex;align-items:center;cursor:pointer;border:1px solid rgba(255,255,255,0.1);}
         
-        /* GAME UI */
-        .p-av{position:absolute;top:7.7%;width:12%;aspect-ratio:1/1;border-radius:50%;border:2px solid #fff;transform:translate(-50%,-50%);background-size:cover;z-index:5;}
+        /* GAME OBJECTS */
+        .p-av{position:absolute;top:7.7%;width:12%;aspect-ratio:1/1;border-radius:50%;border:2px solid #fff;transform:translate(-50%,-50%);background-size:cover;z-index:5;transition:0.3s;}
         #p1-av{left:16.5%;} #p2-av{left:83.5%;}
+        .active-turn{border-color:#f1c40f;box-shadow:0 0 15px #f1c40f;transform:translate(-50%,-50%) scale(1.1);}
+        
         .stat{position:absolute;top:8.5%;transform:translate(-50%,-50%);width:14%;text-align:center;font-size:1.6vh;font-weight:900;color:#5d4037;z-index:6;}
         #u-hati{left:36.5%;} #u-uang{left:66.5%;}
+        
         .pion{position:absolute;width:7%;aspect-ratio:1/1;border-radius:50%;border:3px solid #fff;box-shadow:0 5px 10px rgba(0,0,0,0.5);transform:translate(-50%,-50%);display:none;transition:0.3s;z-index:8;}
         #p1-tok{background:#3498db;} #p2-tok{background:#e74c3c;transform:translate(-30%,-30%) scale(0.8);}
         
-        /* CHAT SYSTEM */
+        /* CHAT */
         #chat-btn{position:absolute;bottom:120px;right:20px;background:#27ae60;width:50px;height:50px;border-radius:50%;border:none;color:#fff;font-size:24px;box-shadow:0 4px 10px #000;cursor:pointer;z-index:90;}
-        #chat-box{position:absolute;bottom:180px;right:20px;width:250px;height:300px;background:rgba(0,0,0,0.85);border-radius:15px;display:none;flex-direction:column;border:1px solid #444;z-index:91;}
-        #chat-msgs{flex:1;overflow-y:auto;padding:10px;font-size:12px;display:flex;flex-direction:column;gap:5px;}
-        .msg{padding:5px 10px;border-radius:5px;background:rgba(255,255,255,0.1);max-width:90%;word-wrap:break-word;}
-        .msg.me{align-self:flex-end;background:#3498db;}
-        #chat-form{display:flex;padding:5px;border-top:1px solid #444;}
-        #chat-input{flex:1;padding:8px;border-radius:5px;border:none;background:#222;color:#fff;}
+        #chat-box{position:absolute;bottom:180px;right:20px;width:250px;height:300px;background:rgba(0,0,0,0.9);border-radius:15px;display:none;flex-direction:column;border:1px solid #444;z-index:91;overflow:hidden;}
+        #chat-msgs{flex:1;overflow-y:auto;padding:10px;font-size:12px;display:flex;flex-direction:column;gap:8px;}
+        .msg{padding:8px 12px;border-radius:15px;background:#333;max-width:85%;word-wrap:break-word;color:#eee;}
+        .msg.me{align-self:flex-end;background:#3498db;color:#fff;border-bottom-right-radius:2px;}
+        .msg.opp{align-self:flex-start;background:#444;border-bottom-left-radius:2px;}
+        #chat-form{display:flex;padding:10px;background:#222;}
+        #chat-input{flex:1;padding:8px;border-radius:5px;border:none;background:#333;color:#fff;}
         
-        /* DICE 3D */
+        /* MODAL & DICE */
+        .modal{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:100;display:none;justify-content:center;align-items:center;}
+        .box{background:#1c2a3f;padding:25px;border-radius:15px;width:70%;text-align:center;border:2px solid #f1c40f;}
+        
         #dice-scn{position:absolute;top:45%;left:50%;transform:translate(-50%,-50%);width:80px;height:80px;display:none;z-index:50;}
         .cube{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform 1s;}
         .face{position:absolute;width:80px;height:80px;background:#fff;border:2px solid #ccc;border-radius:10px;display:flex;justify-content:center;align-items:center;font-size:40px;color:#333;}
         .f1{transform:rotateY(0deg) translateZ(40px);} .f2{transform:rotateY(90deg) translateZ(40px);} .f3{transform:rotateY(180deg) translateZ(40px);}
         .f4{transform:rotateY(-90deg) translateZ(40px);} .f5{transform:rotateX(90deg) translateZ(40px);} .f6{transform:rotateX(-90deg) translateZ(40px);}
         
-        /* MODALS */
-        .modal{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:100;display:none;justify-content:center;align-items:center;}
-        .box{background:#1c2a3f;padding:25px;border-radius:15px;width:70%;text-align:center;border:2px solid #f1c40f;}
+        /* TOAST */
+        #toast{position:absolute;top:15%;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:5px;align-items:center;z-index:99;width:90%;pointer-events:none;}
+        .t-msg{background:rgba(0,0,0,0.85);color:#fff;padding:8px 16px;border-radius:20px;font-size:14px;animation:fade 3s forwards;}
+        @keyframes fade{0%{opacity:0;transform:translateY(-10px);}10%{opacity:1;transform:translateY(0);}90%{opacity:1;}100%{opacity:0;display:none;}}
     </style>
 </head>
 <body>
 
 <div id="app">
     <div id="sc-login" class="screen" style="display:flex;">
-        <h1 style="color:#f1c40f; text-shadow:0 0 10px #000;">CALON MANTU</h1>
+        <h1 style="color:#f1c40f; text-shadow:0 0 10px #000; margin-bottom:20px;">CALON MANTU</h1>
         <button class="btn-g" onclick="doLogin()">
             <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" width="20"> Login Google
         </button>
@@ -91,17 +99,19 @@
         
         <div id="dice-scn"><div class="cube"><div class="face f1">1</div><div class="face f2">2</div><div class="face f3">3</div><div class="face f4">4</div><div class="face f5">5</div><div class="face f6">6</div></div></div>
         
-        <div id="turn-txt" style="position:absolute;bottom:22%;left:50%;transform:translateX(-50%);background:#3498db;padding:8px 20px;border-radius:20px;font-weight:bold;">Menunggu...</div>
-        <div onclick="rollD()" style="position:absolute;bottom:4%;left:50%;transform:translateX(-50%);width:40%;height:10%;border-radius:30px;cursor:pointer;"></div>
+        <div id="turn-txt" style="position:absolute;bottom:22%;left:50%;transform:translateX(-50%);background:#3498db;padding:8px 20px;border-radius:20px;font-weight:bold;box-shadow:0 3px 10px #000;">Menunggu...</div>
+        <div onclick="rollD()" style="position:absolute;bottom:4%;left:50%;transform:translateX(-50%);width:40%;height:10%;border-radius:30px;cursor:pointer;z-index:20;"></div>
 
         <button id="chat-btn" onclick="toggleChat()">💬</button>
         <div id="chat-box">
             <div id="chat-msgs"></div>
             <form id="chat-form" onsubmit="sendChat(event)">
                 <input id="chat-input" type="text" placeholder="Ketik..." autocomplete="off">
-                <button type="submit" style="background:#2ecc71;border:none;color:#fff;padding:5px 10px;">➤</button>
+                <button type="submit" style="background:#2ecc71;border:none;color:#fff;padding:5px 10px;border-radius:5px;">➤</button>
             </form>
         </div>
+        
+        <div id="toast"></div>
     </div>
 
     <div id="m-inv" class="modal">
@@ -109,8 +119,10 @@
             <img id="inv-pic" class="avatar" style="width:70px;height:70px;">
             <h3 id="inv-nm">Nama</h3>
             <p>Mengajak Duel!</p>
-            <button onclick="accInv()" class="btn" style="background:#2ecc71;width:45%;">TERIMA</button>
-            <button onclick="rejInv()" class="btn" style="background:#e74c3c;width:45%;">TOLAK</button>
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button onclick="accInv()" class="btn" style="background:#2ecc71;flex:1;">TERIMA</button>
+                <button onclick="rejInv()" class="btn" style="background:#e74c3c;flex:1;">TOLAK</button>
+            </div>
         </div>
     </div>
 </div>
@@ -180,11 +192,11 @@ function listenOnline(){
     });
 }
 
-// INVITE SYSTEM
+// INVITE
 window.sendInv = (uid, nm) => {
     const id = "R"+Date.now();
     set(ref(db,'invites/'+uid), {from:stats.name, pic:stats.photo, rid:id});
-    alert("Mengajak "+nm+"...");
+    tost("Mengajak "+nm+"...");
     join(id,'p1');
 };
 function listenInv(){
@@ -201,10 +213,11 @@ window.accInv = () => { remove(ref(db,'invites/'+user.uid)); document.getElement
 window.rejInv = () => { remove(ref(db,'invites/'+user.uid)); document.getElementById('m-inv').style.display='none'; };
 
 // GAME ENGINE
-window.startBot = () => { rId='bot'; role='p1'; game={turn:'p1', p1:{pos:0, u:20, h:0, j:true}, p2:{pos:0, u:20, h:0, j:true}}; show('sc-game'); updUI(); };
+window.startBot = () => { rId='bot'; role='p1'; game={turn:'p1', p1:{pos:0, uang:20, hati:0, j:true}, p2:{pos:0, uang:20, hati:0, j:true}}; show('sc-game'); updUI(); initChat('local'); };
+
 function join(id, rl){
     rId=id; role=rl; show('sc-game');
-    const d = {pos:0, u:20, h:0, j:true, nm:stats.name, pic:stats.photo};
+    const d = {pos:0, uang:20, hati:0, j:true, nm:stats.name, pic:stats.photo};
     update(ref(db,`rooms/${id}/${rl}`), d);
     onValue(ref(db,`rooms/${id}`), s => {
         const v = s.val();
@@ -220,63 +233,105 @@ window.rollD = () => {
     visDice(dv);
     setTimeout(()=>{
         let p = game[role];
-        for(let i=0; i<dv; i++){
-            p.pos++; if(p.pos>=16){p.pos=0; p.u+=10; p.h+=5;}
-        }
-        // Logic Simple
-        if(p.pos==1){p.u-=2;p.h+=5;} else if(p.pos==6){p.u-=5;}
+        // Gerak
+        for(let i=0; i<dv; i++){ p.pos++; if(p.pos>=16){p.pos=0; p.uang+=10; p.hati+=5; tost("Gaji +10, Hati +5");} }
         
+        // EFEK KOTAK (LOGIC)
+        checkTile(p);
+
         const nt = game.turn=='p1'?'p2':'p1';
-        if(rId=='bot'){ game.turn=nt; updUI(); if(nt=='p2') setTimeout(botRun,1000); }
+        if(rId=='bot'){ game.turn=nt; updUI(); if(nt=='p2') setTimeout(botRun,1500); }
         else { update(ref(db,`rooms/${rId}`), {turn:nt, [role]:p}); }
     }, 1500);
 };
 
 function botRun(){
+    tost("Bot Berpikir...");
     const dv = Math.floor(Math.random()*6)+1; visDice(dv);
     setTimeout(()=>{
         let p = game.p2;
-        for(let i=0; i<dv; i++){ p.pos++; if(p.pos>=16){p.pos=0;} }
+        for(let i=0; i<dv; i++){ p.pos++; if(p.pos>=16){p.pos=0;p.uang+=10;p.hati+=5;} }
+        checkTile(p, true);
         game.turn='p1'; updUI();
     },1500);
 }
 
+function checkTile(p, isBot=false){
+    const i = p.pos;
+    let msg = "";
+    if(i==1){p.uang-=2;p.hati+=5; msg="Beli Martabak";}
+    else if(i==3){p.hati+=5; msg="Dipuji Camer";}
+    else if(i==5){p.pos=1; msg="Supir Dadakan!";}
+    else if(i==6){p.uang-=5; msg="THR Ponakan";}
+    else if(i==9){p.hati+=8; msg="Genteng Beres";}
+    else if(i==11){p.uang+=10; msg="Prank Viral";}
+    else if(i==13){p.hati-=3; msg="Mantan Datang";}
+    
+    if(msg) tost((isBot?"Bot: ":"") + msg);
+}
+
 function updUI(){
-    // Render P1 & P2
     ['p1','p2'].forEach(r => {
         if(game[r] && game[r].j){
             const el=document.getElementById(r+'-tok'); el.style.display='block';
             const c=tiles[game[r].pos]; el.style.left=c.x+'%'; el.style.top=c.y+'%';
-            document.getElementById(r+'-av').style.backgroundImage = rId=='bot' && r=='p2' ? `url('https://api.dicebear.com/7.x/bottts/svg?seed=Bot')` : (game[r].pic ? `url('${game[r].pic}')` : '');
+            
+            // Avatar Bot
+            const pic = (rId=='bot' && r=='p2') ? 'https://api.dicebear.com/7.x/bottts/svg?seed=Felix' : game[r].pic;
+            document.getElementById(r+'-av').style.backgroundImage = `url('${pic}')`;
+            
+            // Highlight
+            const av = document.getElementById(r+'-av');
+            if(game.turn==r) av.classList.add('active-turn'); else av.classList.remove('active-turn');
         }
     });
-    // Stats Me
+    
     const m = game[role];
-    if(m){ document.getElementById('u-uang').innerText=m.u; document.getElementById('u-hati').innerText=m.h; }
-    document.getElementById('turn-txt').innerText = game.turn==role ? "GILIRANMU!" : "MENUNGGU...";
+    if(m){ document.getElementById('u-uang').innerText=m.uang; document.getElementById('u-hati').innerText=m.hati; }
+    document.getElementById('turn-txt').innerText = game.turn==role ? "GILIRANMU!" : (rId=='bot'?"GILIRAN BOT...":"GILIRAN LAWAN...");
 }
 
-// CHAT SYSTEM
+// CHAT FIX
 function initChat(id){
     document.getElementById('chat-msgs').innerHTML='';
-    if(chatUnsub) chatUnsub();
+    if(chatUnsub) chatUnsub(); // Clear prev listener
+    
+    if(id == 'local') {
+        // Mode Bot: Tidak ada listener firebase
+        return;
+    }
+    
     chatUnsub = onChildAdded(ref(db,`rooms/${id}/chat`), s => {
-        const m = s.val();
-        const d = document.createElement('div');
-        d.className = `msg ${m.uid==user.uid?'me':''}`;
-        d.innerText = m.txt;
-        document.getElementById('chat-msgs').appendChild(d);
-        document.getElementById('chat-msgs').scrollTop=9999;
+        const m = s.val(); addChatBubble(m.txt, m.uid==user.uid);
     });
 }
+
+function addChatBubble(txt, isMe){
+    const d = document.createElement('div');
+    d.className = `msg ${isMe?'me':'opp'}`;
+    d.innerText = txt;
+    const box = document.getElementById('chat-msgs');
+    box.appendChild(d);
+    box.scrollTop = box.scrollHeight;
+}
+
 window.toggleChat = () => { const b=document.getElementById('chat-box'); b.style.display = b.style.display=='flex'?'none':'flex'; };
+
 window.sendChat = (e) => {
     e.preventDefault();
     const i = document.getElementById('chat-input');
-    if(i.value && rId!='bot'){
-        push(ref(db,`rooms/${rId}/chat`), {uid:user.uid, txt:i.value});
-        i.value='';
+    const txt = i.value;
+    if(!txt) return;
+
+    if(rId=='bot'){
+        // Chat Local (Bot Mode)
+        addChatBubble(txt, true);
+        setTimeout(()=> addChatBubble("Bot: Saya cuma robot 🤖", false), 1000);
+    } else {
+        // Chat Online
+        push(ref(db,`rooms/${rId}/chat`), {uid:user.uid, txt:txt});
     }
+    i.value='';
 };
 
 // UTIL
@@ -289,6 +344,11 @@ function visDice(v){
         c.style.transform=`rotateX(${x+720}deg) rotateY(${y+720}deg)`;
     },500);
     setTimeout(()=>document.getElementById('dice-scn').style.display='none',2000);
+}
+function tost(m){
+    const d=document.createElement('div');d.className='t-msg';d.innerText=m;
+    document.getElementById('toast').appendChild(d);
+    setTimeout(()=>d.remove(),3000);
 }
 </script>
 </body>
