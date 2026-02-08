@@ -3,369 +3,398 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Calon Mantu Idaman - Playable</title>
+    <title>Calon Mantu Idaman - Final</title>
     <style>
         /* --- RESET & LAYOUT --- */
         body {
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0;
             background-color: #222;
-            font-family: 'Arial Rounded MT Bold', 'Verdana', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100dvh; /* Dynamic Viewport Height */
+            display: flex; justify-content: center; align-items: center;
+            height: 100dvh;
         }
 
         #game-container {
             position: relative;
             height: 100%;
-            aspect-ratio: 9/16; /* Kunci Rasio HP */
+            aspect-ratio: 9/16;
             background-image: url('https://res.cloudinary.com/dsutaioqw/image/upload/v1770514507/board_gukevw.png');
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
+            background-size: contain; background-repeat: no-repeat; background-position: center;
             box-shadow: 0 0 30px rgba(0,0,0,0.8);
         }
 
-        /* --- UI ATAS (AVATAR & STATS) --- */
-        /* Menggunakan container absolute untuk memudahkan centering */
-        
+        /* --- 1. UI ATAS (AVATAR & STATS) - KALIBRASI ULANG --- */
         .avatar-box {
             position: absolute;
-            top: 7.6%; /* Turunkan sedikit biar pas di lingkaran */
-            width: 13.5%;
-            aspect-ratio: 1/1;
+            top: 7.9%; /* Turun dikit dari 7.6% */
+            width: 13.5%; aspect-ratio: 1/1;
             border-radius: 50%;
             transform: translate(-50%, -50%);
-            background-color: #ddd;
-            background-size: cover;
+            background-color: #ddd; background-size: cover;
             border: 2px solid white;
             box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
             z-index: 5;
         }
-
-        #p2-avatar { /* Musuh (Kiri) */
-            left: 11.5%; 
-            background-image: url('https://api.dicebear.com/7.x/avataaars/svg?seed=Grandma&backgroundColor=b6e3f4');
-        }
-
-        #p1-avatar { /* Player (Kanan) */
-            left: 88.5%; 
-            background-image: url('https://api.dicebear.com/7.x/avataaars/svg?seed=Felix&backgroundColor=ffdfbf');
-        }
+        #p2-avatar { left: 11.5%; background-image: url('https://api.dicebear.com/7.x/avataaars/svg?seed=Grandma&backgroundColor=b6e3f4'); }
+        #p1-avatar { left: 88.5%; background-image: url('https://api.dicebear.com/7.x/avataaars/svg?seed=Felix&backgroundColor=ffdfbf'); }
 
         .stat-box {
             position: absolute;
-            top: 8.5%; /* Turunkan supaya teks masuk ke dalam pill putih */
+            top: 8.0%; /* Disamakan dengan center avatar */
             transform: translate(-50%, -50%);
-            width: 16%;
-            text-align: center;
-            font-size: 2.2vh;
-            font-weight: 800;
-            color: #5d4037;
-            z-index: 6;
-            /* border: 1px solid red; debug only */
+            width: 16%; text-align: center;
+            font-size: 2.0vh; font-weight: 800; color: #5d4037;
+            z-index: 6; letter-spacing: -0.5px;
         }
+        #ui-hati { left: 38.0%; } /* Geser dikit ke kiri */
+        #ui-uang { left: 64.0%; } /* Geser dikit ke kiri */
 
-        #ui-hati { left: 38.5%; } /* Digeser agar pas di kotak Hati */
-        #ui-uang { left: 64.5%; } /* Digeser agar pas di kotak Uang */
-
-        /* --- BIDAK (TOKEN) --- */
+        /* --- 2. BIDAK --- */
         .pion {
             position: absolute;
-            width: 7%;
-            aspect-ratio: 1/1;
-            border-radius: 50%;
-            border: 3px solid #fff;
+            width: 7%; aspect-ratio: 1/1;
+            border-radius: 50%; border: 3px solid #fff;
             box-shadow: 0 5px 10px rgba(0,0,0,0.5);
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); /* Efek membal */
-            z-index: 10;
-            transform: translate(-50%, -50%);
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 10; transform: translate(-50%, -50%);
         }
+        #p1-token { background: #3498db; }
+        #p2-token { background: #e74c3c; transform: translate(-30%, -30%) scale(0.8); }
 
-        #p1-token { background: #3498db; } /* Biru (Kamu) */
-        #p2-token { background: #e74c3c; transform: translate(-30%, -30%); scale: 0.8; } /* Merah (Sepupu) */
-
-        /* --- TOMBOL KONTROL (Area Klik Transparan) --- */
-        .btn-area {
+        /* --- 3. KARTU & POPUP (CSS DESIGN) --- */
+        #card-overlay {
             position: absolute;
-            cursor: pointer;
-            z-index: 20;
-            border-radius: 15px;
-            /* background: rgba(255, 0, 0, 0.3); Debugging: Nyalakan untuk lihat area klik */ 
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: none; justify-content: center; align-items: center;
+            z-index: 100; backdrop-filter: blur(5px);
         }
 
-        #btn-kocok {
-            bottom: 3.5%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 42%;
-            height: 10%;
-            border-radius: 40px;
-        }
-        #btn-kocok:active { background: rgba(255,255,255,0.2); }
-
-        /* --- POPUP PESAN (Toast) --- */
-        #msg-panel {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 70%;
-            background: rgba(255, 255, 255, 0.95);
-            border: 4px solid #f39c12;
+        .game-card {
+            width: 70%; aspect-ratio: 2/3;
             border-radius: 15px;
             padding: 20px;
             text-align: center;
-            display: none;
-            z-index: 100;
-            box-shadow: 0 0 50px rgba(0,0,0,0.5);
-            animation: popIn 0.3s ease-out;
+            display: flex; flex-direction: column; justify-content: space-between;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 4px solid white;
+            animation: cardPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
         }
-        @keyframes popIn { from {transform: translate(-50%, -40%) scale(0.5); opacity:0;} to {transform: translate(-50%, -50%) scale(1); opacity:1;} }
+        @keyframes cardPop { from { transform: scale(0.5) rotate(-10deg); opacity: 0; } to { transform: scale(1) rotate(0deg); opacity: 1; } }
 
-        h2 { margin: 0 0 10px; color: #d35400; font-size: 2.5vh; }
-        p { margin: 0; font-size: 2vh; color: #333; line-height: 1.4; }
-        
-        /* Indikator Giliran */
-        #turn-indicator {
-            position: absolute;
-            top: 15%; left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.7);
-            color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
+        /* Varian Warna Kartu */
+        .card-green { background: linear-gradient(135deg, #a8ff78 0%, #78ffd6 100%); color: #006442; }
+        .card-yellow { background: linear-gradient(135deg, #fce38a 0%, #f38181 100%); color: #854200; }
+        .card-red { background: linear-gradient(135deg, #ff9966 0%, #ff5e62 100%); color: #520002; }
+        .card-orange { background: linear-gradient(135deg, #FFB75E 0%, #ED8F03 100%); color: #632c00; }
+
+        .card-title { font-size: 2.5vh; font-weight: 900; text-transform: uppercase; border-bottom: 2px solid rgba(0,0,0,0.1); padding-bottom: 10px;}
+        .card-body { font-size: 2.2vh; font-weight: 600; flex-grow: 1; display: flex; align-items: center; justify-content: center; }
+        .card-effect { font-size: 1.8vh; background: rgba(255,255,255,0.5); padding: 5px; border-radius: 8px; margin-top: 10px; }
+        .card-btn { margin-top: 15px; padding: 10px; background: white; border: none; border-radius: 20px; font-weight: bold; cursor: pointer; box-shadow: 0 3px 5px rgba(0,0,0,0.2); }
+
+        /* --- 4. TOAST MESSAGE (Notifikasi Kecil) --- */
+        #toast {
+            position: absolute; top: 20%; left: 50%; transform: translateX(-50%);
+            background: rgba(0,0,0,0.8); color: white; padding: 10px 20px;
+            border-radius: 20px; font-size: 1.8vh; pointer-events: none; opacity: 0; transition: opacity 0.3s; z-index: 90;
+        }
+
+        /* --- 5. BUTTONS --- */
+        .btn-area { position: absolute; z-index: 20; cursor: pointer; border-radius: 15px; }
+        #btn-kocok { bottom: 3.5%; left: 50%; transform: translateX(-50%); width: 42%; height: 10%; border-radius: 40px; }
+        #btn-kocok:active { background: rgba(255,255,255,0.2); }
+        #btn-kartu-menu { bottom: 5%; left: 5%; width: 20%; height: 10%; } /* Tombol Kartu di Menu Bawah */
+
+        /* INVENTORY MODAL */
+        #inventory-list {
+            position: absolute; bottom: 15%; left: 5%; width: 40%; 
+            background: white; border-radius: 10px; padding: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3); display: none; z-index: 95;
             font-size: 1.5vh;
-            display: none;
         }
     </style>
 </head>
 <body>
 
 <div id="game-container">
-    <div id="p2-avatar" class="avatar-box"></div> <div id="p1-avatar" class="avatar-box"></div> <div id="ui-hati" class="stat-box">0</div>
+    <div id="p2-avatar" class="avatar-box"></div>
+    <div id="p1-avatar" class="avatar-box"></div>
+    <div id="ui-hati" class="stat-box">0</div>
     <div id="ui-uang" class="stat-box">20</div>
 
     <div id="p1-token" class="pion"></div>
     <div id="p2-token" class="pion"></div>
 
-    <div id="btn-kocok" class="btn-area" onclick="mainkanGiliran()"></div>
+    <div id="toast">Info Game</div>
     
-    <div id="turn-indicator">Giliran Kamu</div>
-    <div id="msg-panel">
-        <h2 id="msg-title">Info</h2>
-        <p id="msg-body">Selamat Datang!</p>
+    <div id="card-overlay">
+        <div id="active-card" class="game-card card-green">
+            <div class="card-title" id="card-title">KARTU</div>
+            <div class="card-body" id="card-desc">Isi kartu...</div>
+            <div class="card-effect" id="card-eff">Efek...</div>
+            <button class="card-btn" onclick="closeCard()">AMBIL</button>
+        </div>
     </div>
+
+    <div id="inventory-list">
+        <b>Kartu Spesialmu:</b>
+        <ul id="inv-ul" style="padding-left: 20px; margin: 5px 0;">
+            <li>(Kosong)</li>
+        </ul>
+    </div>
+
+    <div id="btn-kocok" class="btn-area" onclick="playTurn()"></div>
+    <div id="btn-kartu-menu" class="btn-area" onclick="toggleInventory()"></div>
 </div>
 
 <script>
-    /* --- 1. KONFIGURASI KOORDINAT (KALIBRASI ULANG) --- */
-    // Koordinat X, Y dalam Persen (%) agar responsif di semua HP
+    // --- 1. KOORDINAT GRID (Updated Visuals) ---
     const tiles = [
-        { id: 0, x: 11.0, y: 68.3, type: "start", name: "START" },           // 1. Start
-        { id: 1, x: 30.5, y: 68.3, type: "martabak", name: "Martabak" },     // 2. Martabak
-        { id: 2, x: 50.0, y: 68.3, type: "chance", name: "Kesempatan" },     // 3. Kesempatan
-        { id: 3, x: 69.5, y: 68.3, type: "puji", name: "Puji Masakan" },     // 4. Puji
-        { id: 4, x: 89.0, y: 68.3, type: "safe", name: "Pos Ronda" },        // 5. Pos Ronda
+        { id: 0, x: 11.0, y: 68.3, type: "start", name: "START" },
+        { id: 1, x: 30.5, y: 68.3, type: "martabak", name: "Martabak" },
+        { id: 2, x: 50.0, y: 68.3, type: "chance", name: "Kesempatan" },
+        { id: 3, x: 69.5, y: 68.3, type: "puji", name: "Puji Masakan" },
+        { id: 4, x: 89.0, y: 68.3, type: "safe", name: "Pos Ronda" },
         
-        { id: 5, x: 89.0, y: 57.1, type: "trap", name: "Supir Dadakan" },    // 6. Supir (Naik)
-        { id: 6, x: 89.0, y: 45.8, type: "tax", name: "Pajak THR" },         // 7. THR
-        { id: 7, x: 89.0, y: 34.5, type: "item", name: "Kartu Spesial" },    // 8. Spesial
-        { id: 8, x: 89.0, y: 23.2, type: "jail", name: "RSJ Stress" },       // 9. RSJ (Pojok)
+        { id: 5, x: 89.0, y: 57.1, type: "trap", name: "Supir Dadakan" },
+        { id: 6, x: 89.0, y: 45.8, type: "tax", name: "Pajak THR" },
+        { id: 7, x: 89.0, y: 34.5, type: "special", name: "Kartu Spesial" },
+        { id: 8, x: 89.0, y: 23.2, type: "jail", name: "RSJ Stress" },
         
-        { id: 9, x: 69.5, y: 23.2, type: "gamble_roof", name: "Genteng" },   // 10. Genteng (Kiri)
-        { id: 10, x: 50.0, y: 23.2, type: "gamble_gold", name: "Toko Emas" },// 11. Emas KW
-        { id: 11, x: 30.5, y: 23.2, type: "prank", name: "Prank Sosial" },   // 12. Prank
-        { id: 12, x: 11.0, y: 23.2, type: "extreme", name: "Kartu Ekstrem" },// 13. Ekstrem
+        { id: 9, x: 69.5, y: 23.2, type: "gamble_roof", name: "Genteng" },
+        { id: 10, x: 50.0, y: 23.2, type: "gamble_gold", name: "Toko Emas" },
+        { id: 11, x: 30.5, y: 23.2, type: "prank", name: "Prank Sosial" },
+        { id: 12, x: 11.0, y: 23.2, type: "extreme", name: "Kartu Ekstrem" },
         
-        { id: 13, x: 11.0, y: 34.5, type: "bad", name: "Mantan Datang" },    // 14. Mantan (Turun)
-        { id: 14, x: 11.0, y: 45.8, type: "bad", name: "Kapan Nikah" },      // 15. Kapan Nikah
-        { id: 15, x: 11.0, y: 57.1, type: "climax", name: "Nekat Melamar" }  // 16. Melamar
+        { id: 13, x: 11.0, y: 34.5, type: "bad", name: "Mantan Datang" },
+        { id: 14, x: 11.0, y: 45.8, type: "bad_pay", name: "Kapan Nikah" },
+        { id: 15, x: 11.0, y: 57.1, type: "climax", name: "Nekat Melamar" }
     ];
 
-    /* --- 2. DATA GAME --- */
-    let player = { id: 1, pos: 0, uang: 20, hati: 0, isJailed: false, name: "KAMU" };
-    let cpu = { id: 2, pos: 0, uang: 20, hati: 0, isJailed: false, name: "SEPUPU" };
-    
-    let isPlayerTurn = true; // True = Player, False = CPU
-    let isMoving = false;    // Mencegah klik double
+    // --- 2. DATABASE KARTU ---
+    const decks = {
+        chance: [
+            { title: "Nemu Duit", desc: "Rejeki anak soleh di saku celana.", eff: "uang", val: 5, text: "+5 Uang" },
+            { title: "Dipuji Tante", desc: "Kamu dibilang makin ganteng.", eff: "hati", val: 3, text: "+3 Hati" },
+            { title: "Salah Kostum", desc: "Pakai batik ke tempat gym.", eff: "hati", val: -2, text: "-2 Hati" }
+        ],
+        extreme: [
+            { title: "Camer PMS", desc: "Senggol bacok mode on.", eff: "hati", val: -10, text: "-10 Hati" },
+            { title: "Krisis Moneter", desc: "Dompet hilang!", eff: "uang_loss_half", val: 0, text: "Uang sisa 50%" },
+            { title: "Ulang Tahun", desc: "Camer ultah, semua senang.", eff: "hati", val: 15, text: "+15 Hati" }
+        ],
+        special: [
+            { title: "Surat Dokter", desc: "Bebas dari kerja paksa.", eff: "item", id: "item_skip_job" },
+            { title: "Anti Omelan", desc: "Tangkal serangan mental.", eff: "item", id: "item_shield" }
+        ]
+    };
 
-    // Init Posisi Awal
+    // --- 3. STATE GAME ---
+    let player = { pos: 0, uang: 20, hati: 0, jailed: false, items: [] };
+    let cpu = { pos: 0, uang: 20, hati: 0, jailed: false };
+    let isMoving = false;
+    let currentActor = player; // Pointer
+
     updateVisuals();
 
-    /* --- 3. LOGIC UTAMA --- */
-    function mainkanGiliran() {
-        if (!isPlayerTurn || isMoving) return;
-        jalankanTurn(player);
+    // --- 4. ENGINE UTAMA ---
+    function playTurn() {
+        if (isMoving || currentActor !== player) return;
+        runTurn(player);
     }
 
-    function jalankanTurn(actor) {
+    function runTurn(actor) {
         isMoving = true;
         
-        // Cek Penjara (RSJ)
-        if (actor.isJailed) {
-            showToast(actor.name, "Masih di RSJ! Skip giliran.");
-            actor.isJailed = false; // Keluar turn depan
-            selesaiTurn();
-            return;
+        if (actor.jailed) {
+            showToast(`${actor === player ? "Kamu" : "Sepupu"} masih di RSJ...`);
+            actor.jailed = false; 
+            endTurn(); return;
         }
 
-        // 1. Kocok Dadu
         let dadu = Math.floor(Math.random() * 6) + 1;
-        showToast("DADU", `${actor.name} dapat angka ${dadu}`);
+        showToast(`Dadu: ${dadu}`);
 
-        // 2. Gerakkan Token
         let steps = 0;
         let interval = setInterval(() => {
             actor.pos++;
-            
-            // Loop Board (Start)
-            if (actor.pos >= tiles.length) {
+            if (actor.pos >= 16) {
                 actor.pos = 0;
-                actor.uang += 10; // Gaji lewat start
-                if(actor === player) showToast("GAJIAN", "Lewat Start, Uang +10");
+                actor.uang += 10;
+                showToast("Lewat Start: +10 Uang");
             }
-
-            updateVisuals(); // Update posisi token di layar
+            updateVisuals();
             steps++;
 
             if (steps >= dadu) {
                 clearInterval(interval);
-                setTimeout(() => processTileEffect(actor), 500);
+                setTimeout(() => handleTile(actor), 500);
             }
-        }, 300); // Kecepatan gerak (300ms per kotak)
+        }, 250);
     }
 
-    /* --- 4. SISTEM EFEK KOTAK --- */
-    function processTileEffect(actor) {
+    function handleTile(actor) {
         let tile = tiles[actor.pos];
-        let msg = "";
+        let isP1 = (actor === player);
 
-        // Logika per tipe kotak
-        switch (tile.type) {
-            case "start":
-                msg = "Aman di Start.";
-                break;
-            case "martabak":
-                actor.uang -= 3; actor.hati += 2;
-                msg = "Beli Martabak (-3 Uang, +2 Hati)";
-                break;
-            case "trap":
-                msg = "Supir Dadakan! Mundur ke Martabak.";
-                actor.pos = 1; // Mundur ke tile 1
-                updateVisuals();
-                break;
-            case "tax":
-                actor.uang -= 5;
-                msg = "Pajak THR Keponakan (-5 Uang)";
-                break;
-            case "jail":
-                actor.isJailed = true;
-                msg = "Masuk RSJ! Skip 1 giliran.";
-                break;
-            case "prank": // 50:50 Chance
-                if (Math.random() > 0.5) {
-                    actor.uang += 15; actor.hati += 10;
-                    msg = "Prank SUKSES! Viral (+15 Uang, +10 Hati)";
-                } else {
-                    actor.uang -= 10;
-                    msg = "Prank GAGAL! Dihujat (-10 Uang)";
-                }
-                break;
-            case "gamble_gold":
-                if (actor.uang >= 10) {
-                    actor.uang -= 10;
-                    let luck = Math.random();
-                    if(luck > 0.5) {
-                        actor.hati += 15; msg = "Beli Emas KW, Camer Senang! (+15 Hati)";
-                    } else {
-                        msg = "Ketahuan Emas Palsu! (Uang Hangus)";
-                    }
-                } else {
-                    msg = "Uang kurang buat beli emas. Lewat aja.";
-                }
-                break;
-            case "climax": // Melamar
-                let roll = Math.floor(Math.random() * 6) + 1;
-                if(roll === 6) {
-                    msg = "LAMARAN DITERIMA! MENANG!!";
-                    actor.hati += 100; // Auto Win trigger
-                } else {
-                    msg = "Lamaran Ditolak... Coba lagi.";
-                    actor.hati -= 5;
-                }
-                break;
-            case "bad":
-                actor.hati -= 5;
-                msg = "Momen Canggung... (-5 Hati)";
-                break;
-            default:
-                msg = `Berhenti di ${tile.name}. Aman.`;
-                break;
+        // LOGIKA EFEK
+        if (tile.type === "martabak") {
+            actor.uang -= 3; actor.hati += 2;
+            showToast("Beli Martabak: -3 Uang, +2 Hati");
+        } 
+        else if (tile.type === "trap") {
+            showToast("Supir Dadakan! Balik ke Martabak");
+            actor.pos = 1; updateVisuals();
+        }
+        else if (tile.type === "tax") {
+            actor.uang -= 5;
+            showToast("Pajak THR: -5 Uang");
+        }
+        else if (tile.type === "jail") {
+            actor.jailed = true;
+            showToast("Masuk RSJ! Skip 1 giliran");
+        }
+        else if (tile.type === "gamble_roof") {
+             if(Math.random() > 0.5) { actor.hati += 8; showToast("Genteng Beres! +8 Hati"); }
+             else { actor.uang -= 5; showToast("Jatuh! -5 Uang"); }
+        }
+        else if (tile.type === "gamble_gold") {
+             if(actor.uang >= 10) {
+                 actor.uang -= 10;
+                 if(Math.random() > 0.5) { actor.hati += 15; showToast("Emas KW Laku! +15 Hati"); }
+                 else { showToast("Ketahuan Palsu! Rugi 10"); }
+             } else { showToast("Uang kurang buat beli emas"); }
+        }
+        else if (tile.type === "bad") {
+            actor.hati -= 5; showToast("Mantan Datang: -5 Hati");
+        }
+        else if (tile.type === "bad_pay") {
+            actor.uang -= 5; showToast("Ditanya Kapan Nikah? Bayar 5 buat ngeles");
+        }
+        else if (tile.type === "climax") {
+            let roll = Math.floor(Math.random() * 6) + 1;
+            if (roll === 6) {
+                alert("LAMARAN DITERIMA! MENANG!"); location.reload();
+            } else {
+                actor.hati -= 10; actor.pos = 8; actor.jailed = true;
+                showToast("Ditolak! Masuk RSJ"); updateVisuals();
+            }
+        }
+        // TRIGGER KARTU
+        else if (isP1) {
+            if (tile.type === "chance") drawCard("chance", "card-green");
+            else if (tile.type === "special") drawCard("special", "card-yellow");
+            else if (tile.type === "extreme") drawCard("extreme", "card-red");
+            else if (tile.type === "prank") drawPrankCard();
+            else endTurn(); // Jika kotak aman/biasa
+            return; // Tunggu tutup kartu baru endTurn
         }
 
-        // Tampilkan Pesan Efek
-        if (actor === player || tile.type === "jail" || tile.type === "climax") {
-            showToast(tile.name, msg);
-        }
-
-        updateVisuals();
-        selesaiTurn();
+        endTurn();
     }
 
-    function selesaiTurn() {
-        // Cek Kondisi Menang/Kalah
-        if (player.hati >= 50) { alert("SELAMAT! KAMU JADI MANTU IDAMAN!"); location.reload(); return; }
-        if (player.uang < 0) { alert("GAME OVER! Kamu Bangkrut."); location.reload(); return; }
+    // --- 5. SISTEM KARTU ---
+    function drawCard(deckName, cssClass) {
+        let deck = decks[deckName];
+        let card = deck[Math.floor(Math.random() * deck.length)];
+        
+        showCardUI(card.title, card.desc, card.text || "Item", cssClass, () => {
+            applyCardEffect(card);
+        });
+    }
 
-        isMoving = false;
-        isPlayerTurn = !isPlayerTurn; // Ganti giliran
+    function drawPrankCard() {
+        // Logika Prank 50:50
+        let isGood = Math.random() > 0.5;
+        let card = isGood 
+            ? { title: "VIRAL POSITIF", desc: "Konten bagi-bagi rejeki trending!", val: 15, type: "good" }
+            : { title: "DIHUJAT NETIZEN", desc: "Konten prank dinilai tidak etis.", val: -10, type: "bad" };
+        
+        let css = isGood ? "card-orange" : "card-red";
+        let effText = isGood ? "+15 Hati & Uang" : "-10 Hati & Uang";
 
-        // Update UI Giliran
-        let indicator = document.getElementById('turn-indicator');
-        indicator.innerText = isPlayerTurn ? "Giliran: KAMU" : "Giliran: SEPUPU...";
-        indicator.style.background = isPlayerTurn ? "rgba(52, 152, 219, 0.8)" : "rgba(231, 76, 60, 0.8)";
-        indicator.style.display = 'block';
+        showCardUI(card.title, card.desc, effText, css, () => {
+            if(isGood) { player.hati += 15; player.uang += 15; }
+            else { player.hati -= 10; player.uang -= 10; }
+        });
+    }
 
-        // Jika giliran CPU, jalankan otomatis
-        if (!isPlayerTurn) {
-            setTimeout(() => {
-                jalankanTurn(cpu);
-            }, 1500);
+    function showCardUI(title, desc, eff, cssClass, callback) {
+        let el = document.getElementById('active-card');
+        el.className = "game-card " + cssClass;
+        document.getElementById('card-title').innerText = title;
+        document.getElementById('card-desc').innerText = desc;
+        document.getElementById('card-eff').innerText = eff;
+        
+        document.getElementById('card-overlay').style.display = "flex";
+        
+        // Simpan callback di tombol
+        window.tempCallback = callback;
+    }
+
+    function closeCard() {
+        document.getElementById('card-overlay').style.display = "none";
+        if (window.tempCallback) window.tempCallback();
+        endTurn();
+    }
+
+    function applyCardEffect(card) {
+        if (card.eff === "uang") player.uang += card.val;
+        if (card.eff === "hati") player.hati += card.val;
+        if (card.eff === "uang_loss_half") player.uang = Math.floor(player.uang / 2);
+        if (card.eff === "item") {
+            player.items.push(card.title);
+            alert("Item disimpan ke Tas!");
         }
     }
 
-    /* --- 5. VISUAL & UTILS --- */
+    // --- 6. UTILITAS & UI ---
     function updateVisuals() {
-        // Update Posisi Token Player
+        // Player Token
         let pCoord = tiles[player.pos];
-        document.getElementById('p1-token').style.left = pCoord.x + "%";
-        document.getElementById('p1-token').style.top = pCoord.y + "%";
+        let pEl = document.getElementById('p1-token');
+        pEl.style.left = pCoord.x + "%"; pEl.style.top = pCoord.y + "%";
 
-        // Update Posisi Token CPU
+        // CPU Token
         let cCoord = tiles[cpu.pos];
-        document.getElementById('p2-token').style.left = cCoord.x + "%";
-        document.getElementById('p2-token').style.top = cCoord.y + "%";
+        let cEl = document.getElementById('p2-token');
+        cEl.style.left = cCoord.x + "%"; cEl.style.top = cCoord.y + "%";
 
-        // Update Text Stats (Hanya punya Player yang ditampilkan)
+        // Stats
         document.getElementById('ui-uang').innerText = player.uang;
         document.getElementById('ui-hati').innerText = player.hati;
     }
 
-    function showToast(title, body) {
-        const panel = document.getElementById('msg-panel');
-        document.getElementById('msg-title').innerText = title;
-        document.getElementById('msg-body').innerText = body;
-        panel.style.display = 'block';
-        
-        // Hide otomatis
-        setTimeout(() => {
-            panel.style.display = 'none';
-        }, 2000);
+    function showToast(msg) {
+        let t = document.getElementById('toast');
+        t.innerText = msg; t.style.opacity = 1;
+        setTimeout(() => t.style.opacity = 0, 2000);
     }
-</script>
 
+    function endTurn() {
+        isMoving = false;
+        currentActor = (currentActor === player) ? cpu : player;
+        updateVisuals();
+        
+        if (currentActor === cpu) {
+            setTimeout(() => runTurn(cpu), 1000);
+        }
+    }
+
+    function toggleInventory() {
+        let el = document.getElementById('inventory-list');
+        let ul = document.getElementById('inv-ul');
+        if (el.style.display === "block") {
+            el.style.display = "none";
+        } else {
+            el.style.display = "block";
+            ul.innerHTML = player.items.length ? player.items.map(i => `<li>${i}</li>`).join('') : "<li>(Kosong)</li>";
+        }
+    }
+
+</script>
 </body>
 </html>
